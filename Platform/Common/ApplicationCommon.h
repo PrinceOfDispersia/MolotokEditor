@@ -4,7 +4,7 @@
  *
  **/
 
-#include "..\Framework\Framework.h"
+#include <Framework\Framework.h>
 
 namespace ME_Editor
 {
