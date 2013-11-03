@@ -4,18 +4,27 @@
  *
  **/
 
-#include <Framework\Framework.h>
+#include <Framework/BasicTypes.h>
+// >=== PORTING NOTES: Change this header with appropriate for your platform
+#include <Platform/Windows/Common/PlatformCommon.h>
+// <=== PORTING NOTES END
+#include <Platform/Common/MemoryManager.h>
+#include <Framework/Framework.h>
 
+// TODO: move to separate header ?
 namespace ME_Editor
 {
 	class Exception
 	{
 	public:
 		// TODO: Replace with my fancy string class
-		char message[256];
+		TCHAR message[256];
 	};
+
+
 }
 
+// Platform independent appication callbacks
 extern void ApplicationStart();
 extern void ApplicationRun();
 extern void ApplicationShutdown();

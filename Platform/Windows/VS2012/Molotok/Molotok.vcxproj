@@ -67,6 +67,11 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)\..\..\..\..\;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)\..\..\..\..\bin\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(SolutionDir)\..\..\..\..\;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)\..\..\..\..\bin\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -87,7 +92,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <OutputFile>..\..\..\..\bin\$(TargetName)$(TargetExt)</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -119,12 +124,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\MainApp\Application.cpp" />
     <ClCompile Include="..\..\Launcher\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\Framework\BasicTypes.h" />
     <ClInclude Include="..\..\..\..\Framework\MathLib\Math.h" />
     <ClInclude Include="..\..\..\..\Framework\Framework.h" />
     <ClInclude Include="..\..\..\Common\ApplicationCommon.h" />
+    <ClInclude Include="..\..\..\Common\MemoryManager.h" />
+    <ClInclude Include="..\..\Common\PlatformCommon.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

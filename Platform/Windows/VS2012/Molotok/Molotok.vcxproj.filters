@@ -25,10 +25,22 @@
     <Filter Include="Заголовочные файлы\Platform\Common">
       <UniqueIdentifier>{01071d33-499b-48d6-8813-ccdef33a9b28}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\MainApp">
+      <UniqueIdentifier>{34b683c2-10be-4a03-a124-78e72c2250be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\Platform\Win">
+      <UniqueIdentifier>{73edf6bd-80ce-4080-8f43-1007109cbff4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\Platform\Win\Common">
+      <UniqueIdentifier>{1c1eca73-8a0b-4761-a923-34f138f7751f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Launcher\main.cpp">
       <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MainApp\Application.cpp">
+      <Filter>Файлы исходного кода\MainApp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -40,6 +52,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\Framework\MathLib\Math.h">
       <Filter>Заголовочные файлы\Framework\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\MemoryManager.h">
+      <Filter>Заголовочные файлы\Platform\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\BasicTypes.h">
+      <Filter>Заголовочные файлы\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\PlatformCommon.h">
+      <Filter>Заголовочные файлы\Platform\Win\Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
