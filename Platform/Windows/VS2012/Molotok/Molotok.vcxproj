@@ -27,7 +27,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -73,15 +73,20 @@
     <IncludePath>$(SolutionDir)\..\..\..\..\;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)\..\..\..\..\bin\</OutDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(SolutionDir)\..\..\..\..\;$(VCInstallDir)include;$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);</IncludePath>
+    <OutDir>$(SolutionDir)\..\..\..\..\bin\</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <OutputFile>..\..\..\..\bin\$(TargetName)$(TargetExt)</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -89,6 +94,8 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -116,6 +123,8 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PreprocessorDefinitions>_MBCS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -125,13 +134,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\MainApp\Application.cpp" />
+    <ClCompile Include="..\..\..\Common\Assert.cpp" />
+    <ClCompile Include="..\..\..\Common\CommonUtils.cpp" />
+    <ClCompile Include="..\..\Common\Win_Assert.cpp" />
+    <ClCompile Include="..\..\Common\Win_MemManager.cpp" />
     <ClCompile Include="..\..\Launcher\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\Framework\BasicMacros.h" />
     <ClInclude Include="..\..\..\..\Framework\BasicTypes.h" />
     <ClInclude Include="..\..\..\..\Framework\MathLib\Math.h" />
     <ClInclude Include="..\..\..\..\Framework\Framework.h" />
+    <ClInclude Include="..\..\..\..\Framework\MathLib\Vector.h" />
     <ClInclude Include="..\..\..\Common\ApplicationCommon.h" />
+    <ClInclude Include="..\..\..\Common\ApplicationConfig.h" />
+    <ClInclude Include="..\..\..\Common\Assert.h" />
+    <ClInclude Include="..\..\..\Common\CommonUtils.h" />
     <ClInclude Include="..\..\..\Common\MemoryManager.h" />
     <ClInclude Include="..\..\Common\PlatformCommon.h" />
   </ItemGroup>

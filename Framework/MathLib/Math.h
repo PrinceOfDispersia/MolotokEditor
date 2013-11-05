@@ -3,3 +3,5 @@
  *	Math.h - basic include file of math library
  *
  **/
+
+#include "Vector.h"

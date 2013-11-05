@@ -14,7 +14,24 @@
 void ApplicationStart()
 {
 	// TODO: call here OpenGL initialization
-	MessageBox(0,"ApplicationStart","Debug",MB_ICONERROR);
+
+	// Remove me: doing some testing of classes and trying out fancy "auto" :)
+	ME_Math::Vector2D test1(100);
+	test1+=ME_Math::Vector2D(500,100);
+	test1*=2.0f;
+	auto test2 = test1/2.4f;
+	
+	// TODO: make null termination checks
+	TCHAR tmp[2];
+	_sntprintf(tmp,ARRAY_SIZE(tmp),_T("%f %f"),test1.x,test1.y);
+
+	MemoryPool * pPool = new MemoryPool(_T("Global"),0);
+
+	MemoryPool * pPool2 = pPool->AllocSubPool(_T("Strings"));
+	pPool->Alloc(100);
+	pPool2->Alloc((size_t)8192*1024);
+
+	delete pPool;
 }
 
 /************************************************************************/
@@ -23,11 +40,9 @@ void ApplicationStart()
 /************************************************************************/
 void ApplicationRun()
 {
-	// TODO: load here graphics and additional resource, while showing	
+	// TODO: load here graphics and additional resources, while showing	
 	// fancy loading box to user, then run main logic cycle
 	
-	MessageBox(0,"ApplicationRun","Debug",MB_ICONERROR);
-
 }
 
 /************************************************************************/
@@ -37,7 +52,7 @@ void ApplicationRun()
 void ApplicationShutdown()
 {
 	// TODO: write here some code)
-	MessageBox(0,"ApplicationShutdown","Debug",MB_ICONERROR);
+	// 
 }
 
 /************************************************************************/

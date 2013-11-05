@@ -10,26 +10,37 @@ namespace ME_Editor
 	const byte Guard2[4] = {0xDE,0xAD,0xBE,0xEF};
 
 	const int m_iPoolNameSize = 128;
-
-	class MemoryManager;
-
+	
 	class MemoryPool
 	{
 		TCHAR m_strPoolName[m_iPoolNameSize];
-		MemoryManager * m_pOwner;
+		MemoryPool * m_pOwner;
 	
-		friend MemoryManager;
+		typedef struct allocation_s
+		{
+			const TCHAR * strFile;
+			int iLine;
+			size_t size;
+			void * ptr;
+		}allocation_t;
 
-		void PerformCorruptionCheck();
-
-		MemoryPool(TCHAR * strPoolName,MemoryManager * pOwner);
+		std::vector<allocation_t> m_vAllocationChains;
+		std::vector<MemoryPool*> m_vChildrens;
+		
+		void PerformCorruptionCheck(const bool bRecursive = false);
+		void RemoveChildPool(const MemoryPool * pPool);
 	public:
 		
+		MemoryPool * AllocSubPool(const TCHAR * strDbgName);
+
+		MemoryPool(const TCHAR * strPoolName,MemoryPool * pOwner);
 		~MemoryPool();
 
-		void * Alloc(size_t nSize);
-		void Free(void * pPtr);
-				
+		void * Alloc(const size_t nSize,const TCHAR * strFile,int iLine);
+		void Free(void * pPtr,const  TCHAR * strFile,int iLine);
+
+		#define Alloc(n) Alloc(n,__FILE__,__LINE__)
+		#define Free(ptr) Free(ptr,__FILE__,__LINE__)
 
 	};
 }

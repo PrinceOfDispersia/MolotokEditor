@@ -34,6 +34,15 @@
     <Filter Include="Заголовочные файлы\Platform\Win\Common">
       <UniqueIdentifier>{1c1eca73-8a0b-4761-a923-34f138f7751f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\Platform">
+      <UniqueIdentifier>{187642c0-b078-4158-a5cd-faef27ce0e3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Platform\Common">
+      <UniqueIdentifier>{6f97ccae-38cd-441e-93e9-6d3bb4cb5577}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Platform\Windows">
+      <UniqueIdentifier>{4f1e5fd9-46c1-4eed-85b1-278d06e079bc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Launcher\main.cpp">
@@ -41,6 +50,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\MainApp\Application.cpp">
       <Filter>Файлы исходного кода\MainApp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\Assert.cpp">
+      <Filter>Файлы исходного кода\Platform\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\Win_Assert.cpp">
+      <Filter>Файлы исходного кода\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\Win_MemManager.cpp">
+      <Filter>Файлы исходного кода\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\CommonUtils.cpp">
+      <Filter>Файлы исходного кода\Platform\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +82,21 @@
     </ClInclude>
     <ClInclude Include="..\..\Common\PlatformCommon.h">
       <Filter>Заголовочные файлы\Platform\Win\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\MathLib\Vector.h">
+      <Filter>Заголовочные файлы\Framework\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ApplicationConfig.h">
+      <Filter>Заголовочные файлы\Platform\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\Assert.h">
+      <Filter>Заголовочные файлы\Platform\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\BasicMacros.h">
+      <Filter>Заголовочные файлы\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\CommonUtils.h">
+      <Filter>Заголовочные файлы\Platform\Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

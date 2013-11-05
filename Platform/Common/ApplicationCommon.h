@@ -4,12 +4,20 @@
  *
  **/
 
+// Include configuration header
+#include <Platform/Common/ApplicationConfig.h>
+#include <Framework/BasicMacros.h>
 #include <Framework/BasicTypes.h>
+
 // >=== PORTING NOTES: Change this header with appropriate for your platform
 #include <Platform/Windows/Common/PlatformCommon.h>
 // <=== PORTING NOTES END
+#include <Platform/Common/Assert.h>
 #include <Platform/Common/MemoryManager.h>
+#include <Platform/Common/CommonUtils.h>
+
 #include <Framework/Framework.h>
+
 
 // TODO: move to separate header ?
 namespace ME_Editor
@@ -29,3 +37,5 @@ extern void ApplicationStart();
 extern void ApplicationRun();
 extern void ApplicationShutdown();
 extern void ApplicationOnException(ME_Editor::Exception * pException);
+
+using namespace ME_Editor;

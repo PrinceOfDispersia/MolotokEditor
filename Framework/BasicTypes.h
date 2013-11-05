@@ -19,3 +19,9 @@ typedef struct color24_s
 {
 	byte r,g,b;
 }color24_t;
+
+#ifdef VECTOR_DOUBLE
+	typedef double vec_t;
+#else
+	typedef float vec_t;
+#endif
