@@ -11,6 +11,9 @@
 //
 #include "MathLib/Math.h"
 
+// String support
+//
+#include "String.h"
 
 
 #endif

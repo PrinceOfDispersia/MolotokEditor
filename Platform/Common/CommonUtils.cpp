@@ -30,3 +30,30 @@ TCHAR *VA( const TCHAR *format, ... )
 	return s;
 }
 
+/************************************************************************/
+/*          Safe, cross-platform, multi-charset version of sprintf      */
+/*			formats string to "dest" buffer, "destSize" parameter specifies
+ *			buffer size in characters									*/
+/*			return value: number of used bytes in buffer				*/
+/************************************************************************/
+size_t Sys_SafeSprintf(TCHAR * dest,size_t destSize,TCHAR * format,...)
+{
+	va_list		argptr;
+	
+	TCHAR * s = dest;
+	va_start( argptr, format );
+	int written = _vsntprintf( s, destSize, format, argptr );
+	va_end( argptr );
+
+	if (written == -1)
+	{
+	#ifdef PARANOID
+		// TODO: replace with console log
+		Sys_FatalError(_T("Sys_SafeSprintf(): buffer overflow!"));
+	#endif
+		// null-terminate
+		dest[destSize-1] = 0;
+	}
+	
+	return written;	
+}

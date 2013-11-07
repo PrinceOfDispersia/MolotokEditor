@@ -1,8 +1,11 @@
 /*
  *	Molotok Editor, 2013 (C) PrinceOfDispersia
- *	BasicMacro.h - basic macros defs
+ *	BasicMacros.h - basic macros defs
  *
  **/
+
+#ifndef BASICMACROS_H
+#define BASICMACROS_H
 
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
 
@@ -15,3 +18,5 @@
 #endif
 
 #define clamp(x,a,b) ((x) < (a) ? (a) : ((x) > (b) ? (b) : (x)))
+
+#endif

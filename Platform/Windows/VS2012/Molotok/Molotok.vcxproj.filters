@@ -98,5 +98,11 @@
     <ClInclude Include="..\..\..\Common\CommonUtils.h">
       <Filter>Заголовочные файлы\Platform\Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\String.h">
+      <Filter>Заголовочные файлы\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\PlatformEnvironment.h">
+      <Filter>Заголовочные файлы\Platform\Common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

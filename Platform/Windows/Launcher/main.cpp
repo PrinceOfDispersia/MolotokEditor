@@ -7,8 +7,17 @@
 #include <windows.h>
 #include <Platform/Common/ApplicationCommon.h>
 
+using namespace ME_Editor;
+PlatformEnvironment * ME_Editor::g_pPlatform;
+
+/************************************************************************/
+/*			Entry point for windows application			                */
+/************************************************************************/
 int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd )
 {
+	
+	// Initialize environment
+	ME_Editor::g_pPlatform = new PlatformEnvironment;
 	
 	try
 	{
@@ -22,5 +31,5 @@ int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 	}
 		
 	ApplicationShutdown();
-		
+	delete ME_Editor::g_pPlatform;	
 }

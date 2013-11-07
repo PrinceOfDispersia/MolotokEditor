@@ -15,23 +15,14 @@ void ApplicationStart()
 {
 	// TODO: call here OpenGL initialization
 
-	// Remove me: doing some testing of classes and trying out fancy "auto" :)
-	ME_Math::Vector2D test1(100);
-	test1+=ME_Math::Vector2D(500,100);
-	test1*=2.0f;
-	auto test2 = test1/2.4f;
-	
-	// TODO: make null termination checks
-	TCHAR tmp[2];
-	_sntprintf(tmp,ARRAY_SIZE(tmp),_T("%f %f"),test1.x,test1.y);
+	byte * b[2048];
+	for(int i = 0 ; i < 2048 ; i++)
+	{
+		b[i] = (byte*)g_pPlatform->MemoryPools()->Alloc(2048);
+	}
 
-	MemoryPool * pPool = new MemoryPool(_T("Global"),0);
-
-	MemoryPool * pPool2 = pPool->AllocSubPool(_T("Strings"));
-	pPool->Alloc(100);
-	pPool2->Alloc((size_t)8192*1024);
-
-	delete pPool;
+	for(int i = 0 ; i < 2048 ; i++)	
+		g_pPlatform->MemoryPools()->Free(b[i]);
 }
 
 /************************************************************************/

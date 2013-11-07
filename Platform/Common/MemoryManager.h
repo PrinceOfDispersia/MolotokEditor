@@ -4,15 +4,16 @@
  *
  **/
 
+#ifndef MEMORY_MANAGER_H
+#define MEMORY_MANAGER_H
+
 namespace ME_Editor
 {
-	const byte Guard1[4] = {0xBA,0xAD,0xF0,0x0D};
-	const byte Guard2[4] = {0xDE,0xAD,0xBE,0xEF};
-
-	const int m_iPoolNameSize = 128;
 	
 	class MemoryPool
 	{
+		static const int m_iPoolNameSize = 128;
+
 		TCHAR m_strPoolName[m_iPoolNameSize];
 		MemoryPool * m_pOwner;
 	
@@ -39,8 +40,10 @@ namespace ME_Editor
 		void * Alloc(const size_t nSize,const TCHAR * strFile,int iLine);
 		void Free(void * pPtr,const  TCHAR * strFile,int iLine);
 
-		#define Alloc(n) Alloc(n,__FILE__,__LINE__)
-		#define Free(ptr) Free(ptr,__FILE__,__LINE__)
+		#define Alloc(n) Alloc(n,_T(__FILE__),__LINE__)
+		#define Free(ptr) Free(ptr,_T(__FILE__),__LINE__)
 
 	};
 }
+
+#endif

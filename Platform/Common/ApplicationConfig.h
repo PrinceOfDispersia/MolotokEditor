@@ -4,9 +4,13 @@
  *
  **/
 
+#ifndef APPLICATION_CONFIG_H
+#define APPLICATION_CONFIG_H
+
 // uses double precision vectors
 #define VECTOR_DOUBLE
 
 // paranoid mode - apply additional checks
 #define PARANOID
 
+#endif

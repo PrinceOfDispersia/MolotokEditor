@@ -4,6 +4,9 @@
  *
  **/
 
+#ifndef BASICTYPES_H
+#define BASICTYPES_H
+
 // Byte definition
 //
 typedef unsigned char byte;
@@ -24,4 +27,6 @@ typedef struct color24_s
 	typedef double vec_t;
 #else
 	typedef float vec_t;
+#endif
+
 #endif

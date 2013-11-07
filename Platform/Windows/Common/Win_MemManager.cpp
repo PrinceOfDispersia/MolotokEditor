@@ -1,6 +1,6 @@
 /*
  *	Molotok Editor, 2013 (C) PrinceOfDispersia
- *	Win_MemManagercpp - memory manager implementation
+ *	Win_MemManager.cpp - memory manager implementation
  *
  **/
 
@@ -12,6 +12,10 @@ using namespace ME_Editor;
 // Undefine tracking macroses for this file
 #undef Alloc
 #undef Free
+
+// Define guard bytes
+byte Guard1[4] = {0xBA,0xAD,0xF0,0x0D};
+byte Guard2[4] = {0xDE,0xAD,0xBE,0xEF};
 
 /************************************************************************/
 /*		Allocates nSize bytes and tracks information about caller       */
@@ -45,9 +49,7 @@ void* MemoryPool::Alloc(const size_t nSize,const  TCHAR * strFile,const int iLin
 /************************************************************************/
 void MemoryPool::Free(void * pPtr,const TCHAR * strFile,const int iLine)
 {
-
 	// Shift to guard fences
-	pPtr = ((byte*)pPtr)-4;
 
 	#ifdef PARANOID
 		PerformCorruptionCheck();
@@ -67,8 +69,9 @@ void MemoryPool::Free(void * pPtr,const TCHAR * strFile,const int iLine)
 	}
 
 	// 2) Erase if found one and free memory
-	if ((*it).ptr == pPtr)
+	if (it != m_vAllocationChains.end())
 	{
+		pPtr = ((byte*)pPtr)-4;
 		m_vAllocationChains.erase(it);
 		free(pPtr);
 	}
@@ -102,12 +105,12 @@ void MemoryPool::PerformCorruptionCheck(bool bRecursive)
 		allocation_t a = (*it);
 		byte * ptr = (byte*)a.ptr-4;
 
-		if (memcmp(ptr,Guard1,4))			
+		if (memcmp(ptr,Guard1,4) != 0)			
 		{
 			Sys_FatalError(VA(msg,1,(*it).strFile,(*it).iLine,m_strPoolName));
 		}
 
-		if (memcmp(ptr+a.size,Guard2,4))			
+		if (memcmp(ptr+a.size,Guard2,4) !=0)			
 		{
 			Sys_FatalError(VA(msg,2,(*it).strFile,(*it).iLine,m_strPoolName));
 		}
@@ -124,6 +127,9 @@ MemoryPool::MemoryPool(const TCHAR * strPoolName,MemoryPool * pOwner)
 	
 }
 
+/************************************************************************/
+/*        Removes pool from child list                                  */
+/************************************************************************/
 void MemoryPool::RemoveChildPool(const MemoryPool * pPool)
 {
 	auto it = m_vChildrens.begin();
@@ -172,5 +178,8 @@ MemoryPool::~MemoryPool()
 		delete *it;
 	}
 
+	m_vChildrens.shrink_to_fit();
+	m_vAllocationChains.shrink_to_fit();
 	
 }
+
