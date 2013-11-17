@@ -7,7 +7,7 @@
 #ifndef MEMORY_MANAGER_H
 #define MEMORY_MANAGER_H
 
-namespace ME_Editor
+namespace ME_Framework
 {
 	
 	class MemoryPool
@@ -28,10 +28,11 @@ namespace ME_Editor
 		std::vector<allocation_t> m_vAllocationChains;
 		std::vector<MemoryPool*> m_vChildrens;
 		
-		void PerformCorruptionCheck(const bool bRecursive = false);
+		
 		void RemoveChildPool(const MemoryPool * pPool);
 	public:
-		
+		void PerformCorruptionCheck(const bool bRecursive = false);
+
 		MemoryPool * AllocSubPool(const TCHAR * strDbgName);
 
 		MemoryPool(const TCHAR * strPoolName,MemoryPool * pOwner);

@@ -48,7 +48,7 @@ size_t Sys_SafeSprintf(TCHAR * dest,size_t destSize,TCHAR * format,...)
 	if (written == -1)
 	{
 	#ifdef PARANOID
-		// TODO: replace with console log
+		// TODO: replace with console log, cause fatal error is too brutal
 		Sys_FatalError(_T("Sys_SafeSprintf(): buffer overflow!"));
 	#endif
 		// null-terminate
@@ -57,3 +57,31 @@ size_t Sys_SafeSprintf(TCHAR * dest,size_t destSize,TCHAR * format,...)
 	
 	return written;	
 }
+
+/************************************************************************/
+/*          Safe, cross-platform, multi-charset version of strcpy       */
+/*			Copies source string to dest, ensuring null-termination of dest
+ *			return value: true - no overflow, false - overflow happened
+/************************************************************************/
+bool Sys_SafeStrCopy(TCHAR * dest,TCHAR * source,size_t destSize)
+{
+	
+	_tcsnccpy(dest,source,destSize);
+
+	// Function didn't filled null-terminator, so we probably overflowed
+	if (dest[destSize - 1] != 0)
+	{
+		#ifdef PARANOID
+				// TODO: replace with console log, cause fatal error is too brutal
+				Sys_FatalError(_T("Sys_SafeStrCopy(): destination overflow!"));
+		#endif
+		dest[destSize - 1] = 0;
+
+		return false;
+	}
+
+	return true;
+		
+}
+
+

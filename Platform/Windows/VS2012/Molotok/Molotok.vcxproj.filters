@@ -104,5 +104,8 @@
     <ClInclude Include="..\..\..\Common\PlatformEnvironment.h">
       <Filter>Заголовочные файлы\Platform\Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\EnumFlags.h">
+      <Filter>Заголовочные файлы\Framework</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

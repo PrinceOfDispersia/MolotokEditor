@@ -20,13 +20,14 @@
 #include <Platform/Common/MemoryManager.h>
 #include <Platform/Common/CommonUtils.h>
 
-#include <Platform/Common/PlatformEnvironment.h>
 
+#include <Platform/Common/PlatformEnvironment.h>
 #include <Framework/Framework.h>
 
 
+
 // TODO: move to separate header ?
-namespace ME_Editor
+namespace ME_Framework
 {
 	class Exception
 	{
@@ -42,8 +43,8 @@ namespace ME_Editor
 extern void ApplicationStart();
 extern void ApplicationRun();
 extern void ApplicationShutdown();
-extern void ApplicationOnException(ME_Editor::Exception * pException);
+extern void ApplicationOnException(ME_Framework::Exception * pException);
 
-using namespace ME_Editor;
+using namespace ME_Framework;
 
 #endif

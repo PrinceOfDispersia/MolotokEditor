@@ -7,7 +7,7 @@
 #include <Platform\Common\ApplicationCommon.h>
 #include "PlatformCommon.h"
 
-using namespace ME_Editor;
+using namespace ME_Framework;
 
 // Undefine tracking macroses for this file
 #undef Alloc
@@ -29,8 +29,11 @@ void* MemoryPool::Alloc(const size_t nSize,const  TCHAR * strFile,const int iLin
 	// Simply alloc and guard around for now
 	byte * ptr = (byte*)malloc(nSize + 8);
 	memcpy(ptr,Guard1,4);
-	memcpy(ptr+nSize,Guard2,4);
-
+	memcpy(ptr+nSize+4,Guard2,4);
+	
+	//0			+4			+4+nSize
+	//Guard1	Data		Guard2
+	
 	// Add allocation to list
 	allocation_t a;
 	a.strFile = strFile;
@@ -100,19 +103,18 @@ void MemoryPool::PerformCorruptionCheck(bool bRecursive)
 	TCHAR msg[]=
 	_T("MemoryPool::PerformCorruptionCheck(): damaged Guard%d for allocation at %s on line %d in memory pool %s");
 
-	for(auto it = m_vAllocationChains.begin(); it != m_vAllocationChains.end() ; ++it)
+	for(allocation_t a: m_vAllocationChains)
 	{
-		allocation_t a = (*it);
 		byte * ptr = (byte*)a.ptr-4;
 
 		if (memcmp(ptr,Guard1,4) != 0)			
 		{
-			Sys_FatalError(VA(msg,1,(*it).strFile,(*it).iLine,m_strPoolName));
+			Sys_FatalError(VA(msg,1,a.strFile,a.iLine,m_strPoolName));
 		}
 
-		if (memcmp(ptr+a.size,Guard2,4) !=0)			
+		if (memcmp(ptr+ a.size + 4,Guard2,4) !=0)			
 		{
-			Sys_FatalError(VA(msg,2,(*it).strFile,(*it).iLine,m_strPoolName));
+			Sys_FatalError(VA(msg,2,a.strFile,a.iLine,m_strPoolName));
 		}
 	}	
 }
@@ -122,7 +124,7 @@ void MemoryPool::PerformCorruptionCheck(bool bRecursive)
 /************************************************************************/
 MemoryPool::MemoryPool(const TCHAR * strPoolName,MemoryPool * pOwner)
 {
-	_tcsnccpy_s(m_strPoolName,strPoolName,sizeof(m_strPoolName));
+	_tcsnccpy(m_strPoolName,strPoolName,ARRAY_SIZE(m_strPoolName));
 	m_pOwner = pOwner;
 	
 }
@@ -162,9 +164,9 @@ MemoryPool::~MemoryPool()
 		PerformCorruptionCheck(false);
 	#endif
 
-	for(auto it = m_vAllocationChains.begin(); it != m_vAllocationChains.end() ; ++it)
+	for(allocation_t o: m_vAllocationChains)
 	{
-		byte * ptr = ((byte*)(*it).ptr)-4;
+		byte * ptr = ((byte*)(o).ptr)-4;
 		free(ptr);
 	}	
 
@@ -173,9 +175,9 @@ MemoryPool::~MemoryPool()
 		m_pOwner->RemoveChildPool(this);
 	}*/
 
-	for(auto it = m_vChildrens.begin(); it != m_vChildrens.end() ; ++it)
+	for(MemoryPool * Pool: m_vChildrens)
 	{
-		delete *it;
+		delete Pool;
 	}
 
 	m_vChildrens.shrink_to_fit();

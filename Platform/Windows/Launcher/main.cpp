@@ -7,8 +7,8 @@
 #include <windows.h>
 #include <Platform/Common/ApplicationCommon.h>
 
-using namespace ME_Editor;
-PlatformEnvironment * ME_Editor::g_pPlatform;
+using namespace ME_Framework;
+PlatformEnvironment * ME_Framework::g_pPlatform;
 
 /************************************************************************/
 /*			Entry point for windows application			                */
@@ -17,19 +17,21 @@ int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 {
 	
 	// Initialize environment
-	ME_Editor::g_pPlatform = new PlatformEnvironment;
+	ME_Framework::g_pPlatform = new PlatformEnvironment;
 	
 	try
 	{
 		ApplicationStart();
 		ApplicationRun();
 	}
-	catch(ME_Editor::Exception * pException)
+	catch(ME_Framework::Exception * pException)
 	{
 			// Handle major errors here
 			ApplicationOnException(pException);
 	}
+
+	
 		
 	ApplicationShutdown();
-	delete ME_Editor::g_pPlatform;	
+	delete ME_Framework::g_pPlatform;	
 }

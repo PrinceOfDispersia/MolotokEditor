@@ -7,7 +7,7 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-namespace ME_Editor
+namespace ME_Framework
 {
 	namespace ME_Math
 	{
