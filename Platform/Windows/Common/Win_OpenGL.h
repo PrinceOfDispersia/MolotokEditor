@@ -14,6 +14,11 @@ class CWinOpenGLContext: public IOpenGLContext
 
 	void RegisterWindowClass();
 	void SetupOpenGLContext();
+
+
+	bool TranslateToEvent(UINT uMsg,WPARAM wParam,LPARAM lParam);
+	ME_Framework::appEvent_t m_tmpEvent;
+
 public:
 	CWinOpenGLContext();
 	virtual ~CWinOpenGLContext();

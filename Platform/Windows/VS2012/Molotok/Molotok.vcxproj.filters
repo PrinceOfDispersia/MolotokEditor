@@ -134,5 +134,8 @@
     <ClInclude Include="..\..\Common\Win_OpenGL.h">
       <Filter>Заголовочные файлы\Platform\Windows\Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Common\MouseKeys.h">
+      <Filter>Заголовочные файлы\Framework</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -27,6 +27,7 @@
 #include <Framework/Framework.h>
 
 
+#include <Platform/Common/MouseKeys.h>
 #include <Platform/Common/ApplicationEvents.h>
 
 

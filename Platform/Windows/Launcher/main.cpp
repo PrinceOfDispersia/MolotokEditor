@@ -142,9 +142,7 @@ int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 		// Initiliaze OpenGL
 		IOpenGLContext * pContext = new CWinOpenGLContext();
 		g_pPlatform->SetOpenGLContext(pContext);
-		pContext->MainLoop();
-
-		
+		pContext->MainLoop();		
 	}
 	catch(ME_Framework::Exception * pException)
 	{

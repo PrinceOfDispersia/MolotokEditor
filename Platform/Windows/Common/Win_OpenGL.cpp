@@ -97,12 +97,28 @@ CWinOpenGLContext::CWinOpenGLContext()
 
 	DWORD dwExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
 	DWORD dwStyle = WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|WS_MINIMIZEBOX|WS_MAXIMIZEBOX|WS_THICKFRAME;
+	
+	const int width = 640;
+	const int height = 480;
+
+
+	// Center around desktop
+	RECT rect;
+
+	GetClientRect(GetDesktopWindow(), &rect);
+	rect.left = (rect.right/2) - (width/2);
+	rect.top = (rect.bottom/2) - (height/2);
+
+	rect.bottom = rect.top + height;
+	rect.right = rect.left + width;
+
+	AdjustWindowRectEx(&rect,dwStyle,FALSE,dwExStyle);
 
 	m_hWnd = ::CreateWindowEx(dwExStyle,_T(WND_CLASSNAME),
 		_T("Molotok Editor"),
 		dwStyle,
-		0,0,
-		640,480,
+		rect.left,rect.top,
+		rect.right - rect.left, rect.bottom - rect.top,
 		NULL,
 		NULL,
 		g_hInstance,
@@ -113,10 +129,8 @@ CWinOpenGLContext::CWinOpenGLContext()
 	
 	SetWindowLong(m_hWnd,GWLP_USERDATA,(long)this);	
 	SetupOpenGLContext();
-
-	ShowWindow(m_hWnd,SW_SHOW);
-
-
+	
+	ShowWindow(m_hWnd,SW_MAXIMIZE);
 }
 
 /*
@@ -148,6 +162,12 @@ void CWinOpenGLContext::Resize(ME_Math::Vector2D vNewPos,ME_Math::Vector2D vNewE
  **/
 LRESULT CWinOpenGLContext::WindowProc(UINT uMsg,WPARAM wParam,LPARAM lParam)
 {
+	if (TranslateToEvent(uMsg,wParam,lParam))
+	{
+		ApplicationPumpEvent(m_tmpEvent);
+		return TRUE;
+	}
+
 	return DefWindowProc(m_hWnd,uMsg,wParam,lParam);
 }
 
@@ -156,9 +176,8 @@ LRESULT CWinOpenGLContext::WindowProc(UINT uMsg,WPARAM wParam,LPARAM lParam)
  **/
 void CWinOpenGLContext::MainLoop()
 {
-	MSG             msg;    // Структура сообщения Windows
-
-
+	MSG             msg;
+	
 	ApplicationStart();
 
 	float flPrevTime = Sys_TimeElapsed();
@@ -189,7 +208,6 @@ void CWinOpenGLContext::MainLoop()
 		flPrevTime = Sys_TimeElapsed();
 
 		glClearColor((sin(Sys_TimeElapsed()) + 1) * 0.5f,(cos(Sys_TimeElapsed()) + 1) * 0.5f,0,1);
-
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		ApplicationRun(flFrameTime);						
@@ -197,4 +215,67 @@ void CWinOpenGLContext::MainLoop()
 		SwapBuffers(m_hDC);
 
 	}
+}
+
+/*
+ *	Windows message to event translator,
+ *	returns true if successes translation and false if not
+ **/
+bool CWinOpenGLContext::TranslateToEvent(UINT uMsg,WPARAM wParam,LPARAM lParam)
+{
+	// we've fine here
+	#pragma  warning(disable:4244)
+	if (uMsg == WM_KEYDOWN)
+	{
+		m_tmpEvent.eventid = eventTypes::EV_KB_KEY_DOWN;
+		m_tmpEvent.uParam1 = wParam;
+		return true;
+	}
+	else if (uMsg == WM_KEYUP)
+	{
+		m_tmpEvent.eventid = eventTypes::EV_KB_KEY_UP;
+		m_tmpEvent.uParam1 = wParam;
+		return true;
+	}
+	
+	else if (uMsg == WM_LBUTTONDOWN || uMsg == WM_MBUTTONDOWN || uMsg == WM_RBUTTONDOWN)
+	{
+		m_tmpEvent.eventid = eventTypes::EV_MOUSE_KEY_DOWN;
+		
+		switch(uMsg)
+		{
+		case WM_LBUTTONDOWN:
+			m_tmpEvent.uParam1 = MKEY_LEFT;
+			break;
+		case WM_MBUTTONDOWN:
+			m_tmpEvent.uParam1 = MKEY_MIDDLE;
+			break;
+		case WM_RBUTTONDOWN:
+			m_tmpEvent.uParam1 = MKEY_RIGHT;
+			break;
+		}
+		
+		return true;
+	}
+	else if (uMsg == WM_LBUTTONUP || uMsg == WM_MBUTTONUP || uMsg == WM_RBUTTONUP)
+	{
+		m_tmpEvent.eventid = eventTypes::EV_MOUSE_KEY_UP;
+
+		switch(uMsg)
+		{
+		case WM_LBUTTONUP:
+			m_tmpEvent.uParam1 = MKEY_LEFT;
+			break;
+		case WM_MBUTTONUP:
+			m_tmpEvent.uParam1 = MKEY_MIDDLE;
+			break;
+		case WM_RBUTTONUP:
+			m_tmpEvent.uParam1 = MKEY_RIGHT;
+			break;
+		}
+
+		return true;
+	}
+
+	return false;
 }

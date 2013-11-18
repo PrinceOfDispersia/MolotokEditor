@@ -52,5 +52,5 @@ void ApplicationOnException(ME_Framework::Exception * pException)
 /************************************************************************/
 void ApplicationPumpEvent(ME_Framework::appEvent_t & ev)
 {
-
+	_tprintf(_T("ApplicationPumpEvent(): eventid = %d, uParam1 = %d\n"),ev.eventid,ev.uParam1);
 }

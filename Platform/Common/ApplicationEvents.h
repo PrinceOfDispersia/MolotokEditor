@@ -28,6 +28,11 @@ namespace ME_Framework
 		int iParam3;
 		int iParam4;
 
+		unsigned int uParam1;
+		unsigned int uParam2;
+		unsigned int uParam3;
+		unsigned int uParam4;
+
 		float fParam1;
 		float fParam2;
 		float fParam3;
