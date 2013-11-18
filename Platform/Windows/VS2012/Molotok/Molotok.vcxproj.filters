@@ -46,6 +46,15 @@
     <Filter Include="Заголовочные файлы\Application">
       <UniqueIdentifier>{811ec0f0-ed8e-4246-8402-8c1b1b68d2f1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\Libs">
+      <UniqueIdentifier>{97b725b1-ae27-4038-b9ca-994d9a2eed6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Libs\libpng">
+      <UniqueIdentifier>{7dcb080b-88b6-44a5-987c-0d4065677472}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Libs\zlib">
+      <UniqueIdentifier>{dc21e5e4-0ae5-4c91-8bd8-e38239cc690f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\MainApp\Application.cpp">
@@ -74,6 +83,87 @@
     </ClCompile>
     <ClCompile Include="..\..\Common\Win_OpenGL.cpp">
       <Filter>Файлы исходного кода\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\libpng\png.c">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\libpng\pngerror.c">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\libpng\pngget.c">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\libpng\pngmem.c">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\libpng\pngpread.c">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\libpng\pngread.c">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\libpng\pngrio.c">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\libpng\pngrtran.c">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\libpng\pngrutil.c">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\libpng\pngset.c">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\libpng\pngtest.c">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\libpng\pngtrans.c">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\libpng\pngwio.c">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\libpng\pngwrite.c">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\libpng\pngwtran.c">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\libpng\pngwutil.c">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\zlib\adler32.c">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\zlib\compress.c">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\zlib\crc32.c">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\zlib\deflate.c">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\zlib\infback.c">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\zlib\inffast.c">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\zlib\inflate.c">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\zlib\inftrees.c">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\zlib\trees.c">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\zlib\uncompr.c">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\zlib\zutil.c">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -136,6 +226,57 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Common\MouseKeys.h">
       <Filter>Заголовочные файлы\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Libs\libpng\png.h">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Libs\libpng\pngconf.h">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Libs\libpng\pngdebug.h">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Libs\libpng\pnginfo.h">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Libs\libpng\pngpriv.h">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Libs\libpng\pngstruct.h">
+      <Filter>Файлы исходного кода\Libs\libpng</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Libs\zlib\crc32.h">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Libs\zlib\deflate.h">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Libs\zlib\gzguts.h">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Libs\zlib\inffast.h">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Libs\zlib\inffixed.h">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Libs\zlib\inflate.h">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Libs\zlib\inftrees.h">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Libs\zlib\trees.h">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Libs\zlib\zconf.h">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Libs\zlib\zlib.h">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Libs\zlib\zutil.h">
+      <Filter>Файлы исходного кода\Libs\zlib</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
