@@ -73,7 +73,20 @@ namespace ME_Framework
 
 		LogFile * m_pDeveloperLog;
 		LogFile * m_pSystemLog;
+
+		IOpenGLContext * m_pOpenGLContext;
+
 	public:
+		IOpenGLContext * GetOpenGLContext()
+		{
+			return m_pOpenGLContext;
+		}
+
+		void SetOpenGLContext(IOpenGLContext * pContext)
+		{
+			m_pOpenGLContext = pContext;
+		}
+
 		/*
 		 *	Log access
 		 **/
@@ -113,6 +126,8 @@ namespace ME_Framework
 
 			m_pSystemLog = new LogFile(_T("system.log"),eLogLevels::LOG_SYSTEM);
 			m_pDeveloperLog = new LogFile(_T("developer.log"),eLogLevels::LOG_DEV);
+
+			m_pOpenGLContext = 0;
 		}
 
 		/*
@@ -121,6 +136,10 @@ namespace ME_Framework
 		~PlatformEnvironment()
 		{
 			delete m_pGlobalMemoryPool;
+			delete m_pSystemLog;
+			delete m_pDeveloperLog;
+			
+			if (m_pOpenGLContext) delete m_pOpenGLContext;
 		}
 
 		// Implementation up to platform

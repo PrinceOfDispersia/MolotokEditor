@@ -13,7 +13,7 @@
 /************************************************************************/
 void ApplicationStart()
 {
-	// TODO: initialize OpenGL here
+	// TODO: load GUI here
 
 }
 
@@ -45,4 +45,12 @@ void ApplicationOnException(ME_Framework::Exception * pException)
 {
 	// TODO: show here message box with my hands, ask user to save documents
 	// and shutdown editor
+}
+
+/************************************************************************/
+/*			Events handler                                              */
+/************************************************************************/
+void ApplicationPumpEvent(ME_Framework::appEvent_t & ev)
+{
+
 }

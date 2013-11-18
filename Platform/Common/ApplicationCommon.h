@@ -12,6 +12,7 @@
 #include <Framework/BasicMacros.h>
 #include <Framework/BasicTypes.h>
 
+
 // >=== PORTING NOTES: Change this header with appropriate for your platform
 #include <Platform/Windows/Common/PlatformCommon.h>
 // <=== PORTING NOTES END
@@ -20,10 +21,12 @@
 #include <Platform/Common/MemoryManager.h>
 #include <Platform/Common/CommonUtils.h>
 
+#include <Framework/MathLib/Math.h>
+#include <Platform/Common/OpenGLContext.h>
 #include <Platform/Common/PlatformEnvironment.h>
 #include <Framework/Framework.h>
 
-#include <Platform/Common/OpenGLContext.h>
+
 #include <Platform/Common/ApplicationEvents.h>
 
 
@@ -43,6 +46,7 @@ namespace ME_Framework
 extern void ApplicationStart();
 extern void ApplicationRun(float flFrameDelta);
 extern void ApplicationShutdown();
+extern void ApplicationPumpEvent(ME_Framework::appEvent_t & ev);
 extern void ApplicationOnException(ME_Framework::Exception * pException);
 
 using namespace ME_Framework;

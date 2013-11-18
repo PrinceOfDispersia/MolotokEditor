@@ -10,3 +10,5 @@
 
 #include <tchar.h>
 #include <windows.h>
+
+#include <gl/GL.H>

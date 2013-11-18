@@ -9,8 +9,9 @@
 #include <fcntl.h>
 #include <Platform/Common/ApplicationCommon.h>
 #include "../Common/Win_Timer.h"
+#include "../Common/Win_OpenGL.h"
 
-#include <iostream>
+HINSTANCE g_hInstance;
 
 using namespace ME_Framework;
 PlatformEnvironment * ME_Framework::g_pPlatform;
@@ -108,6 +109,9 @@ const int PlatformEnvironment::GetCmdLineArgumentsCount() const
 /************************************************************************/
 int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd )
 {
+	// Copy instance to global variable - we'll need it in OpenGL context creation
+	g_hInstance = hInstance;
+
 	// Start timer
 	Sys_TimerStart();
 
@@ -135,17 +139,11 @@ int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 	// Run
 	try
 	{
-		ApplicationStart();
-		
-		float flPrevTime = Sys_TimeElapsed();
-		float flFrameTime = 0;
-		
-		while(true)
-		{
-			flFrameTime = Sys_TimeElapsed() - flPrevTime;	
-			flPrevTime = Sys_TimeElapsed();
-			ApplicationRun(flFrameTime);						
-		}
+		// Initiliaze OpenGL
+		IOpenGLContext * pContext = new CWinOpenGLContext();
+		g_pPlatform->SetOpenGLContext(pContext);
+		pContext->MainLoop();
+
 		
 	}
 	catch(ME_Framework::Exception * pException)

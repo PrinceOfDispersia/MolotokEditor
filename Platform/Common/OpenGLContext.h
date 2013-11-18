@@ -14,6 +14,8 @@ namespace ME_Framework
 		
 		virtual void Activate(){};
 		virtual void Resize(ME_Math::Vector2D vNewPos,ME_Math::Vector2D vNewExtents) {};
+
+		virtual void MainLoop() {};
 	};
 }
 

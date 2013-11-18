@@ -21,11 +21,11 @@ void LogFile::Log(TCHAR * format,...)
 {
 
 	va_list args;
-	size_t len;
+	//	size_t len;
 
 	va_start( args, format );
-	len = _vsctprintf( format, args ) + 1; // terminating '\0'
-	len *= sizeof(TCHAR);
+	/*len = _vsctprintf( format, args ) + 1; // terminating '\0'
+	len *= sizeof(TCHAR);*/
 
 	
 	TCHAR buffer[32768];

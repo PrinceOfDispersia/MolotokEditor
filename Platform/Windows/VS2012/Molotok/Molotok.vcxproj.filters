@@ -72,6 +72,9 @@
     <ClCompile Include="..\..\Common\Win_Log.cpp">
       <Filter>Файлы исходного кода\Platform\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Common\Win_OpenGL.cpp">
+      <Filter>Файлы исходного кода\Platform\Windows</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Common\ApplicationCommon.h">
@@ -126,6 +129,9 @@
       <Filter>Заголовочные файлы\Application</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\Win_Timer.h">
+      <Filter>Заголовочные файлы\Platform\Windows\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\Win_OpenGL.h">
       <Filter>Заголовочные файлы\Platform\Windows\Common</Filter>
     </ClInclude>
   </ItemGroup>

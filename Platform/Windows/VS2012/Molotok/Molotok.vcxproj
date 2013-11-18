@@ -141,6 +141,7 @@
     <ClCompile Include="..\..\..\Common\Assert.cpp" />
     <ClCompile Include="..\..\..\Common\CommonUtils.cpp" />
     <ClCompile Include="..\..\Common\Win_Log.cpp" />
+    <ClCompile Include="..\..\Common\Win_OpenGL.cpp" />
     <ClCompile Include="..\..\Common\Win_Timer.cpp" />
     <ClCompile Include="..\..\Common\Win_Assert.cpp" />
     <ClCompile Include="..\..\Common\Win_MemManager.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="..\..\..\Common\OpenGLContext.h" />
     <ClInclude Include="..\..\..\Common\PlatformEnvironment.h" />
     <ClInclude Include="..\..\Common\PlatformCommon.h" />
+    <ClInclude Include="..\..\Common\Win_OpenGL.h" />
     <ClInclude Include="..\..\Common\Win_Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
