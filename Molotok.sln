@@ -1,30 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Molotok", "Molotok.vcxproj", "{15E807B1-1A53-42B9-9DD8-6D9CCBEB237E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Molotok", "Platform\Windows\VS2012\Molotok\Molotok.vcxproj", "{15E807B1-1A53-42B9-9DD8-6D9CCBEB237E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Debug|Mixed Platforms = Debug|Mixed Platforms
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
-		Release|Any CPU = Release|Any CPU
-		Release|Mixed Platforms = Release|Mixed Platforms
 		Release|Win32 = Release|Win32
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{15E807B1-1A53-42B9-9DD8-6D9CCBEB237E}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{15E807B1-1A53-42B9-9DD8-6D9CCBEB237E}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{15E807B1-1A53-42B9-9DD8-6D9CCBEB237E}.Debug|Mixed Platforms.Build.0 = Debug|Win32
 		{15E807B1-1A53-42B9-9DD8-6D9CCBEB237E}.Debug|Win32.ActiveCfg = Debug|Win32
 		{15E807B1-1A53-42B9-9DD8-6D9CCBEB237E}.Debug|Win32.Build.0 = Debug|Win32
 		{15E807B1-1A53-42B9-9DD8-6D9CCBEB237E}.Debug|x64.ActiveCfg = Debug|x64
 		{15E807B1-1A53-42B9-9DD8-6D9CCBEB237E}.Debug|x64.Build.0 = Debug|x64
-		{15E807B1-1A53-42B9-9DD8-6D9CCBEB237E}.Release|Any CPU.ActiveCfg = Release|Win32
-		{15E807B1-1A53-42B9-9DD8-6D9CCBEB237E}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{15E807B1-1A53-42B9-9DD8-6D9CCBEB237E}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{15E807B1-1A53-42B9-9DD8-6D9CCBEB237E}.Release|Win32.ActiveCfg = Release|Win32
 		{15E807B1-1A53-42B9-9DD8-6D9CCBEB237E}.Release|Win32.Build.0 = Release|Win32
 		{15E807B1-1A53-42B9-9DD8-6D9CCBEB237E}.Release|x64.ActiveCfg = Release|x64

@@ -22,7 +22,7 @@ bool g_bWinGLClassRegistered = false;
  **/
 LRESULT _stdcall WinGL_WindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 {
-	CWinOpenGLContext * pCont = (CWinOpenGLContext*)GetWindowLong(hwnd,GWLP_USERDATA);
+	CWinOpenGLContext * pCont = (CWinOpenGLContext*)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 
 	if (pCont)
 	{
@@ -127,7 +127,7 @@ CWinOpenGLContext::CWinOpenGLContext()
 	m_hGLRC = 0;
 	m_hDC = GetDC(m_hWnd);
 	
-	SetWindowLong(m_hWnd,GWLP_USERDATA,(long)this);	
+	SetWindowLongPtr(m_hWnd,GWLP_USERDATA,(LONG_PTR)this);	
 	SetupOpenGLContext();
 	
 	ShowWindow(m_hWnd,SW_MAXIMIZE);
