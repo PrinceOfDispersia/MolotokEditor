@@ -13,15 +13,15 @@
 /************************************************************************/
 void ApplicationStart()
 {
-	// TODO: call here OpenGL initialization
-		
+	// TODO: initialize OpenGL here
+
 }
 
 /************************************************************************/
 /*          Application main cycle routine, called right after startup
 *          by platform abstraction layer								*/
 /************************************************************************/
-void ApplicationRun()
+void ApplicationRun(float flFrameDelta)
 {
 	// TODO: load here graphics and additional resources, while showing	
 	// fancy loading box to user, then run main logic cycle

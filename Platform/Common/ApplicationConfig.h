@@ -13,4 +13,7 @@
 // paranoid mode - apply additional checks
 #define PARANOID
 
+// maximum number of command line arguments
+#define MAX_COMMAND_LINE_ARGUMENTS 256
+
 #endif

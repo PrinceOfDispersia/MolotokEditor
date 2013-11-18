@@ -30,6 +30,7 @@ namespace ME_Framework
 	
 	class LogFile
 	{
+		eLogLevels m_LogLevel;
 	public:
 		LogFile(TCHAR * file,eLogLevels type);
 		~LogFile();

@@ -49,7 +49,7 @@ size_t Sys_SafeSprintf(TCHAR * dest,size_t destSize,TCHAR * format,...)
 	{
 	#ifdef PARANOID
 		// TODO: replace with console log, cause fatal error is too brutal
-		Sys_FatalError(_T("Sys_SafeSprintf(): buffer overflow!"));
+		g_pPlatform->DeveloperLog()->Log(_T("Sys_SafeSprintf(): buffer overflow!"));
 	#endif
 		// null-terminate
 		dest[destSize-1] = 0;
@@ -73,7 +73,7 @@ bool Sys_SafeStrCopy(TCHAR * dest,TCHAR * source,size_t destSize)
 	{
 		#ifdef PARANOID
 				// TODO: replace with console log, cause fatal error is too brutal
-				Sys_FatalError(_T("Sys_SafeStrCopy(): destination overflow!"));
+				g_pPlatform->DeveloperLog()->Log(_T("Sys_SafeStrCopy(): destination overflow!"));
 		#endif
 		dest[destSize - 1] = 0;
 

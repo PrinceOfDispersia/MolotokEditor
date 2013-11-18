@@ -36,7 +36,7 @@ namespace ME_Framework
 		/*
 		 *	Effective data length in characters
 		 **/ 
-		inline size_t Length()
+		const size_t Length() const
 		{
 			return m_szLength;
 		}

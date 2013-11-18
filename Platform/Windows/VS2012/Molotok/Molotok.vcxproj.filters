@@ -25,15 +25,6 @@
     <Filter Include="Заголовочные файлы\Platform\Common">
       <UniqueIdentifier>{01071d33-499b-48d6-8813-ccdef33a9b28}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы исходного кода\MainApp">
-      <UniqueIdentifier>{34b683c2-10be-4a03-a124-78e72c2250be}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Заголовочные файлы\Platform\Win">
-      <UniqueIdentifier>{73edf6bd-80ce-4080-8f43-1007109cbff4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Заголовочные файлы\Platform\Win\Common">
-      <UniqueIdentifier>{1c1eca73-8a0b-4761-a923-34f138f7751f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Файлы исходного кода\Platform">
       <UniqueIdentifier>{187642c0-b078-4158-a5cd-faef27ce0e3c}</UniqueIdentifier>
     </Filter>
@@ -43,13 +34,22 @@
     <Filter Include="Файлы исходного кода\Platform\Windows">
       <UniqueIdentifier>{4f1e5fd9-46c1-4eed-85b1-278d06e079bc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Заголовочные файлы\Platform\Windows">
+      <UniqueIdentifier>{73edf6bd-80ce-4080-8f43-1007109cbff4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\Platform\Windows\Common">
+      <UniqueIdentifier>{1c1eca73-8a0b-4761-a923-34f138f7751f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Application">
+      <UniqueIdentifier>{34b683c2-10be-4a03-a124-78e72c2250be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Заголовочные файлы\Application">
+      <UniqueIdentifier>{811ec0f0-ed8e-4246-8402-8c1b1b68d2f1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Launcher\main.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\MainApp\Application.cpp">
-      <Filter>Файлы исходного кода\MainApp</Filter>
+      <Filter>Файлы исходного кода\Application</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Common\Assert.cpp">
       <Filter>Файлы исходного кода\Platform\Common</Filter>
@@ -62,6 +62,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Common\CommonUtils.cpp">
       <Filter>Файлы исходного кода\Platform\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Launcher\main.cpp">
+      <Filter>Файлы исходного кода\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\Win_Timer.cpp">
+      <Filter>Файлы исходного кода\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\Win_Log.cpp">
+      <Filter>Файлы исходного кода\Platform\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -81,7 +90,7 @@
       <Filter>Заголовочные файлы\Framework</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\PlatformCommon.h">
-      <Filter>Заголовочные файлы\Platform\Win\Common</Filter>
+      <Filter>Заголовочные файлы\Platform\Windows\Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\Framework\MathLib\Vector.h">
       <Filter>Заголовочные файлы\Framework\Math</Filter>
@@ -106,6 +115,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\Framework\EnumFlags.h">
       <Filter>Заголовочные файлы\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\OpenGLContext.h">
+      <Filter>Заголовочные файлы\Platform\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ApplicationEvents.h">
+      <Filter>Заголовочные файлы\Platform\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\MainApp\Application.h">
+      <Filter>Заголовочные файлы\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\Win_Timer.h">
+      <Filter>Заголовочные файлы\Platform\Windows\Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

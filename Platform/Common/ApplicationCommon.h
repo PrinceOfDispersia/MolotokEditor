@@ -20,10 +20,11 @@
 #include <Platform/Common/MemoryManager.h>
 #include <Platform/Common/CommonUtils.h>
 
-
 #include <Platform/Common/PlatformEnvironment.h>
 #include <Framework/Framework.h>
 
+#include <Platform/Common/OpenGLContext.h>
+#include <Platform/Common/ApplicationEvents.h>
 
 
 // TODO: move to separate header ?
@@ -32,16 +33,15 @@ namespace ME_Framework
 	class Exception
 	{
 	public:
-		// TODO: Replace with my fancy string class
-		TCHAR message[256];
+		String message;
 	};
-
-
 }
+
+
 
 // Platform independent appication callbacks
 extern void ApplicationStart();
-extern void ApplicationRun();
+extern void ApplicationRun(float flFrameDelta);
 extern void ApplicationShutdown();
 extern void ApplicationOnException(ME_Framework::Exception * pException);
 
