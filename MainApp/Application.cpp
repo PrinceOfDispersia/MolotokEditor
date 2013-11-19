@@ -13,8 +13,23 @@
 /************************************************************************/
 void ApplicationStart()
 {
-	// TODO: load GUI here
+	// Start image library
+	InitImageLib();
 
+	FILE * fp = fopen("gui.png","rb");
+	if (!fp) return;
+
+	fseek(fp,0,SEEK_END);
+	size_t sz = ftell(fp);
+	fseek(fp,0,SEEK_SET);
+
+	byte  * pBuffer = (byte*)g_pPlatform->MemoryPools()->Alloc(sz);
+	fread(pBuffer,sz,1,fp);
+	fclose(fp);
+
+	gl_texture_t * pTexture = Img_Load(_T("sss"),pBuffer,sz,true);
+
+	g_pPlatform->MemoryPools()->Free(pBuffer);
 }
 
 /************************************************************************/
@@ -35,7 +50,8 @@ void ApplicationRun(float flFrameDelta)
 void ApplicationShutdown()
 {
 	// TODO: write here some code)
-	// 
+	// 	
+	ShutdownImageLib();
 }
 
 /************************************************************************/

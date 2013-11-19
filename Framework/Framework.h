@@ -15,4 +15,8 @@
 //
 #include "String.h"
 
+// Image library
+//
+#include "ImageLib/ImageLib.h"
+
 #endif

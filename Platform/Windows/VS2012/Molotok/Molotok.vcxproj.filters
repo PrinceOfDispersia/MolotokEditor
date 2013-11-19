@@ -55,6 +55,15 @@
     <Filter Include="Файлы исходного кода\Libs\zlib">
       <UniqueIdentifier>{dc21e5e4-0ae5-4c91-8bd8-e38239cc690f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Заголовочные файлы\Framework\ImageLib">
+      <UniqueIdentifier>{05d54bc4-ccb0-40f6-9ed3-5b4a6b6e03fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Framework">
+      <UniqueIdentifier>{3a8a19d4-ac63-49da-9fcb-5585647d4cc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы исходного кода\Framework\ImageLib">
+      <UniqueIdentifier>{6a02423f-a15a-434b-8893-8b2be05c01cb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\MainApp\Application.cpp">
@@ -164,6 +173,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\Libs\zlib\zutil.c">
       <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Framework\ImageLib\ImageLib.cpp">
+      <Filter>Файлы исходного кода\Framework\ImageLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Framework\ImageLib\Image_Png.cpp">
+      <Filter>Файлы исходного кода\Framework\ImageLib</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -277,6 +292,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\Libs\zlib\zutil.h">
       <Filter>Файлы исходного кода\Libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\ImageLib\ImageLib.h">
+      <Filter>Заголовочные файлы\Framework\ImageLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\ImageLib\Image_Png.h">
+      <Filter>Заголовочные файлы\Framework\ImageLib</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

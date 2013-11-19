@@ -32,7 +32,7 @@ void ParseCommandLine(TCHAR * strOneline)
 	Tokenizer t(str);
 	
 
-	// Assume that there is no more than 256 arguments
+	// Assume that there is no more than MAX_COMMAND_LINE_ARGUMENTS arguments
 	g_tArgv = (TCHAR**)g_pPlatform->MemoryPools()->Alloc(sizeof(TCHAR*) * MAX_COMMAND_LINE_ARGUMENTS);
 
 	g_tArgc = 0;
@@ -139,15 +139,15 @@ int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 	// Run
 	try
 	{
-		// Initiliaze OpenGL
+		// Initialize OpenGL
 		IOpenGLContext * pContext = new CWinOpenGLContext();
 		g_pPlatform->SetOpenGLContext(pContext);
 		pContext->MainLoop();		
 	}
 	catch(ME_Framework::Exception * pException)
 	{
-			// Handle major errors here
-			ApplicationOnException(pException);
+		// Handle major errors here
+		ApplicationOnException(pException);
 	}
 
 	

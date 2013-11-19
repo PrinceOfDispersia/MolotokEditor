@@ -68,20 +68,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir);$(IncludePath);$(SolutionDir)\Libs\libpng;$(SolutionDir)\libs\zlib</IncludePath>
     <OutDir>$(SolutionDir)\bin\</OutDir>
-    <IntDir>$(SolutionDir)\bin\</IntDir>
+    <IntDir>$(SolutionDir)\build\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir);$(IncludePath);$(SolutionDir)\Libs\libpng;$(SolutionDir)\libs\zlib</IncludePath>
-    <OutDir>$(SolutionDir)\..\..\..\..\bin\</OutDir>
-    <IntDir>$(SolutionDir)\bin\</IntDir>
+    <OutDir>$(SolutionDir)\bin\</OutDir>
+    <IntDir>$(SolutionDir)\build\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(SolutionDir);$(IncludePath);$(SolutionDir)\Libs\libpng;$(SolutionDir)\libs\zlib</IncludePath>
     <OutDir>$(SolutionDir)\bin\</OutDir>
+    <IntDir>$(SolutionDir)\build\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir);$(IncludePath);$(SolutionDir)\Libs\libpng;$(SolutionDir)\libs\zlib</IncludePath>
     <OutDir>$(SolutionDir)\bin\</OutDir>
+    <IntDir>$(SolutionDir)\build\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -155,6 +157,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\Framework\ImageLib\ImageLib.cpp" />
+    <ClCompile Include="..\..\..\..\Framework\ImageLib\Image_Png.cpp" />
     <ClCompile Include="..\..\..\..\Libs\libpng\png.c" />
     <ClCompile Include="..\..\..\..\Libs\libpng\pngerror.c" />
     <ClCompile Include="..\..\..\..\Libs\libpng\pngget.c" />
@@ -196,6 +200,8 @@
     <ClInclude Include="..\..\..\..\Framework\BasicMacros.h" />
     <ClInclude Include="..\..\..\..\Framework\BasicTypes.h" />
     <ClInclude Include="..\..\..\..\Framework\EnumFlags.h" />
+    <ClInclude Include="..\..\..\..\Framework\ImageLib\ImageLib.h" />
+    <ClInclude Include="..\..\..\..\Framework\ImageLib\Image_Png.h" />
     <ClInclude Include="..\..\..\..\Framework\MathLib\Math.h" />
     <ClInclude Include="..\..\..\..\Framework\Framework.h" />
     <ClInclude Include="..\..\..\..\Framework\MathLib\Vector.h" />

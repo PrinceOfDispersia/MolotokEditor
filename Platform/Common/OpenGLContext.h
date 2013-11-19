@@ -8,6 +8,7 @@ namespace ME_Framework
 {
 	class IOpenGLContext
 	{
+	protected:
 		ME_Math::Vector2D m_vWindowPosition;
 		ME_Math::Vector2D m_vWindowExtents;
 	public:

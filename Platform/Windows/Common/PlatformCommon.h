@@ -12,3 +12,4 @@
 #include <windows.h>
 
 #include <gl/GL.H>
+#include <gl/glext.h>

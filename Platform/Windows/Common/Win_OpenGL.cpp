@@ -17,6 +17,9 @@ extern HINSTANCE g_hInstance;
 
 bool g_bWinGLClassRegistered = false;
 
+// i'm know what i'm doing
+#pragma warning(disable:4244)
+
 /*
  *	Window procedure for our context
  **/
@@ -154,7 +157,8 @@ void CWinOpenGLContext::Activate()
  **/
 void CWinOpenGLContext::Resize(ME_Math::Vector2D vNewPos,ME_Math::Vector2D vNewExtents)
 {
-
+	m_vWindowExtents = vNewExtents;
+	m_vWindowPosition = vNewPos;
 }
 
 /*
@@ -166,6 +170,18 @@ LRESULT CWinOpenGLContext::WindowProc(UINT uMsg,WPARAM wParam,LPARAM lParam)
 	{
 		ApplicationPumpEvent(m_tmpEvent);
 		return TRUE;
+	}
+
+	switch(uMsg)
+	{
+	case WM_SIZE:
+		{
+			RECT r;
+			GetWindowRect(m_hWnd,&r);
+			Resize(ME_Math::Vector2D(r.left,r.top),ME_Math::Vector2D(r.right - r.left,r.bottom - r.top));
+			return TRUE;
+		}
+			
 	}
 
 	return DefWindowProc(m_hWnd,uMsg,wParam,lParam);
@@ -207,9 +223,53 @@ void CWinOpenGLContext::MainLoop()
 		flFrameTime = Sys_TimeElapsed() - flPrevTime;	
 		flPrevTime = Sys_TimeElapsed();
 
+		// Remove me
 		glClearColor((sin(Sys_TimeElapsed()) + 1) * 0.5f,(cos(Sys_TimeElapsed()) + 1) * 0.5f,0,1);
 		glClear(GL_COLOR_BUFFER_BIT);
+		
+		glViewport(0,0,m_vWindowExtents.x,m_vWindowExtents.y);
 
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_DEPTH_TEST);
+
+		glMatrixMode(GL_PROJECTION);  
+		glLoadIdentity();             
+
+
+		glOrtho( 0,m_vWindowExtents.x,0,m_vWindowExtents.y, -1, 1 );
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D,1);
+		glColor4f(1,1,1,1);
+		
+		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER,0.5f);
+
+		int s = 1024;
+
+		float d;
+		d =sin(Sys_TimeElapsed() / 5) + 1;
+		d*=-0.5;
+
+		glBegin(GL_QUADS);
+
+		glTexCoord2f(0,0);
+		glVertex2f(0,0);
+
+		glTexCoord2f(1  * d,0);
+		glVertex2f(s,0);
+
+		glTexCoord2f(1 * d,1  * d);
+		glVertex2f(s,s);
+
+		glTexCoord2f(0,1  * d);
+		glVertex2f(0,s);
+
+		glEnd();
+		// remove me
 		ApplicationRun(flFrameTime);						
 
 		SwapBuffers(m_hDC);

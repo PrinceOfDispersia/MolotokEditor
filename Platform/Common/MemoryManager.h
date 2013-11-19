@@ -28,10 +28,19 @@ namespace ME_Framework
 		std::vector<allocation_t> m_vAllocationChains;
 		std::vector<MemoryPool*> m_vChildrens;
 		
-		
 		void RemoveChildPool(const MemoryPool * pPool);
+		
 	public:
+		void UnlinkFromParent()
+		{
+			if (m_pOwner)
+			{
+				m_pOwner->RemoveChildPool(this);
+				m_pOwner = 0;
+			}
+		}
 		void PerformCorruptionCheck(const bool bRecursive = false);
+		
 
 		MemoryPool * AllocSubPool(const TCHAR * strDbgName);
 
