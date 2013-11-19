@@ -92,6 +92,19 @@ gl_texture_t*AllocGLTexture(int pref_id = -1)
 }
 
 /*
+ *	Free GL Texture
+ **/
+void FreeGLTexture(gl_texture_t * pTexture)
+{
+	if (pTexture->source)
+		FreeRawImage(pTexture->source);
+
+	glDeleteTextures(1,&pTexture->texID);
+
+	g_pImgMemoryPool->Free(pTexture);
+}
+
+/*
  *	Initiliazes image lib
  **/
 void InitImageLib()
@@ -105,9 +118,11 @@ void InitImageLib()
  **/
 void ShutdownImageLib()
 {
-	/*
-	 *	Free textures pool here
-	 **/
+	for(gl_texture_t * texture: g_TexturesPool)
+	{
+		FreeGLTexture(texture);
+		g_TexturesPool.shrink_to_fit();
+	}
 
 	g_pImgMemoryPool->UnlinkFromParent();
 	delete g_pImgMemoryPool;
@@ -118,6 +133,8 @@ void ShutdownImageLib()
  **/
 gl_texture_t * Img_Load(TCHAR * szName,byte * pSource,size_t bufferSize,bool keepRaw)
 {
+	if (!pSource) return 0;
+
 	eImageTypes type = DetermineImageType(pSource);
 
 	rawImage_t * pImage = nullptr;

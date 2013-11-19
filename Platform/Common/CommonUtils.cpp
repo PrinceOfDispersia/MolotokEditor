@@ -81,7 +81,21 @@ bool Sys_SafeStrCopy(TCHAR * dest,TCHAR * source,size_t destSize)
 	}
 
 	return true;
-		
+	
 }
 
+/************************************************************************/
+/*			Allocates buffer for copy of string and copies it		    
+ *			Uses platform memory manager
+/************************************************************************/
+TCHAR * Sys_StrDup(TCHAR * source)
+{
+	size_t s = _tcsclen(source) + 1;
+	s*=sizeof(TCHAR);
+
+	TCHAR * pRet = (TCHAR*)g_pPlatform->StringsPool()->Alloc(s);
+	_tcscpy(pRet,source);
+
+	return pRet;
+}
 

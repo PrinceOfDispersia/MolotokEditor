@@ -124,32 +124,29 @@ int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 
 	// Alloc windows console, 
 	// TODO: fix codepages issues - it probably works fine only with Russian and English
-	// and will screw up on chinese or something like that
+	// and will screw up on Chinese or something like that
 	AllocConsole();
 	FILE * console = freopen( "CONOUT$", "w+t", stdout);
 
-	// switch it to unicode if necceseary
+	// switch it to unicode if necessary
 	if (sizeof(TCHAR) == 2)
 	{
 		_setmode(_fileno(console), _O_U16TEXT);
 	}
 	
-	g_pPlatform->SystemLog()->Log(_T("Platform envrionment initialized\n"));
+	g_pPlatform->SystemLog()->Log(_T("Platform environment initialized\n"));
 
-	// Run
-	try
-	{
-		// Initialize OpenGL
-		IOpenGLContext * pContext = new CWinOpenGLContext();
-		g_pPlatform->SetOpenGLContext(pContext);
-		pContext->MainLoop();		
-	}
-	catch(ME_Framework::Exception * pException)
-	{
-		// Handle major errors here
-		ApplicationOnException(pException);
-	}
+	// Initialize file system
+	TCHAR workDir[4096];
+	GetCurrentDirectory(4096,workDir);
+	FileSystemProxy * pProxy = new FileSystemProxy(workDir);
+	g_pPlatform->SetFileSystemProxy(pProxy);
 
+	// Initialize OpenGL
+	IOpenGLContext * pContext = new CWinOpenGLContext();
+	g_pPlatform->SetOpenGLContext(pContext);
+	pContext->MainLoop();		
+	
 	
 	// Cleanup		
 	ApplicationShutdown();

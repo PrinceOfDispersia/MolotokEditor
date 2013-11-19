@@ -17,6 +17,8 @@
 #include <Platform/Windows/Common/PlatformCommon.h>
 // <=== PORTING NOTES END
 
+#include <Platform/Common/FileSystemProxy.h>
+
 #include <Platform/Common/Assert.h>
 #include <Platform/Common/MemoryManager.h>
 #include <Platform/Common/CommonUtils.h>
@@ -30,25 +32,14 @@
 #include <Platform/Common/MouseKeys.h>
 #include <Platform/Common/ApplicationEvents.h>
 
-
-// TODO: move to separate header ?
-namespace ME_Framework
-{
-	class Exception
-	{
-	public:
-		String message;
-	};
-}
-
-
+#include <Framework/GUI/XGUI.h>
 
 // Platform independent appication callbacks
 extern void ApplicationStart();
 extern void ApplicationRun(float flFrameDelta);
 extern void ApplicationShutdown();
 extern void ApplicationPumpEvent(ME_Framework::appEvent_t & ev);
-extern void ApplicationOnException(ME_Framework::Exception * pException);
+
 
 using namespace ME_Framework;
 

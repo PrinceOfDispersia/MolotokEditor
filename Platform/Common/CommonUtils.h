@@ -16,6 +16,7 @@ TCHAR *VA( const TCHAR *format, ... );
  **/
 size_t Sys_SafeSprintf(TCHAR * dest,size_t destSize,TCHAR * format,...);
 bool Sys_SafeStrCopy(TCHAR * dest,TCHAR * source,size_t destSize);
+TCHAR * Sys_StrDup(TCHAR * source);
 
 /*
  *	Log file class, implementation up to platform code

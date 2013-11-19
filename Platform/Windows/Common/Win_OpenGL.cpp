@@ -76,7 +76,7 @@ void CWinOpenGLContext::SetupOpenGLContext()
 
 	pfd.cColorBits = 32;//params->flags & IE_RGB32 ? 32 : 16;
 	pfd.cDepthBits = 32;///params->flags & IE_DEPTH32 ? 32 : 32;
-	pfd.cStencilBits = 8;//params->flags & IE_STENCIL ? 8 : 0;
+	pfd.cStencilBits = 0;//params->flags & IE_STENCIL ? 8 : 0;
 
 	int iFormat = ChoosePixelFormat( m_hDC, &pfd );
 	SetPixelFormat( m_hDC, iFormat, &pfd );

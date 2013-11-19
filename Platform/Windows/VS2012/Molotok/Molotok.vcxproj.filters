@@ -64,6 +64,9 @@
     <Filter Include="Файлы исходного кода\Framework\ImageLib">
       <UniqueIdentifier>{6a02423f-a15a-434b-8893-8b2be05c01cb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Заголовочные файлы\Framework\GUI">
+      <UniqueIdentifier>{3df0489d-361d-44c5-9dcf-2d8ed06e3139}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\MainApp\Application.cpp">
@@ -179,6 +182,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\Framework\ImageLib\Image_Png.cpp">
       <Filter>Файлы исходного кода\Framework\ImageLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\Win_FileSystemProxy.cpp">
+      <Filter>Файлы исходного кода\Platform\Windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -298,6 +304,21 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\Framework\ImageLib\Image_Png.h">
       <Filter>Заголовочные файлы\Framework\ImageLib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\FileSystemProxy.h">
+      <Filter>Заголовочные файлы\Platform\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\GUI\Font_FT2.h">
+      <Filter>Заголовочные файлы\Framework\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Font.h">
+      <Filter>Заголовочные файлы\Framework\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Common.h">
+      <Filter>Заголовочные файлы\Framework\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\GUI\XGUI.h">
+      <Filter>Заголовочные файлы\Framework\GUI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

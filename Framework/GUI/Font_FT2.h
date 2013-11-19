@@ -1,0 +1,55 @@
+/*
+ *	Molotok Editor, 2013 (C) PrinceOfDispersia
+ *	Font_FT2.h - FT2 font definitions
+ *
+ **/
+#ifndef FONT_FT2_H
+#define FONT_FT2_H
+
+#pragma pack(push,1)
+typedef struct dGlyphInfo_s
+{
+	unsigned short sym;
+	short xpos;
+	short ypos;
+	short width;
+	short height;
+	short xoffs;
+	short yoffs;
+	short orig_w;
+	short orig_h;
+}dGlyphInfo_t;
+
+typedef struct dKerningPairs_s
+{
+	unsigned short s1;
+	unsigned short s2;
+
+	float value;
+}dKerningPairs_t;
+
+typedef struct lump_s
+{
+	size_t start,length;
+}lump_t;
+
+enum eFT2Lumps 
+{
+	LUMP_FNT_NAME = 0,
+	LUMP_FNT_GLYPHS,
+	LUMP_FNT_KERNING_PAIRS,
+	LUMP_FNT_IMAGE,
+	LUMP_FNT_MAX
+};
+
+typedef struct dFontHdr_s
+{
+	char magic[4]; // FONT	
+	lump_t lumps[LUMP_FNT_MAX];
+}dFontHdr_t;
+
+
+
+#pragma pack(pop)
+
+#endif

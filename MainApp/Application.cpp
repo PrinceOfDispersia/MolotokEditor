@@ -16,20 +16,12 @@ void ApplicationStart()
 	// Start image library
 	InitImageLib();
 
-	FILE * fp = fopen("gui.png","rb");
-	if (!fp) return;
+	size_t sz;
+	byte * pBuffer = g_pPlatform->FileSystem()->LoadFile(_T("gui.png"),&sz);
+	gl_texture_t * pTexture = Img_Load(_T("sss"),pBuffer,sz,false);
 
-	fseek(fp,0,SEEK_END);
-	size_t sz = ftell(fp);
-	fseek(fp,0,SEEK_SET);
-
-	byte  * pBuffer = (byte*)g_pPlatform->MemoryPools()->Alloc(sz);
-	fread(pBuffer,sz,1,fp);
-	fclose(fp);
-
-	gl_texture_t * pTexture = Img_Load(_T("sss"),pBuffer,sz,true);
-
-	g_pPlatform->MemoryPools()->Free(pBuffer);
+	if (pBuffer) g_pPlatform->FileSystem()->CloseFile(pBuffer);
+		
 }
 
 /************************************************************************/
@@ -52,15 +44,6 @@ void ApplicationShutdown()
 	// TODO: write here some code)
 	// 	
 	ShutdownImageLib();
-}
-
-/************************************************************************/
-/*          Application exception handling routine                      */
-/************************************************************************/
-void ApplicationOnException(ME_Framework::Exception * pException)
-{
-	// TODO: show here message box with my hands, ask user to save documents
-	// and shutdown editor
 }
 
 /************************************************************************/

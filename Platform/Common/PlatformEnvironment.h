@@ -75,8 +75,11 @@ namespace ME_Framework
 		LogFile * m_pSystemLog;
 
 		IOpenGLContext * m_pOpenGLContext;
-
+		FileSystemProxy * m_pFileSystemProxy;
 	public:
+		/*
+		 *	OpenGL context getters-setters
+		 **/
 		IOpenGLContext * GetOpenGLContext()
 		{
 			return m_pOpenGLContext;
@@ -85,6 +88,19 @@ namespace ME_Framework
 		void SetOpenGLContext(IOpenGLContext * pContext)
 		{
 			m_pOpenGLContext = pContext;
+		}
+
+		/*
+		 *	FileSystem getters-setters
+		 **/
+		FileSystemProxy * FileSystem()
+		{
+			return m_pFileSystemProxy;
+		}
+
+		void SetFileSystemProxy(FileSystemProxy * p)
+		{
+			m_pFileSystemProxy = p;
 		}
 
 		/*
@@ -128,6 +144,7 @@ namespace ME_Framework
 			m_pDeveloperLog = new LogFile(_T("developer.log"),eLogLevels::LOG_DEV);
 
 			m_pOpenGLContext = 0;
+			m_pFileSystemProxy = 0;
 		}
 
 		/*
@@ -140,6 +157,7 @@ namespace ME_Framework
 			delete m_pDeveloperLog;
 			
 			if (m_pOpenGLContext) delete m_pOpenGLContext;
+			if (m_pFileSystemProxy) delete m_pFileSystemProxy;
 		}
 
 		// Implementation up to platform
