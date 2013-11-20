@@ -6,6 +6,8 @@
 
 #include <Platform/Common/ApplicationCommon.h>
 
+ME_XGUI::XGUI_Font * pFont;
+
 /************************************************************************/
 /*			Application startup routine, 
 *			Called when all platform related subsystem initialized		
@@ -16,11 +18,14 @@ void ApplicationStart()
 	// Start image library
 	InitImageLib();
 
+	dFontHdr_t * pHeader;
 	size_t sz;
-	byte * pBuffer = g_pPlatform->FileSystem()->LoadFile(_T("gui.png"),&sz);
-	gl_texture_t * pTexture = Img_Load(_T("sss"),pBuffer,sz,false);
 
-	if (pBuffer) g_pPlatform->FileSystem()->CloseFile(pBuffer);
+	pHeader = (dFontHdr_t*)g_pPlatform->FileSystem()->LoadFile(_T("gui/fonts/segoeui.ft2"),&sz);
+	pFont = new ME_XGUI::XGUI_Font(pHeader,sz);
+	
+
+	g_pPlatform->FileSystem()->CloseFile((byte*)pHeader);
 		
 }
 
@@ -32,6 +37,9 @@ void ApplicationRun(float flFrameDelta)
 {
 	// TODO: load here graphics and additional resources, while showing	
 	// fancy loading box to user, then run main logic cycle
+	
+	pFont->Draw(ME_Math::Vector2D(100,100),_T("—ъешь ещЄ этих м€гких французских булок, да выпей же чаю."));
+	 
 
 }
 

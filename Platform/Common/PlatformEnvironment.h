@@ -76,6 +76,7 @@ namespace ME_Framework
 
 		IOpenGLContext * m_pOpenGLContext;
 		FileSystemProxy * m_pFileSystemProxy;
+				
 	public:
 		/*
 		 *	OpenGL context getters-setters
@@ -166,7 +167,8 @@ namespace ME_Framework
 		const TCHAR * GetCmdLineArgument(int index) const;
 
 		const float TimeElapsed();
-		const float FrameTime();
+		
+		float m_flFrameTime;
 	};
 
 	// Instance, initialization is up to platform

@@ -5,6 +5,7 @@
 **/
 
 #include "PlatformCommon.h"
+#include <Platform/Common/ApplicationCommon.h>
 
 LARGE_INTEGER frequency;
 LARGE_INTEGER startTime;
@@ -22,4 +23,9 @@ float Sys_TimeElapsed()
 	 QueryPerformanceCounter(&currentTime);
 	 
 	 return (float)((double)(currentTime.QuadPart - startTime.QuadPart) /(double)frequency.QuadPart) ;
+}
+
+const float ME_Framework::PlatformEnvironment::TimeElapsed()
+{
+	return Sys_TimeElapsed();
 }

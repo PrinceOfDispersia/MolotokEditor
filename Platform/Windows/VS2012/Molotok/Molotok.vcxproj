@@ -157,6 +157,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Font.cpp" />
     <ClCompile Include="..\..\..\..\Framework\ImageLib\ImageLib.cpp" />
     <ClCompile Include="..\..\..\..\Framework\ImageLib\Image_Png.cpp" />
     <ClCompile Include="..\..\..\..\Libs\libpng\png.c" />

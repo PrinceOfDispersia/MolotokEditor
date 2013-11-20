@@ -94,7 +94,7 @@ gl_texture_t*AllocGLTexture(int pref_id = -1)
 /*
  *	Free GL Texture
  **/
-void FreeGLTexture(gl_texture_t * pTexture)
+void GL_FreeTexture(gl_texture_t * pTexture)
 {
 	if (pTexture->source)
 		FreeRawImage(pTexture->source);
@@ -105,7 +105,7 @@ void FreeGLTexture(gl_texture_t * pTexture)
 }
 
 /*
- *	Initiliazes image lib
+ *	Initializes image lib
  **/
 void InitImageLib()
 {
@@ -120,7 +120,7 @@ void ShutdownImageLib()
 {
 	for(gl_texture_t * texture: g_TexturesPool)
 	{
-		FreeGLTexture(texture);
+		GL_FreeTexture(texture);
 		g_TexturesPool.shrink_to_fit();
 	}
 
@@ -131,7 +131,7 @@ void ShutdownImageLib()
 /*
  *	Loads image
  **/
-gl_texture_t * Img_Load(TCHAR * szName,byte * pSource,size_t bufferSize,bool keepRaw)
+gl_texture_t * GL_LoadTexture(TCHAR * szName,byte * pSource,size_t bufferSize,bool keepRaw)
 {
 	if (!pSource) return 0;
 

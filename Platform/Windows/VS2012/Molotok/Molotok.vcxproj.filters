@@ -67,6 +67,9 @@
     <Filter Include="Заголовочные файлы\Framework\GUI">
       <UniqueIdentifier>{3df0489d-361d-44c5-9dcf-2d8ed06e3139}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\Framework\ImageLib\GUI">
+      <UniqueIdentifier>{3bff4c1e-a302-4802-ad92-8449640d2d59}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\MainApp\Application.cpp">
@@ -185,6 +188,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Common\Win_FileSystemProxy.cpp">
       <Filter>Файлы исходного кода\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Font.cpp">
+      <Filter>Файлы исходного кода\Framework\ImageLib\GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

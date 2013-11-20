@@ -34,7 +34,8 @@ typedef struct gl_texture_s
 void InitImageLib();
 void ShutdownImageLib();
 
-gl_texture_t * Img_Load(TCHAR * szName,byte * pSource,size_t bufferSize,bool keepRaw);
+gl_texture_t * GL_LoadTexture(TCHAR * szName,byte * pSource,size_t bufferSize,bool keepRaw);
+void GL_FreeTexture(gl_texture_t*);
 rawImage_t * AllocRawImage(int sz);
 
 
