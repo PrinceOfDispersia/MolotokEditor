@@ -6,3 +6,5 @@
 
 #include "XGUI_Common.h"
 #include "XGUI_Font.h"
+#include "XGUI_Sheet.h"
+

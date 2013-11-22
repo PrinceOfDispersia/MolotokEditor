@@ -68,22 +68,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir);$(IncludePath);$(SolutionDir)\Libs\libpng;$(SolutionDir)\libs\zlib</IncludePath>
     <OutDir>$(SolutionDir)\bin\</OutDir>
-    <IntDir>$(SolutionDir)\build\</IntDir>
+    <IntDir>$(SolutionDir)\Build\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir);$(IncludePath);$(SolutionDir)\Libs\libpng;$(SolutionDir)\libs\zlib</IncludePath>
     <OutDir>$(SolutionDir)\bin\</OutDir>
-    <IntDir>$(SolutionDir)\build\</IntDir>
+    <IntDir>$(SolutionDir)\Build\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(SolutionDir);$(IncludePath);$(SolutionDir)\Libs\libpng;$(SolutionDir)\libs\zlib</IncludePath>
     <OutDir>$(SolutionDir)\bin\</OutDir>
-    <IntDir>$(SolutionDir)\build\</IntDir>
+    <IntDir>$(SolutionDir)\Build\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir);$(IncludePath);$(SolutionDir)\Libs\libpng;$(SolutionDir)\libs\zlib</IncludePath>
     <OutDir>$(SolutionDir)\bin\</OutDir>
-    <IntDir>$(SolutionDir)\build\</IntDir>
+    <IntDir>$(SolutionDir)\Build\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -158,6 +158,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Font.cpp" />
+    <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Sheet.cpp" />
     <ClCompile Include="..\..\..\..\Framework\ImageLib\ImageLib.cpp" />
     <ClCompile Include="..\..\..\..\Framework\ImageLib\Image_Png.cpp" />
     <ClCompile Include="..\..\..\..\Libs\libpng\png.c" />
@@ -206,6 +207,8 @@
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Common.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Font.h" />
+    <ClInclude Include="..\..\..\..\Framework\GUI\GUISheet.h" />
+    <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Sheet.h" />
     <ClInclude Include="..\..\..\..\Framework\ImageLib\ImageLib.h" />
     <ClInclude Include="..\..\..\..\Framework\ImageLib\Image_Png.h" />
     <ClInclude Include="..\..\..\..\Framework\MathLib\Math.h" />

@@ -33,14 +33,26 @@ void ApplicationStart()
 /*          Application main cycle routine, called right after startup
 *          by platform abstraction layer								*/
 /************************************************************************/
+
+float d = 0;
+int fps = 0;
+int rfps = 0;
+
 void ApplicationRun(float flFrameDelta)
 {
 	// TODO: load here graphics and additional resources, while showing	
 	// fancy loading box to user, then run main logic cycle
 	
-	pFont->Draw(ME_Math::Vector2D(100,100),_T("—ъешь ещЄ этих м€гких французских булок, да выпей же чаю."));
-	 
+	if (d > 1.0f)
+	{
+		rfps = fps;
+		fps = 0;
+		d = 0;
+	}
 
+	fps++;
+	d+=flFrameDelta;
+	
 }
 
 /************************************************************************/

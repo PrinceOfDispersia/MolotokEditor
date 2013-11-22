@@ -7,6 +7,7 @@ typedef unsigned char byte;
 
 #include "..\..\Framework\GUI\Font_FT2.h"
 
+#pragma warning(disable: 4267)
 
 // Common types
 typedef unsigned char byte;

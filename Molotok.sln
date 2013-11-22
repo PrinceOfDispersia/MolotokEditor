@@ -5,6 +5,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Molotok", "Platform\Windows
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FontCompiler", "Utils\FontCompiler\FontCompiler.vcxproj", "{13CB6459-16B1-4375-8BA9-C8FAED03A338}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GUISheetCompiler", "Utils\GUISheetCompiler\GUISheetCompiler.vcxproj", "{B1375A9F-25A2-4543-92A1-07451E5AFEAF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{1D9455C6-8AA1-4DF8-9CD9-E8AADFD9AD80}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -37,9 +41,26 @@ Global
 		{13CB6459-16B1-4375-8BA9-C8FAED03A338}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{13CB6459-16B1-4375-8BA9-C8FAED03A338}.Release|Win32.ActiveCfg = Release|Win32
 		{13CB6459-16B1-4375-8BA9-C8FAED03A338}.Release|Win32.Build.0 = Release|Win32
-		{13CB6459-16B1-4375-8BA9-C8FAED03A338}.Release|x64.ActiveCfg = Release|Win32
+		{13CB6459-16B1-4375-8BA9-C8FAED03A338}.Release|x64.ActiveCfg = Release|x64
+		{13CB6459-16B1-4375-8BA9-C8FAED03A338}.Release|x64.Build.0 = Release|x64
+		{B1375A9F-25A2-4543-92A1-07451E5AFEAF}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{B1375A9F-25A2-4543-92A1-07451E5AFEAF}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{B1375A9F-25A2-4543-92A1-07451E5AFEAF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B1375A9F-25A2-4543-92A1-07451E5AFEAF}.Debug|Win32.Build.0 = Debug|Win32
+		{B1375A9F-25A2-4543-92A1-07451E5AFEAF}.Debug|x64.ActiveCfg = Debug|x64
+		{B1375A9F-25A2-4543-92A1-07451E5AFEAF}.Debug|x64.Build.0 = Debug|x64
+		{B1375A9F-25A2-4543-92A1-07451E5AFEAF}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{B1375A9F-25A2-4543-92A1-07451E5AFEAF}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{B1375A9F-25A2-4543-92A1-07451E5AFEAF}.Release|Win32.ActiveCfg = Release|Win32
+		{B1375A9F-25A2-4543-92A1-07451E5AFEAF}.Release|Win32.Build.0 = Release|Win32
+		{B1375A9F-25A2-4543-92A1-07451E5AFEAF}.Release|x64.ActiveCfg = Release|x64
+		{B1375A9F-25A2-4543-92A1-07451E5AFEAF}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{13CB6459-16B1-4375-8BA9-C8FAED03A338} = {1D9455C6-8AA1-4DF8-9CD9-E8AADFD9AD80}
+		{B1375A9F-25A2-4543-92A1-07451E5AFEAF} = {1D9455C6-8AA1-4DF8-9CD9-E8AADFD9AD80}
 	EndGlobalSection
 EndGlobal

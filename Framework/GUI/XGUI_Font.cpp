@@ -79,10 +79,10 @@ void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 
 		glColor4f(0,.5,0,1);
 		glBegin(GL_QUADS);
-		glVertex2f(pos.x,			pos.y + r.pos.y);
-		glVertex2f(pos.x + r.ext.x,	pos.y + r.pos.y);
-		glVertex2f(pos.x + r.ext.x,	pos.y + r.ext.y + r.pos.y);
-		glVertex2f(pos.x,			pos.y + r.ext.y + r.pos.y);
+		glVertex2d(pos.x,			pos.y + r.pos.y);
+		glVertex2d(pos.x + r.ext.x,	pos.y + r.pos.y);
+		glVertex2d(pos.x + r.ext.x,	pos.y + r.ext.y + r.pos.y);
+		glVertex2d(pos.x,			pos.y + r.ext.y + r.pos.y);
 		glEnd();
 
 		glEnable(GL_TEXTURE_2D);
@@ -157,13 +157,13 @@ void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 			
 
  			glTexCoord2f(c[0],c[1]);
- 			glVertex2f(x1,y1);
+ 			glVertex2d(x1,y1);
  			glTexCoord2f(c[2],c[1]);
- 			glVertex2f(x2,y1);
+ 			glVertex2d(x2,y1);
  			glTexCoord2f(c[2],c[3]);
- 			glVertex2f(x2,y2);
+ 			glVertex2d(x2,y2);
  			glTexCoord2f(c[0],c[3]);
- 			glVertex2f(x1,y2);
+ 			glVertex2d(x1,y2);
 			
 			w+=(inf->orig_w) * scale;
 						

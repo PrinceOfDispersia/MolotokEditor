@@ -98,4 +98,3 @@ TCHAR * Sys_StrDup(TCHAR * source)
 
 	return pRet;
 }
-
