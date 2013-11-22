@@ -143,6 +143,8 @@ gl_texture_t * GL_LoadTexture(TCHAR * szName,byte * pSource,size_t bufferSize,bo
 	case IMG_PNG:
 		pImage = Img_LoadPng(pSource,bufferSize);
 		break;
+	default:
+		return nullptr;
 	}
 
 	if (pImage == nullptr) 

@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <vector>
+#include <unordered_map>
+#include <map>
 
 #include <tchar.h>
 #include <windows.h>

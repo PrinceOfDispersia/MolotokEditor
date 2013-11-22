@@ -15,7 +15,57 @@ void XGUI_Font::Calc_TextRect(String & str,xgRect_t * rect)
 {
 	memset(rect,0,sizeof(xgRect_t));
 
-	// TODO: implement me!
+	size_t i = 0;
+
+	vec_t w,h,o;
+
+	w = 0;
+	h = 0;
+
+
+	const TCHAR * ptr = str.c_str();
+	size_t sz = str.Length();
+
+	for(size_t i = 0 ; i < sz ; i++)
+	{
+
+		TCHAR sym = ptr[i];
+
+		int idx = -1;
+		byte page = sym >> 8;
+
+		for(int j = 0 ; j < m_nMaps ; j++)
+		{
+			if (m_pSymbolMaps[j] == page)
+			{
+				idx = j;
+				break;
+			}
+		}
+
+		if (idx == -1) 
+			continue;
+
+		byte b = sym & 0x00FF;
+		idx = m_pCodePages[(idx * 256) + b];
+
+
+
+		dGlyphInfo_t * inf = &m_pGlyphs[idx];
+		
+		w+=(inf->orig_w);
+
+		if (h < (inf->height))
+		{
+			h = inf->height; 
+			o = inf->yoffs;
+		}
+
+
+	}
+
+	rect->pos = ME_Math::Vector2D(0,o);
+	rect->ext = ME_Math::Vector2D(w,h);
 }
 
 /*
@@ -23,104 +73,61 @@ void XGUI_Font::Calc_TextRect(String & str,xgRect_t * rect)
  **/
 void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 {
-		// TODO: implement hash maps
-		// Cleanup, and move code to Calc_TextRect;
+		glDisable(GL_TEXTURE_2D);
+		xgRect_t r;
+		Calc_TextRect(str,&r);
+
+		glColor4f(0,.5,0,1);
+		glBegin(GL_QUADS);
+		glVertex2f(pos.x,			pos.y + r.pos.y);
+		glVertex2f(pos.x + r.ext.x,	pos.y + r.pos.y);
+		glVertex2f(pos.x + r.ext.x,	pos.y + r.ext.y + r.pos.y);
+		glVertex2f(pos.x,			pos.y + r.ext.y + r.pos.y);
+		glEnd();
 
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D,m_pFontImage->texID);
-		glTranslatef(100,100,0);
-
-		glPushMatrix();
-
-		float w = 0;
-		float h = 0;
-		float yoff = 0;
-		for(size_t i = 0 ; i < str.Length() ; i++)
-		{
-
-			size_t j = 0;
-			for(j = 0 ; j < m_nGlyphs ; j++)
-			{
-				if (m_pGlyphs[j].sym == str[i])
-					break;
-			}
-
-			dGlyphInfo_t * inf = &m_pGlyphs[j];
-
-			float c[4];
-
-			float x,y;
-
-			x =  (float)inf->xpos;
-			y =  (float)inf->ypos;
-
-			c[0] = x / m_pFontImage->width;
-			c[1] = 1 - (y / m_pFontImage->height);
-
-			c[2] = (x + inf->width) / m_pFontImage->width;
-			c[3] = 1 - ( (y + inf->height) / m_pFontImage->height);
-
-			
-
-			const float scale = 2.0f+ (sin(g_pPlatform->TimeElapsed()) + 1) * 10;
-			
-			glTranslatef(inf->xoffs * scale,inf->yoffs * scale,0);
-			
-
-			glColor4f(1,1,1,1);
-			glBegin(GL_QUADS);
-			glTexCoord2f(c[0],c[1]);
-			glVertex2f(0,0);
-			glTexCoord2f(c[2],c[1]);
-			glVertex2f(inf->width * scale,0);
-			glTexCoord2f(c[2],c[3]);
-			glVertex2f(inf->width * scale,inf->height * scale);
-			glTexCoord2f(c[0],c[3]);
-			glVertex2f(0,inf->height * scale);
-			glEnd();
-
-			glTranslatef(-inf->xoffs * scale,-inf->yoffs * scale,0);
-			
-			glTranslatef((inf->orig_w) * scale,0,0);
-			w+=(inf->orig_w) * scale;
-			if (inf->height*scale > h)
-			{
-				h = inf->height*scale;
-				yoff = inf->yoffs*scale;
-			}
-			
-			
-
-		}
 		
-		glPopMatrix();
 
-		glDisable(GL_TEXTURE_2D);
-		glColor4f(0.7f,0,0.7f,1);
+		vec_t w = 0;
+		vec_t h = 0;
+		
+
+		glColor4f(1,1,1,1);
 		glBegin(GL_QUADS);
-		glVertex2f(0,yoff);
-		glVertex2f(w,yoff);
-		glVertex2f(w,h + yoff);
-		glVertex2f(0,h + yoff);
-		glEnd();
+		
+		size_t i = 0;
 
-		glPushMatrix();
+		const TCHAR * ptr = str.c_str();
+		size_t sz = str.Length();
 
-	
-		glEnable(GL_TEXTURE_2D);
-
-		for(size_t i = 0 ; i < str.Length() ; i++)
+		for(size_t i = 0 ; i < sz ; i++)
 		{
 
-			size_t j = 0;
-			for(j = 0 ; j < m_nGlyphs ; j++)
+			TCHAR sym = ptr[i];
+
+			int idx = -1;
+			byte page = sym >> 8;
+
+			for(int j = 0 ; j < m_nMaps ; j++)
 			{
-				if (m_pGlyphs[j].sym == str[i])
+				if (m_pSymbolMaps[j] == page)
+				{
+					idx = j;
 					break;
+				}
 			}
 
-			dGlyphInfo_t * inf = &m_pGlyphs[j];
+			if (idx == -1) continue;
 
+			byte b = sym & 0x00FF;
+			idx = m_pCodePages[(idx * 256) + b];
+			
+			
+
+			dGlyphInfo_t * inf = &m_pGlyphs[idx];
+				
+		
 			float c[4];
 
 			float x,y;
@@ -134,39 +141,36 @@ void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 			c[2] = (x + inf->width) / m_pFontImage->width;
 			c[3] = 1 - ( (y + inf->height) / m_pFontImage->height);
 
-
-
-			const float scale = 2.0f + (sin(g_pPlatform->TimeElapsed()) + 1) * 10;
-
-			glTranslatef(inf->xoffs * scale,inf->yoffs * scale,0);
-
-
-			glColor4f(1,1,1,1);
-			glBegin(GL_QUADS);
-			glTexCoord2f(c[0],c[1]);
-			glVertex2f(0,0);
-			glTexCoord2f(c[2],c[1]);
-			glVertex2f(inf->width * scale,0);
-			glTexCoord2f(c[2],c[3]);
-			glVertex2f(inf->width * scale,inf->height * scale);
-			glTexCoord2f(c[0],c[3]);
-			glVertex2f(0,inf->height * scale);
-			glEnd();
-
-			glTranslatef(-inf->xoffs * scale,-inf->yoffs * scale,0);
-
-			glTranslatef((inf->orig_w) * scale,0,0);
-			w+=inf->orig_w * scale;
 			
 
+			const float scale = 1;
+			
+			vec_t xofs = inf->xoffs * scale;
+			vec_t yofs = inf->yoffs * scale; 
+			
+			vec_t x1 = w + xofs + pos.x;
+			vec_t x2 = x1 + (inf->width * scale);
+
+			vec_t y1 = yofs + pos.y;
+			vec_t y2 = y1 + (inf->height * scale);
+
+			
+
+ 			glTexCoord2f(c[0],c[1]);
+ 			glVertex2f(x1,y1);
+ 			glTexCoord2f(c[2],c[1]);
+ 			glVertex2f(x2,y1);
+ 			glTexCoord2f(c[2],c[3]);
+ 			glVertex2f(x2,y2);
+ 			glTexCoord2f(c[0],c[3]);
+ 			glVertex2f(x1,y2);
+			
+			w+=(inf->orig_w) * scale;
+						
+			
 		}
-
-		glPopMatrix();
-
-		
-
-		
-
+		glEnd();
+				
 
 }
 
@@ -196,6 +200,11 @@ XGUI_Font::XGUI_Font(dFontHdr_t * pHeader,size_t sz)
 		size_t imgSize = pHeader->lumps[LUMP_FNT_IMAGE].length;
 
 		m_pFontImage = GL_LoadTexture(_T("FontImage"),pFontImage,imgSize,false);
+
+		m_pSymbolMaps = &pBits[pHeader->lumps[LUMP_FNT_MAPS].start];
+		m_nMaps = pHeader->lumps[LUMP_FNT_MAPS].length / sizeof(byte);
+
+		m_pCodePages = (short*)&pBits[pHeader->lumps[LUMP_FNT_PAGES].start];
 }
 
 /*
@@ -204,6 +213,7 @@ XGUI_Font::XGUI_Font(dFontHdr_t * pHeader,size_t sz)
 XGUI_Font::~XGUI_Font()
 {
 	g_pPlatform->MemoryPools()->Free(m_pHeader);
-	GL_FreeTexture(m_pFontImage);
+	
+	GL_FreeTexture(m_pFontImage);	
 }
 

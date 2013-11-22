@@ -30,15 +30,16 @@ typedef struct dKerningPairs_s
 
 typedef struct lump_s
 {
-	size_t start,length;
+	int start,length; // Use ints on disk structures, since size_t varies from build to build
 }lump_t;
 
 enum eFT2Lumps 
 {
-	LUMP_FNT_NAME = 0,
-	LUMP_FNT_GLYPHS,
+	LUMP_FNT_GLYPHS = 0,
 	LUMP_FNT_KERNING_PAIRS,
 	LUMP_FNT_IMAGE,
+	LUMP_FNT_MAPS,
+	LUMP_FNT_PAGES,
 	LUMP_FNT_MAX
 };
 

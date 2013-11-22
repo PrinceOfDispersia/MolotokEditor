@@ -250,6 +250,7 @@ void CWinOpenGLContext::MainLoop()
 		ApplicationRun(flFrameTime);						
 
 		SwapBuffers(m_hDC);
+		
 
 	}
 }

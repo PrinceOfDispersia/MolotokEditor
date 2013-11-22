@@ -166,35 +166,87 @@ int _tmain(int argc, _TCHAR* argv[])
 	fwrite(&vKernings[0],sizeof(dKerningPairs_t),vKernings.size(),fp);
 
 	// write image
-	FILE * fImage = fopen(szTextureName,"rb");
+		FILE * fImage = fopen(szTextureName,"rb");
 
-	if (!fImage)
-	{
-		printf("Image not found!");
-		while (!_kbhit());
-		return 1;
-	}
+		if (!fImage)
+		{
+			printf("Image not found!");
+			while (!_kbhit());
+			return 1;
+		}
 
-	fseek(fImage,0,SEEK_END);
-	size_t szImage = ftell(fImage);
-	fseek(fImage,0,SEEK_SET);
+		fseek(fImage,0,SEEK_END);
+		size_t szImage = ftell(fImage);
+		fseek(fImage,0,SEEK_SET);
 
-	byte * pImage = (byte*)malloc(szImage);
-	fread(pImage,szImage,1,fImage);
-	fclose(fImage);
+		byte * pImage = (byte*)malloc(szImage);
+		fread(pImage,szImage,1,fImage);
+		fclose(fImage);
+	// 
 
 	hdr.lumps[LUMP_FNT_IMAGE].start = ftell(fp);
 	hdr.lumps[LUMP_FNT_IMAGE].length = szImage;
 
 	fwrite(pImage,szImage,1,fp);
 
+	// Codepages
+	byte pages[256];
+	unsigned short codepages[256][256];
+	memset(&codepages,0,sizeof(codepages));
+	int used_pages = 0;
+
+	for(int i = 0 ; i < vGlyphs.size() ; i++)
+	{
+		short s = vGlyphs[i].sym;
+		byte page = (s >> 8);
+
+		bool bAdd = true;
+		int page_index = -1;
+
+		int j;
+		for(j = 0 ; j < used_pages ; j++)
+		{
+			if (pages[j] == page)
+			{
+				page_index = j;
+				bAdd = false;
+				break;
+			}
+		}
+
+		if (bAdd)
+		{
+			page_index = used_pages;
+			pages[used_pages++] = page;			
+			
+		}
+
+		byte b = s & 0x00FF;
+
+		codepages[page_index][b] = i;
+		
+	}
+
+	
+	hdr.lumps[LUMP_FNT_PAGES].start = ftell(fp);
+	hdr.lumps[LUMP_FNT_PAGES].length = used_pages * 256 * sizeof(short);
+
+	fwrite(codepages,256 * sizeof(short),used_pages,fp);
+
+	hdr.lumps[LUMP_FNT_MAPS].start = ftell(fp);
+	hdr.lumps[LUMP_FNT_MAPS].length = used_pages * sizeof(byte);
+
+	fwrite(pages,sizeof(byte),used_pages,fp);
+	
+
 	fseek(fp,0,SEEK_SET);
 	fwrite(&hdr,sizeof(hdr),1,fp);
 	fclose(fp);
+	
+
 
 	vGlyphs.clear();
 	vKernings.clear();
-
 	vGlyphs.shrink_to_fit();
 	vKernings.shrink_to_fit();
 

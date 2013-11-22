@@ -24,6 +24,12 @@ namespace ME_Framework
 			size_t m_nKerningPairs;
 
 			gl_texture_t * m_pFontImage;
+
+			byte * m_pSymbolMaps;
+			int m_nMaps;
+
+			short * m_pCodePages;
+			
 		public:
 			void Calc_TextRect(String & str,xgRect_t * rect);
 			void Draw(ME_Math::Vector2D pos,String str);
