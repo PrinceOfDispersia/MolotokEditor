@@ -6,6 +6,7 @@
 
 class CWinOpenGLContext: public IOpenGLContext
 {
+	friend PlatformEnvironment;
 	HWND m_hWnd;
 	HGLRC m_hGLRC;
 	HDC m_hDC;

@@ -15,3 +15,5 @@
 
 #include <gl/GL.H>
 #include <gl/glext.h>
+
+#include <algorithm>

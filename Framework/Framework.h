@@ -19,4 +19,8 @@
 //
 #include "ImageLib/ImageLib.h"
 
+// OpenGL backend
+//
+#include "OpenGLBackend.h"
+
 #endif

@@ -17,7 +17,9 @@ extern HINSTANCE g_hInstance;
 
 bool g_bWinGLClassRegistered = false;
 
-// i'm know what i'm doing
+using namespace ME_Framework::ME_OpenGLBackend;
+
+// I know what I'm doing
 #pragma warning(disable:4244)
 
 /*
@@ -194,6 +196,11 @@ void CWinOpenGLContext::MainLoop()
 {
 	MSG             msg;
 	
+	// Synch backend
+	GL_SynchBackend();
+
+
+	// Start application
 	ApplicationStart();
 
 	float flPrevTime = Sys_TimeElapsed();
@@ -225,6 +232,7 @@ void CWinOpenGLContext::MainLoop()
 
 		g_pPlatform->m_flFrameTime = flFrameTime;
 
+		
 		glClear(GL_COLOR_BUFFER_BIT);
 			
 		// Remove me
@@ -242,8 +250,7 @@ void CWinOpenGLContext::MainLoop()
 
 		// <============= 2D Viewport setup
 
-		glEnable(GL_ALPHA_TEST);
-		glAlphaFunc(GL_GREATER,0.5f);
+		
 
 			
 		// remove me

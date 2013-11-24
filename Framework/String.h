@@ -11,7 +11,7 @@
 
 namespace ME_Framework
 {
-	// TODO: FIX HASHING! CAUSE IT'S WRONG FROM THE BEGINING
+	
 	class String
 	{
 		TCHAR * m_strData; // Data pointer
@@ -19,6 +19,23 @@ namespace ME_Framework
 		size_t m_uiHash; // String hash
 		size_t m_szBufferSize; // String buffer size in bytes
 				
+
+		// Hashing func implementation
+		void RSHash()
+		{
+			unsigned int b    = 378551;
+			unsigned int a    = 63689;
+			m_uiHash = 0;
+
+			for(size_t i = 0; i < m_szLength; i++)
+			{
+				m_uiHash = m_uiHash * a + m_strData[i];
+				a    = a * b;
+			}
+
+			m_uiHash = (m_uiHash & 0x7FFFFFFF);
+		}
+
 		void Init(TCHAR * strSource)
 		{
 			m_szLength = (_tcsclen(strSource));
@@ -29,8 +46,7 @@ namespace ME_Framework
 			m_szBufferSize = size;
 
 			_tcscpy(m_strData,strSource);
-			std::hash<TCHAR*> h;
-			m_uiHash = h(m_strData);
+			RSHash();
 		}
 	public:
 		/*
@@ -69,8 +85,7 @@ namespace ME_Framework
 
 			_tcscpy(m_strData,other);
 			m_szLength = (_tcsclen(m_strData));
-			std::hash<TCHAR*> h;
-			m_uiHash = h(m_strData);
+			RSHash();
 			m_szBufferSize = newLen;
 
 			return (*this);
@@ -137,8 +152,7 @@ namespace ME_Framework
 			_vstprintf( m_strData, format, args );
 
 			m_szLength = (_tcsclen(m_strData));			
-			std::hash<TCHAR*> h;
-			m_uiHash = h(m_strData);
+			RSHash();
 		}
 
 		/*
@@ -170,8 +184,7 @@ namespace ME_Framework
 
 			_tcscat(m_strData,strOther.m_strData);
 			m_szLength = (_tcsclen(m_strData));
-			std::hash<TCHAR*> h;
-			m_uiHash = h(m_strData);
+			RSHash();
 
 			return (*this);
 		}
@@ -195,8 +208,7 @@ namespace ME_Framework
 			m_szLength++;
 			m_strData[m_szLength] = 0;
 
-			std::hash<TCHAR*> h;
-			m_uiHash = h(m_strData);
+			RSHash();
 
 			return (*this);
 		}

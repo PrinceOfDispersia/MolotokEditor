@@ -169,10 +169,16 @@ namespace ME_Framework
 		const float TimeElapsed();
 		
 		float m_flFrameTime;
+
+		ME_Math::Vector2D GetCursorPos();
+
+		ME_Math::Vector2D GetClientAreaExtents();
 	};
 
 	// Instance, initialization is up to platform
 	extern PlatformEnvironment * g_pPlatform;
 }
+
+
 
 #endif

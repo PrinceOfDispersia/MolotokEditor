@@ -195,6 +195,18 @@
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Sheet.cpp">
       <Filter>Файлы исходного кода\Framework\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\Framework\OpenGLBackend.cpp">
+      <Filter>Файлы исходного кода\Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Widget.cpp">
+      <Filter>Файлы исходного кода\Framework\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Manager.cpp">
+      <Filter>Файлы исходного кода\Framework\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Button.cpp">
+      <Filter>Файлы исходного кода\Framework\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Common\ApplicationCommon.h">
@@ -211,9 +223,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\Framework\BasicTypes.h">
       <Filter>Заголовочные файлы\Framework</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Common\PlatformCommon.h">
-      <Filter>Заголовочные файлы\Platform\Windows\Common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\Framework\MathLib\Vector.h">
       <Filter>Заголовочные файлы\Framework\Math</Filter>
@@ -334,6 +343,24 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Sheet.h">
       <Filter>Заголовочные файлы\Framework\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\OpenGLBackend.h">
+      <Filter>Заголовочные файлы\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Widget.h">
+      <Filter>Заголовочные файлы\Framework\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Const.h">
+      <Filter>Заголовочные файлы\Framework\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Manager.h">
+      <Filter>Заголовочные файлы\Framework\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Button.h">
+      <Filter>Заголовочные файлы\Framework\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\PlatformCommon.h">
+      <Filter>Заголовочные файлы\Platform\Windows\Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

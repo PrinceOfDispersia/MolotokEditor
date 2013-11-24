@@ -115,6 +115,17 @@ namespace ME_Framework
 
 				return (*this);
 			}
+			
+			operator const vec_t*() const
+			{
+				return &x;
+			}
+
+			vec_t Length()
+			{
+				return sqrt(x * x + y*y);
+			}
+
 		};
 
 		// 3D Vector
@@ -229,6 +240,16 @@ namespace ME_Framework
 				z/=flOther;
 
 				return (*this);
+			}
+
+			operator const vec_t*() const
+			{
+				return &x;
+			}
+
+			vec_t Length()
+			{
+				return sqrt(x * x + y*y + z*z);
 			}
 		};
 	}

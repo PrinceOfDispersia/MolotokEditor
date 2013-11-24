@@ -103,6 +103,25 @@ const int PlatformEnvironment::GetCmdLineArgumentsCount() const
 	return g_tArgc;
 }
 
+/*
+ *	Returns client area extents
+ **/
+ME_Math::Vector2D PlatformEnvironment::GetClientAreaExtents()
+{
+	return g_pPlatform->GetOpenGLContext()->m_vWindowExtents;
+}
+
+/*
+ *	Returns cursor pos within client area
+ **/
+ME_Math::Vector2D PlatformEnvironment::GetCursorPos()
+{
+	POINT pt;
+	::GetCursorPos(&pt);
+	ScreenToClient(((CWinOpenGLContext*)g_pPlatform->GetOpenGLContext())->m_hWnd,&pt);
+	
+	return  ME_Math::Vector2D(pt.x,pt.y);
+}
 
 /************************************************************************/
 /*			Entry point for windows application			                */

@@ -7,6 +7,7 @@
 #include <Platform/Common/ApplicationCommon.h>
 
 using namespace ME_XGUI;
+using namespace ME_OpenGLBackend;
 
 /*
  *	Calculates area used when printing string
@@ -73,27 +74,30 @@ void XGUI_Font::Calc_TextRect(String & str,xgRect_t * rect)
  **/
 void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 {
-		glDisable(GL_TEXTURE_2D);
-		xgRect_t r;
-		Calc_TextRect(str,&r);
+// 		glDisable(GL_TEXTURE_2D);
+// 		xgRect_t r;
+// 		Calc_TextRect(str,&r);
+// 
+// 		glColor4f(0,.5,0,1);
+// 		glBegin(GL_QUADS);
+// 		glVertex2d(pos.x,			pos.y + r.pos.y);
+// 		glVertex2d(pos.x + r.ext.x,	pos.y + r.pos.y);
+// 		glVertex2d(pos.x + r.ext.x,	pos.y + r.ext.y + r.pos.y);
+// 		glVertex2d(pos.x,			pos.y + r.ext.y + r.pos.y);
+// 		glEnd();
+// 
 
-		glColor4f(0,.5,0,1);
-		glBegin(GL_QUADS);
-		glVertex2d(pos.x,			pos.y + r.pos.y);
-		glVertex2d(pos.x + r.ext.x,	pos.y + r.pos.y);
-		glVertex2d(pos.x + r.ext.x,	pos.y + r.ext.y + r.pos.y);
-		glVertex2d(pos.x,			pos.y + r.ext.y + r.pos.y);
-		glEnd();
+		GL_EnableState(GLS_TEXTURE_2D);
+		GL_EnableState(GLS_BLEND);
 
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D,m_pFontImage->texID);
+		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
+ 		glBindTexture(GL_TEXTURE_2D,m_pFontImage->texID);
 		
 
 		vec_t w = 0;
 		vec_t h = 0;
-		
-
-		glColor4f(1,1,1,1);
+						
 		glBegin(GL_QUADS);
 		
 		size_t i = 0;
@@ -171,6 +175,7 @@ void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 		}
 		glEnd();
 				
+		GL_DisableState(GLS_BLEND);
 
 }
 

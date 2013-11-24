@@ -6,7 +6,9 @@
 
 #include <Platform/Common/ApplicationCommon.h>
 
-ME_XGUI::XGUI_Font * pFont;
+using namespace ME_Framework::ME_XGUI;
+
+XGUI_Manager * pManager;
 
 /************************************************************************/
 /*			Application startup routine, 
@@ -18,41 +20,28 @@ void ApplicationStart()
 	// Start image library
 	InitImageLib();
 
-	dFontHdr_t * pHeader;
-	size_t sz;
+	pManager = new XGUI_Manager;
 
-	pHeader = (dFontHdr_t*)g_pPlatform->FileSystem()->LoadFile(_T("gui/fonts/segoeui.ft2"),&sz);
-	pFont = new ME_XGUI::XGUI_Font(pHeader,sz);
-	
+	xgRect_t r;
+	r.pos = ME_Math::Vector2D(100,100);
+	r.ext = ME_Math::Vector2D(0,0);
 
-	g_pPlatform->FileSystem()->CloseFile((byte*)pHeader);
-		
+	pManager->AddWidget(new XGUI_Button(&r));
 }
 
 /************************************************************************/
 /*          Application main cycle routine, called right after startup
 *          by platform abstraction layer								*/
 /************************************************************************/
-
-float d = 0;
-int fps = 0;
-int rfps = 0;
-
 void ApplicationRun(float flFrameDelta)
 {
 	// TODO: load here graphics and additional resources, while showing	
 	// fancy loading box to user, then run main logic cycle
 	
-	if (d > 1.0f)
-	{
-		rfps = fps;
-		fps = 0;
-		d = 0;
-	}
+	pManager->Think(flFrameDelta);
+	pManager->Draw();
 
-	fps++;
-	d+=flFrameDelta;
-	
+
 }
 
 /************************************************************************/
@@ -71,5 +60,13 @@ void ApplicationShutdown()
 /************************************************************************/
 void ApplicationPumpEvent(ME_Framework::appEvent_t & ev)
 {
-	_tprintf(_T("ApplicationPumpEvent(): eventid = %d, uParam1 = %d\n"),ev.eventid,ev.uParam1);
+	//_tprintf(_T("ApplicationPumpEvent(): eventid = %d, uParam1 = %d\n"),ev.eventid,ev.uParam1);
+
+	switch(ev.eventid)
+	{
+	case eventTypes::EV_MOUSE_KEY_DOWN:
+	case eventTypes::EV_MOUSE_KEY_UP:
+		pManager->HandleEvent(ev);
+	}
+
 }

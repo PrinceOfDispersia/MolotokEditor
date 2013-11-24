@@ -16,7 +16,9 @@ namespace ME_Framework
 		EV_MOUSE_KEY_DOWN,
 		EV_MOUSE_KEY_UP,
 		EV_MOUSE_SCROLL,
-		EV_MOUSE_MOVE
+		EV_WINDOW_RESIZE,
+
+		
 	};
 
 	typedef struct  appEvent_s

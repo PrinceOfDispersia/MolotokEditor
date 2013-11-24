@@ -35,6 +35,9 @@ void SetupDefaultLoaderParams()
 
 	g_loaderFilterMin=GL_LINEAR_MIPMAP_LINEAR;
 	g_loaderFilterMag=GL_LINEAR;
+
+	//g_loaderFilterMin=GL_NEAREST;
+	//g_loaderFilterMag=GL_NEAREST;
 	
 }
 
