@@ -33,6 +33,11 @@ XGUI_Widget::XGUI_Widget(xgRect_t * rect)
 
 	m_Align = TAlign::alClientArea;
 	SetSize(&m_Rect);
+
+	m_bVisible = true;
+	m_bEnabled = true;
+
+	m_strCaption = _T("");
 }
 
 /*
@@ -56,9 +61,20 @@ void XGUI_Widget::SetSize(xgRect_t * rect)
 /*
  *	Handles system event
  **/
-void XGUI_Widget::HandleEvent(ME_Framework::appEvent_t * pEvent)
+void XGUI_Widget::HandleEvent(ME_Framework::appEvent_t & ev)
 {
-
+	switch(ev.eventid)
+	{
+	case eventTypes::EV_MOUSE_KEY_UP:
+		for(XGUI_Widget * c : m_vChilds)
+		{
+			if (c->m_bVisible)
+				c->HandleEvent(ev);
+		}
+		break;
+	
+	}
+	
 }
 
 /*
@@ -143,6 +159,11 @@ void XGUI_Widget::SetEnableState(bool bEnabled)
 	m_bEnabled = bEnabled;
 }
 
+void XGUI_Widget::SetCaption(String & str)
+{
+	m_strCaption = str;
+}
+
 // Getters
 XGUI_Widget * XGUI_Widget::GetParent()
 {
@@ -169,6 +190,11 @@ bool XGUI_Widget::GetEnableState()
 	return m_bEnabled;
 }
 
+String & XGUI_Widget::GetCaption()
+{
+	return m_strCaption;
+}
+
 /*
  *	Property accessors end
  **/
@@ -192,12 +218,14 @@ void XGUI_Widget::SortChilds()
 /*
  *	Marks child items under cursor or self if no childs marked
  **/
-bool XGUI_Widget::MarkItemUnderCursor(ME_Math::Vector2D pt)
+XGUI_Widget* XGUI_Widget::WidgetUnderCursor(ME_Math::Vector2D pt)
 {
 	for(XGUI_Widget * c: m_vChilds)
 	{
-		if (c->MarkItemUnderCursor(pt))
-			return true;
+		if (c->m_bVisible == false) continue;
+		XGUI_Widget * w = c->WidgetUnderCursor(pt);
+		if (w)
+			return w;
 	}
 
 	xgRect_t r = m_Rect;
@@ -206,15 +234,10 @@ bool XGUI_Widget::MarkItemUnderCursor(ME_Math::Vector2D pt)
 	if (pt.x >= r.pos.x && pt.x <= r.pos.x + r.ext.x)
 		if (pt.y >= r.pos.y && pt.y <= r.pos.y + r.ext.y)
 		{
-			m_flHoveroutTimer = g_pPlatform->TimeElapsed();
-
-			if (m_flHoverinTimer < 1)
-				m_flHoverinTimer = m_flHoveroutTimer + 0.3f;
-
-			return true;
+			return this;
 		}
 		
-	return false;
+	return 0;
 }
 
 /*
@@ -228,3 +251,4 @@ void XGUI_Widget::CalcClientRect(xgRect_t & r)
 		m_pParent->CalcClientRect(r);
 	}
 }
+

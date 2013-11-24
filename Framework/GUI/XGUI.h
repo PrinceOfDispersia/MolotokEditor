@@ -11,4 +11,5 @@
 #include "XGUI_Widget.h"
 #include "XGUI_Manager.h"
 
+#include "XGUI_Resources.h"
 #include "XGUI_Button.h"

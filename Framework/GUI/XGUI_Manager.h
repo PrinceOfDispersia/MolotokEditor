@@ -33,7 +33,7 @@ namespace ME_Framework
 
 		void XGUI_DrawSheetGlyph(mSheetGlyph_t * pGlyph,xgRect_t & r);
 		void XGUI_DrawScalableSheetGlyph(mSheetGlyph_t * pGlyphs[9],xgRect_t & r);
-		
+		void XGUI_DrawRect(xgRect_t & r);
 	}
 }
 

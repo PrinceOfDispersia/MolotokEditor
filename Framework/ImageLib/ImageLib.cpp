@@ -33,11 +33,11 @@ void SetupDefaultLoaderParams()
 	g_loaderWrap_s=GL_REPEAT;
 	g_loaderWrap_t=GL_REPEAT;
 
-	g_loaderFilterMin=GL_LINEAR_MIPMAP_LINEAR;
-	g_loaderFilterMag=GL_LINEAR;
+	//g_loaderFilterMin=GL_LINEAR_MIPMAP_LINEAR;
+	//g_loaderFilterMag=GL_LINEAR;
 
-	//g_loaderFilterMin=GL_NEAREST;
-	//g_loaderFilterMag=GL_NEAREST;
+	g_loaderFilterMin=GL_NEAREST;
+	g_loaderFilterMag=GL_NEAREST;
 	
 }
 

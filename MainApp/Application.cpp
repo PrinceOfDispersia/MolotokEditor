@@ -24,9 +24,12 @@ void ApplicationStart()
 
 	xgRect_t r;
 	r.pos = ME_Math::Vector2D(100,100);
-	r.ext = ME_Math::Vector2D(0,0);
+	r.ext = ME_Math::Vector2D(150,24);
 
-	pManager->AddWidget(new XGUI_Button(&r));
+	XGUI_Button * pButton = new XGUI_Button(&r);
+	pButton->SetCaption(String(_T("…а кнопка!")));
+
+	pManager->AddWidget(pButton);
 }
 
 /************************************************************************/

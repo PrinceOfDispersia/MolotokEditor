@@ -11,13 +11,17 @@ namespace ME_Framework
 	{
 		class XGUI_Button: public XGUI_Widget
 		{
+			bool m_bPressed;
+
+
+			void DrawHoverOverlay();
+			void DrawTextLabel();
 		public:
 			XGUI_Button(xgRect_t * rect);
 			~XGUI_Button();
 
-			virtual void HandleEvent(ME_Framework::appEvent_t * pEvent);
+			virtual void HandleEvent(ME_Framework::appEvent_t & ev);
 			virtual void DrawComponent();
-
 		};
 
 	}

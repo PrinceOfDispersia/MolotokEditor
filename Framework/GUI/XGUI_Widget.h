@@ -38,7 +38,7 @@ namespace ME_XGUI
 		void CalcClientRect(xgRect_t & r);
 
 		float m_flHoveroutTimer;
-		float m_flHoverinTimer;
+		
 
 		XGUI_Font * m_pGuiFont;
 		
@@ -53,6 +53,7 @@ namespace ME_XGUI
 		void SetAnchors(TAnchor anchors);
 		void SetVisibilty(bool bVisible);
 		void SetEnableState(bool bEnabled);
+		void SetCaption(String & str);
 
 		// Getters
 		XGUI_Widget *	GetParent();
@@ -60,15 +61,16 @@ namespace ME_XGUI
 		TAnchor			GetAnchors();
 		bool			GetVisibilty();
 		bool			GetEnableState();
+		String &		GetCaption();
 		
-		virtual void HandleEvent(ME_Framework::appEvent_t * pEvent);
+		virtual void HandleEvent(ME_Framework::appEvent_t & pEvent);
 		virtual void DrawComponent();
 
 		void Render();		
 		void UpdateTimers(float flDelta);
 		void SetSize(xgRect_t * rect);
 
-		bool MarkItemUnderCursor(ME_Math::Vector2D pt);
+		XGUI_Widget* WidgetUnderCursor(ME_Math::Vector2D pt);
 			
 
 		XGUI_Widget(xgRect_t * rect);

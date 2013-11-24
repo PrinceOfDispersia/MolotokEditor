@@ -22,6 +22,7 @@ void XGUI_Font::Calc_TextRect(String & str,xgRect_t * rect)
 
 	w = 0;
 	h = 0;
+	o = 0;
 
 
 	const TCHAR * ptr = str.c_str();

@@ -9,6 +9,31 @@
 using namespace ME_Framework::ME_XGUI;
 XGUI_Manager * g_pGUIManager;
 
+
+mSheetGlyph_t * ME_XGUI::sprButtonHovered[9];
+mSheetGlyph_t * ME_XGUI::sprButtonNormal[9];
+mSheetGlyph_t * ME_XGUI::sprButtonPressed[9];
+
+void LoadScalableSet(mSheetGlyph_t * sprites[9],char mask[])
+{
+	char tmp[128];
+	
+	// TOOD: make this safe way
+	
+	char xPos[][16] = {"Left","Middle","Right"};
+	char yPos[][16] = {"Top","Middle","Bottom"};
+	
+	for(int y = 0 ; y < 3 ; y++)
+	{
+		for(int x = 0 ; x < 3 ; x++)
+		{
+			sprintf(tmp,"%s.%s%s",mask,yPos[y],xPos[x]);
+			sprites[y * 3 + x] = g_pGUIManager->GetGUISheetGlyph(tmp);
+		}
+	}
+
+}
+
 /*
  *	Constructor
  **/
@@ -38,6 +63,10 @@ XGUI_Manager::XGUI_Manager()
 	m_pGuiFont = new XGUI_Font((dFontHdr_t*)pBuffer,sz);
 
 	g_pGUIManager = this;
+
+	LoadScalableSet(sprButtonNormal,"UI.ButtonBig.Normal");
+	LoadScalableSet(sprButtonHovered,"UI.ButtonBig.Hovered");
+	LoadScalableSet(sprButtonPressed,"UI.ButtonBig.Pressed");
 }
 
 /*
@@ -65,9 +94,15 @@ void XGUI_Manager::Think(float flDeltaTime)
 	m_pDesktop->SortChilds();
 	m_pDesktop->UpdateTimers(flDeltaTime);
 
-	m_pDesktop->MarkItemUnderCursor(g_pPlatform->GetCursorPos());
+	XGUI_Widget * w = m_pDesktop->WidgetUnderCursor(g_pPlatform->GetCursorPos());
+
+	if (w)
+		w->m_flHoveroutTimer = g_pPlatform->TimeElapsed();
 }
 
+/*
+ *	Searches for specified glyph in sheet
+ **/
 mSheetGlyph_t * XGUI_Manager::GetGUISheetGlyph(char * szName)
 {
 	if (m_pImagesSheet == nullptr) return 0;
@@ -75,12 +110,18 @@ mSheetGlyph_t * XGUI_Manager::GetGUISheetGlyph(char * szName)
 	return m_pImagesSheet->FindGlyph(szName);
 }
 
+/*
+ *	Adds widget to desktop
+ **/
 void XGUI_Manager::AddWidget(XGUI_Widget * pWidget)
 {
 	pWidget->m_pGuiFont = m_pGuiFont;
 	m_pDesktop->AddChildWidget(pWidget);
 }
 
+/*
+ *	Draw glyph from sheet
+ **/
 void ME_Framework::ME_XGUI::XGUI_DrawSheetGlyph(mSheetGlyph_t * pGlyph,xgRect_t & r)
 {
 	glBegin(GL_QUADS);
@@ -95,18 +136,20 @@ void ME_Framework::ME_XGUI::XGUI_DrawSheetGlyph(mSheetGlyph_t * pGlyph,xgRect_t 
 	glEnd();
 }
 
+/*
+ * Renders fancy scalable glyph
+ **/
 void ME_Framework::ME_XGUI::XGUI_DrawScalableSheetGlyph(mSheetGlyph_t * pGlyphs[9],xgRect_t & r)
 {
+	pGlyphs[0]->sheet->Bind();
+
 	ME_Math::Vector2D Vectors[9 * 4];
-
-	r.ext.x = (sin(g_pPlatform->TimeElapsed())+1) * 500;
-	r.ext.y = (sin(g_pPlatform->TimeElapsed())+1) * 500;
-
-	int unscalable_top_x = (pGlyphs[0]->e[0] + pGlyphs[2]->e[0]);
-	int unscalable_mid_y = (pGlyphs[0]->e[1] + pGlyphs[2]->e[1]);
 	
-	float top_extend_x = (r.ext.x) - unscalable_top_x;
-	float top_extend_y = (r.ext.y) - unscalable_mid_y;
+	int unscalable_top_x = (pGlyphs[0]->e[0] + pGlyphs[2]->e[0]);
+	int unscalable_mid_y = (pGlyphs[0]->e[1] + pGlyphs[7]->e[1]);
+	
+	vec_t top_extend_x = (r.ext.x) - unscalable_top_x;
+	vec_t top_extend_y = (r.ext.y) - unscalable_mid_y;
 
 	// Top left
 
@@ -118,8 +161,8 @@ void ME_Framework::ME_XGUI::XGUI_DrawScalableSheetGlyph(mSheetGlyph_t * pGlyphs[
 	// Top Middle
 
 	Vectors[4].x = pGlyphs[0]->e[0];						Vectors[4].y = 0;
-	Vectors[5].x = pGlyphs[1]->e[0] + top_extend_x;			Vectors[5].y = 0;
-	Vectors[6].x = pGlyphs[1]->e[0] + top_extend_x;			Vectors[6].y = pGlyphs[1]->e[1];
+	Vectors[5].x = pGlyphs[0]->e[0] + top_extend_x;			Vectors[5].y = 0;
+	Vectors[6].x = pGlyphs[0]->e[0] + top_extend_x;			Vectors[6].y = pGlyphs[1]->e[1];
 	Vectors[7].x = pGlyphs[0]->e[0];						Vectors[7].y = pGlyphs[1]->e[1];
 
 	// Top right
@@ -133,22 +176,22 @@ void ME_Framework::ME_XGUI::XGUI_DrawScalableSheetGlyph(mSheetGlyph_t * pGlyphs[
 
 	Vectors[12].x = 0;										Vectors[12].y = Vectors[3].y;
 	Vectors[13].x = pGlyphs[3]->e[0];						Vectors[13].y = Vectors[3].y;
-	Vectors[14].x = pGlyphs[3]->e[0];						Vectors[14].y = pGlyphs[3]->e[1] + top_extend_y;
-	Vectors[15].x = 0;										Vectors[15].y = pGlyphs[3]->e[1] + top_extend_y;
+	Vectors[14].x = pGlyphs[3]->e[0];						Vectors[14].y = Vectors[3].y + top_extend_y;
+	Vectors[15].x = 0;										Vectors[15].y = Vectors[3].y + top_extend_y;
 
 	// Middle Middle
 
 	Vectors[16].x = pGlyphs[3]->e[0];						Vectors[16].y = Vectors[3].y;
-	Vectors[17].x = pGlyphs[4]->e[0] + top_extend_x;		Vectors[17].y = Vectors[3].y;
-	Vectors[18].x = pGlyphs[4]->e[0] + top_extend_x;		Vectors[18].y = pGlyphs[4]->e[1] + top_extend_y;
-	Vectors[19].x = pGlyphs[3]->e[0];						Vectors[19].y = pGlyphs[4]->e[1] + top_extend_y;
+	Vectors[17].x = pGlyphs[3]->e[0] + top_extend_x;		Vectors[17].y = Vectors[3].y;
+	Vectors[18].x = pGlyphs[3]->e[0] + top_extend_x;		Vectors[18].y = Vectors[3].y + top_extend_y;
+	Vectors[19].x = pGlyphs[3]->e[0];						Vectors[19].y = Vectors[3].y + top_extend_y;
 
 	// Middle right
 
 	Vectors[20].x =  Vectors[5].x;							Vectors[20].y = Vectors[3].y;
-	Vectors[21].x =	Vectors[5].x + pGlyphs[5]->e[0];		Vectors[21].y = Vectors[3].y;
-	Vectors[22].x = Vectors[5].x + pGlyphs[5]->e[0];		Vectors[22].y = pGlyphs[5]->e[1]  + top_extend_y;
-	Vectors[23].x = Vectors[5].x;							Vectors[23].y = pGlyphs[5]->e[1]  + top_extend_y;
+	Vectors[21].x =	Vectors[17].x + pGlyphs[5]->e[0];		Vectors[21].y = Vectors[3].y;
+	Vectors[22].x = Vectors[17].x + pGlyphs[5]->e[0];		Vectors[22].y = Vectors[3].y  + top_extend_y;
+	Vectors[23].x = Vectors[5].x;							Vectors[23].y = Vectors[3].y  + top_extend_y;
 
 	// bottom left
 
@@ -160,8 +203,8 @@ void ME_Framework::ME_XGUI::XGUI_DrawScalableSheetGlyph(mSheetGlyph_t * pGlyphs[
 	// bottom Middle
 
 	Vectors[28].x = pGlyphs[6]->e[0];						Vectors[28].y = Vectors[23].y;
-	Vectors[29].x = pGlyphs[7]->e[0] + top_extend_x;		Vectors[29].y = Vectors[23].y;
-	Vectors[30].x = pGlyphs[7]->e[0] + top_extend_x;		Vectors[30].y = Vectors[23].y + pGlyphs[7]->e[1];
+	Vectors[29].x = pGlyphs[6]->e[0] + top_extend_x;		Vectors[29].y = Vectors[23].y;
+	Vectors[30].x = pGlyphs[6]->e[0] + top_extend_x;		Vectors[30].y = Vectors[23].y + pGlyphs[7]->e[1];
 	Vectors[31].x = pGlyphs[6]->e[0];						Vectors[31].y = Vectors[23].y + pGlyphs[7]->e[1];
 
 	// bottom right
@@ -176,6 +219,8 @@ void ME_Framework::ME_XGUI::XGUI_DrawScalableSheetGlyph(mSheetGlyph_t * pGlyphs[
 
 	for(int i = 0 ; i < 36 ; i+=4)
 	{
+		//if (i / 4 == 4)  continue;
+
 		glTexCoord2dv(pGlyphs[i / 4]->c[0]);
 		glVertex2dv(Vectors[i] + r.pos);
 		glTexCoord2dv(pGlyphs[i / 4]->c[1]);
@@ -189,7 +234,38 @@ void ME_Framework::ME_XGUI::XGUI_DrawScalableSheetGlyph(mSheetGlyph_t * pGlyphs[
 	glEnd();
 }
 
+/*
+ *	Handles app event
+ **/
 void XGUI_Manager::HandleEvent(ME_Framework::appEvent_t & ev)
 {
+	switch(ev.eventid)
+	{
+		case eventTypes::EV_MOUSE_KEY_DOWN:
+		{
+			XGUI_Widget * w = m_pDesktop->WidgetUnderCursor(g_pPlatform->GetCursorPos());
+			if (w)
+				w->HandleEvent(ev);
+		}
+		case eventTypes::EV_MOUSE_KEY_UP:
+		{
+			m_pDesktop->HandleEvent(ev);
+		}
+		break;
+	}
+}
 
+/*
+ *	Renders untextured rectangle
+ **/
+void ME_Framework::ME_XGUI::XGUI_DrawRect(xgRect_t & r)
+{
+	glBegin(GL_QUADS);
+		
+		glVertex2d(r.pos.x,r.pos.y);
+		glVertex2d(r.pos.x + r.ext.x,r.pos.y);
+		glVertex2d(r.pos.x + r.ext.x,r.pos.y + r.ext.y);
+		glVertex2d(r.pos.x,r.pos.y + r.ext.y);
+
+	glEnd();	
 }

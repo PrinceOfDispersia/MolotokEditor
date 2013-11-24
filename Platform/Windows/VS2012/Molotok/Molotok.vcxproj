@@ -215,6 +215,7 @@
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Font.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\GUISheet.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Manager.h" />
+    <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Resources.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Sheet.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Widget.h" />
     <ClInclude Include="..\..\..\..\Framework\ImageLib\ImageLib.h" />

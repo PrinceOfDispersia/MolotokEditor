@@ -362,5 +362,8 @@
     <ClInclude Include="..\..\Common\PlatformCommon.h">
       <Filter>Заголовочные файлы\Platform\Windows\Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Resources.h">
+      <Filter>Заголовочные файлы\Framework\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
