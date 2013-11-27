@@ -23,4 +23,21 @@
 //
 #include "OpenGLBackend.h"
 
+// TinyXML
+//
+
+// Fix my memanager and tinyxml collisions
+#undef Alloc
+#undef Free
+
+#include <Libs/tinyxml/tinyxml2.h>
+
+#define Alloc(n) Alloc(n,_T(__FILE__),__LINE__)
+#define Free(ptr) Free(ptr,_T(__FILE__),__LINE__)
+
+// Config vars
+//
+#include "ConfigVars.h"
+
+
 #endif

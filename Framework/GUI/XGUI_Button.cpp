@@ -80,8 +80,8 @@ void XGUI_Button::DrawTextLabel()
 
 	xt = strRect.pos.x; yt = strRect.pos.y - yofs;
 
-
-	glColor4f(0.2f,0.2f,0.2f,1);
+	
+	glColor4f(0.0f,0.0f,0.0f,1);
 
 	m_pGuiFont->Draw(ME_Math::Vector2D(xt,yt),m_strCaption);
 }
@@ -93,6 +93,7 @@ void XGUI_Button::DrawComponent()
 {
 	GL_EnableState(GLS_TEXTURE_2D);
 	GL_EnableState(GLS_BLEND);
+	GL_DisableState(GLS_DEPTH_TEST);
 	
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	glColor4ubv((GLubyte*)&m_Color);

@@ -34,6 +34,8 @@ namespace ME_Framework
 		FileSystemProxy(TCHAR * workDir);
 		~FileSystemProxy();
 
+		FILE * OpenFileLocal(TCHAR * path,TCHAR * mode);
+
 		byte* LoadFile(TCHAR * path,size_t *sz);
 		void CloseFile(byte * ptr);
 	};

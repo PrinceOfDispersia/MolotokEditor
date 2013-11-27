@@ -128,3 +128,16 @@ void FileSystemProxy::CloseFile(byte * ptr)
 {
 	g_pFileSystemPool->Free(ptr);
 }
+
+/*
+ * Opens file by relative to program path
+ **/
+FILE * FileSystemProxy::OpenFileLocal(TCHAR * path,TCHAR * mode)
+{
+	TCHAR tmp[4096];
+	Sys_SafeSprintf(tmp,ARRAY_SIZE(tmp),_T("%s/%s"),m_strWorkDir,path);
+
+	FILE * fp = _tfopen(path,mode);
+
+	return fp;
+}

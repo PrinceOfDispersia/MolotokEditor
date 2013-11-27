@@ -27,9 +27,36 @@ void ApplicationStart()
 	r.ext = ME_Math::Vector2D(150,24);
 
 	XGUI_Button * pButton = new XGUI_Button(&r);
-	pButton->SetCaption(String(_T("Éà êíîïêà!")));
+	pButton->SetCaption(String(_T("The quick brown fox jumped over a lazy dog")));
 
 	pManager->AddWidget(pButton);
+
+	tinyxml2::XMLDocument doc;
+	
+	tinyxml2::XMLElement * e = doc.NewElement("GUIScheme");
+	tinyxml2::XMLElement * c = doc.NewElement("Colors");
+	tinyxml2::XMLElement * c2 = doc.NewElement("Desktop");
+
+	e->InsertFirstChild(c);
+	c->InsertFirstChild(c2);
+	
+	c2->SetAttribute("r",255);
+	c2->SetAttribute("g",0);
+	c2->SetAttribute("b",0);
+
+	doc.InsertFirstChild(e);
+
+	FILE * fp = fopen("1.xml","wb");
+
+	doc.SaveFile(fp,false);
+
+	fclose(fp);
+	
+
+	
+	
+	
+
 }
 
 /************************************************************************/
@@ -70,6 +97,7 @@ void ApplicationPumpEvent(ME_Framework::appEvent_t & ev)
 	case eventTypes::EV_MOUSE_KEY_DOWN:
 	case eventTypes::EV_MOUSE_KEY_UP:
 		pManager->HandleEvent(ev);
+		break;
 	}
 
 }

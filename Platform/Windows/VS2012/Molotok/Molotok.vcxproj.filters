@@ -70,6 +70,9 @@
     <Filter Include="Файлы исходного кода\Framework\GUI">
       <UniqueIdentifier>{3bff4c1e-a302-4802-ad92-8449640d2d59}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы исходного кода\Libs\tinyxml">
+      <UniqueIdentifier>{39b8abd1-1dac-4e78-b816-c3726f8e13a3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\MainApp\Application.cpp">
@@ -206,6 +209,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Button.cpp">
       <Filter>Файлы исходного кода\Framework\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Libs\tinyxml\tinyxml2.cpp">
+      <Filter>Файлы исходного кода\Libs\tinyxml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Framework\ConfigVars.cpp">
+      <Filter>Файлы исходного кода\Framework</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -364,6 +373,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Resources.h">
       <Filter>Заголовочные файлы\Framework\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Libs\tinyxml\tinyxml2.h">
+      <Filter>Файлы исходного кода\Libs\tinyxml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\ConfigVars.h">
+      <Filter>Заголовочные файлы\Framework</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

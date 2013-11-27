@@ -157,6 +157,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\Framework\ConfigVars.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Button.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Font.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Manager.cpp" />
@@ -181,6 +182,7 @@
     <ClCompile Include="..\..\..\..\Libs\libpng\pngwrite.c" />
     <ClCompile Include="..\..\..\..\Libs\libpng\pngwtran.c" />
     <ClCompile Include="..\..\..\..\Libs\libpng\pngwutil.c" />
+    <ClCompile Include="..\..\..\..\Libs\tinyxml\tinyxml2.cpp" />
     <ClCompile Include="..\..\..\..\Libs\zlib\adler32.c" />
     <ClCompile Include="..\..\..\..\Libs\zlib\compress.c" />
     <ClCompile Include="..\..\..\..\Libs\zlib\crc32.c" />
@@ -206,6 +208,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\..\Framework\BasicMacros.h" />
     <ClInclude Include="..\..\..\..\Framework\BasicTypes.h" />
+    <ClInclude Include="..\..\..\..\Framework\ConfigVars.h" />
     <ClInclude Include="..\..\..\..\Framework\EnumFlags.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\Font_FT2.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI.h" />
@@ -231,6 +234,7 @@
     <ClInclude Include="..\..\..\..\Libs\libpng\pnginfo.h" />
     <ClInclude Include="..\..\..\..\Libs\libpng\pngpriv.h" />
     <ClInclude Include="..\..\..\..\Libs\libpng\pngstruct.h" />
+    <ClInclude Include="..\..\..\..\Libs\tinyxml\tinyxml2.h" />
     <ClInclude Include="..\..\..\..\Libs\zlib\crc32.h" />
     <ClInclude Include="..\..\..\..\Libs\zlib\deflate.h" />
     <ClInclude Include="..\..\..\..\Libs\zlib\gzguts.h" />
