@@ -19,12 +19,15 @@ namespace ME_XGUI
 		color32_t m_Color;
 		mSheetGlyph_t * m_pImage[16];
 		unsigned int m_ZOrder;
-
-		double m_flTimers[4]; 
-
+			
+		float m_flTimers[4];
 		std::vector<XGUI_Widget*> m_vChilds;
 		XGUI_Widget * m_pParent;
 
+		int m_nWidgetNumber;
+		int m_nWidgetCounter;
+
+		int m_AlignPriority;
 		TAlign m_Align;
 		TAnchor m_Anchors; 
 
@@ -36,12 +39,21 @@ namespace ME_XGUI
 
 		void SortChilds();
 		void CalcClientRect(xgRect_t & r);
+		void PointToClient(ME_Math::Vector2D & v);
 
 		float m_flHoveroutTimer;
 		
-
 		XGUI_Font * m_pGuiFont;
 		
+		ME_Math::Vector2D m_vDragOrigin;
+		bool m_bDragged;
+
+		ME_Math::Vector2D m_vParentStart;
+
+		void RecalcRectWithAligment();
+		xgRect_t GetParentRect();
+
+
 
 	public:
 
@@ -50,10 +62,12 @@ namespace ME_XGUI
 		// Setters
 		void SetParent(XGUI_Widget * pParent);
 		void SetAlign(TAlign align);
+		void SetAlignPriority(int alignPriority);
 		void SetAnchors(TAnchor anchors);
 		void SetVisibilty(bool bVisible);
 		void SetEnableState(bool bEnabled);
 		void SetCaption(String & str);
+		void SetZOrder(int order);
 
 		// Getters
 		XGUI_Widget *	GetParent();
@@ -62,13 +76,19 @@ namespace ME_XGUI
 		bool			GetVisibilty();
 		bool			GetEnableState();
 		String &		GetCaption();
-		
+		int				GetAlignPriority();
+		int				GetZOrder();
+
 		virtual void HandleEvent(ME_Framework::appEvent_t & pEvent);
 		virtual void DrawComponent();
 
 		void Render();		
 		void UpdateTimers(float flDelta);
-		void SetSize(xgRect_t * rect);
+		void SetRect(xgRect_t & rect);
+
+		void DoThink();
+		virtual void Think();
+
 
 		XGUI_Widget* WidgetUnderCursor(ME_Math::Vector2D pt);
 			

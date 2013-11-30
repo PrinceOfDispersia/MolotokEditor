@@ -39,10 +39,6 @@ void LoadScalableSet(mSheetGlyph_t * sprites[9],char mask[])
  **/
 XGUI_Manager::XGUI_Manager()
 {
-	xgRect_t r;
-	m_pDesktop = new XGUI_Widget(&r);
-	
-
 	size_t sz;
 	byte * pBuffer = g_pPlatform->FileSystem()->LoadFile(_T("gui/skin.bin"),&sz);
 
@@ -67,7 +63,22 @@ XGUI_Manager::XGUI_Manager()
 	LoadScalableSet(sprButtonNormal,"UI.ButtonBig.Normal");
 	LoadScalableSet(sprButtonHovered,"UI.ButtonBig.Hovered");
 	LoadScalableSet(sprButtonPressed,"UI.ButtonBig.Pressed");
+
+	m_pGuiVars = new CConfigVarsManager(_T("configs/gui_default_scheme.xml"));
+	LoadVars();
+	
+	xgRect_t r;
+	m_pDesktop = new XGUI_Widget(&r);
+
+	m_bInEditorMode = false;
 }
+
+
+void XGUI_Manager::LoadVars()
+{
+	m_GuiSettings.m_cDesktopBG = m_pGuiVars->GetColorValue(m_pGuiVars->QueryVariable("gui_desktop_bg_col","[45 45 48 255]"));
+}
+
 
 /*
  * Destructor	
@@ -76,6 +87,8 @@ XGUI_Manager::~XGUI_Manager()
 {
 	delete m_pDesktop;
 	delete m_pImagesSheet;
+	delete m_pGuiVars;
+	delete m_pGuiFont;
 }
 
 /*
@@ -93,11 +106,14 @@ void XGUI_Manager::Think(float flDeltaTime)
 {
 	m_pDesktop->SortChilds();
 	m_pDesktop->UpdateTimers(flDeltaTime);
+	m_pDesktop->DoThink();
 
 	XGUI_Widget * w = m_pDesktop->WidgetUnderCursor(g_pPlatform->GetCursorPos());
 
 	if (w)
+	{
 		w->m_flHoveroutTimer = g_pPlatform->TimeElapsed();
+	}
 }
 
 /*
@@ -106,7 +122,6 @@ void XGUI_Manager::Think(float flDeltaTime)
 mSheetGlyph_t * XGUI_Manager::GetGUISheetGlyph(char * szName)
 {
 	if (m_pImagesSheet == nullptr) return 0;
-
 	return m_pImagesSheet->FindGlyph(szName);
 }
 
@@ -117,6 +132,9 @@ void XGUI_Manager::AddWidget(XGUI_Widget * pWidget)
 {
 	pWidget->m_pGuiFont = m_pGuiFont;
 	m_pDesktop->AddChildWidget(pWidget);
+	
+	// Recalc aligments
+	m_pDesktop->SetRect(m_pDesktop->m_Rect);
 }
 
 /*
@@ -188,7 +206,7 @@ void ME_Framework::ME_XGUI::XGUI_DrawScalableSheetGlyph(mSheetGlyph_t * pGlyphs[
 
 	// Middle right
 
-	Vectors[20].x =  Vectors[5].x;							Vectors[20].y = Vectors[3].y;
+	Vectors[20].x = Vectors[5].x;							Vectors[20].y = Vectors[3].y;
 	Vectors[21].x =	Vectors[17].x + pGlyphs[5]->e[0];		Vectors[21].y = Vectors[3].y;
 	Vectors[22].x = Vectors[17].x + pGlyphs[5]->e[0];		Vectors[22].y = Vectors[3].y  + top_extend_y;
 	Vectors[23].x = Vectors[5].x;							Vectors[23].y = Vectors[3].y  + top_extend_y;
@@ -245,13 +263,44 @@ void XGUI_Manager::HandleEvent(ME_Framework::appEvent_t & ev)
 		{
 			XGUI_Widget * w = m_pDesktop->WidgetUnderCursor(g_pPlatform->GetCursorPos());
 			if (w)
-				w->HandleEvent(ev);
-		}
-		case eventTypes::EV_MOUSE_KEY_UP:
-		{
-			m_pDesktop->HandleEvent(ev);
+			{
+				if (m_bInEditorMode)
+				{
+					ME_Math::Vector2D v = g_pPlatform->GetCursorPos();
+					w->PointToClient(v);
+					w->m_vDragOrigin = v;
+					w->m_bDragged = true;
+				}
+				else 
+					w->HandleEvent(ev);
+			}
 		}
 		break;
+		case eventTypes::EV_MOUSE_KEY_UP:
+		{
+			
+			if (m_bInEditorMode)
+			{
+				XGUI_Widget * w = m_pDesktop->WidgetUnderCursor(g_pPlatform->GetCursorPos());
+				if (w)
+				{
+					ME_Math::Vector2D v = g_pPlatform->GetCursorPos();
+					w->PointToClient(v);					
+					w->m_bDragged = false;
+				}
+			}
+			m_pDesktop->HandleEvent(ev);
+			
+		}
+		break;
+		case eventTypes::EV_WINDOW_RESIZE:
+			{
+				xgRect_t r;
+				r.ext = g_pPlatform->GetClientAreaExtents();
+				r.pos = ME_Math::Vector2D(0,0);
+				m_pDesktop->SetRect(r);
+			}
+			break;
 	}
 }
 

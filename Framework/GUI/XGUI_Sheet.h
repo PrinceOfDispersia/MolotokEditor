@@ -33,7 +33,7 @@ namespace ME_Framework
 			dSheetHDR_t * m_pHeader;
 			
 			std::vector<mSheetGlyph_t*> m_vGlyphList;
-			gl_texture_t * m_pImage;
+			pgl_texture_t  m_pImage;
 		public:
 			XGUI_Sheet(byte * pBuffer,size_t buffSize);
 			~XGUI_Sheet();

@@ -59,6 +59,8 @@ Use this line before header, if you don't want flags(T x) function to be impleme
 #define USE_ENUM_FLAGS_FUNCTION 0
 */
 
+//#define USE_ENUM_FLAGS_FUNCTION 0
+
 #ifndef USE_ENUM_FLAGS_FUNCTION
 #define USE_ENUM_FLAGS_FUNCTION 1
 #endif

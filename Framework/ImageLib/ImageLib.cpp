@@ -8,7 +8,9 @@
 #include "ImageLib.h"
 #include "Image_Png.h"
 
-std::vector<gl_texture_t*> g_TexturesPool;
+std::vector<pgl_texture_t> g_TexturesPool;
+
+void GL_FreeTexture(gl_texture_t * pTexture);
 
 enum eImageTypes
 {
@@ -78,7 +80,7 @@ void FreeRawImage(rawImage_t * p)
 /*
  *	Allocates new GL texture
  **/
-gl_texture_t*AllocGLTexture(int pref_id = -1)
+pgl_texture_t AllocGLTexture(int pref_id = -1)
 {
 	gl_texture_t*pRet=(gl_texture_t*)g_pImgMemoryPool->Alloc(sizeof(gl_texture_t));
 
@@ -89,9 +91,9 @@ gl_texture_t*AllocGLTexture(int pref_id = -1)
 	else pRet->texID=pref_id;
 		
 
-	g_TexturesPool.push_back(pRet);
-
-	return pRet;
+	pgl_texture_t t(pRet,[](gl_texture_t * pt){ GL_FreeTexture(pt);} );
+	
+	return t;
 }
 
 /*
@@ -103,8 +105,7 @@ void GL_FreeTexture(gl_texture_t * pTexture)
 		FreeRawImage(pTexture->source);
 
 	glDeleteTextures(1,&pTexture->texID);
-
-	g_pImgMemoryPool->Free(pTexture);
+ 	g_pImgMemoryPool->Free(pTexture);
 }
 
 /*
@@ -121,20 +122,21 @@ void InitImageLib()
  **/
 void ShutdownImageLib()
 {
-	for(gl_texture_t * texture: g_TexturesPool)
+	/*for(pgl_texture_t  pTexture: g_TexturesPool)
 	{
-		GL_FreeTexture(texture);
-		g_TexturesPool.shrink_to_fit();
-	}
+		pTexture.reset();
+	}*/
 
-	g_pImgMemoryPool->UnlinkFromParent();
-	delete g_pImgMemoryPool;
+	g_TexturesPool.clear();
+	g_TexturesPool.shrink_to_fit();
+	//pImgMemoryPool->UnlinkFromParent();
+	//delete g_pImgMemoryPool;
 }
 
 /*
  *	Loads image
  **/
-gl_texture_t * GL_LoadTexture(TCHAR * szName,byte * pSource,size_t bufferSize,bool keepRaw)
+pgl_texture_t GL_LoadTexture(TCHAR * szName,byte * pSource,size_t bufferSize,bool keepRaw)
 {
 	if (!pSource) return 0;
 
@@ -153,7 +155,9 @@ gl_texture_t * GL_LoadTexture(TCHAR * szName,byte * pSource,size_t bufferSize,bo
 	if (pImage == nullptr) 
 		return nullptr;
 
-	gl_texture_t * pTexture = AllocGLTexture();
+	pgl_texture_t  pTexture = AllocGLTexture();
+	g_TexturesPool.push_back(pTexture);
+		
 	Sys_SafeStrCopy(pTexture->strTextureName,szName,ARRAY_SIZE(pTexture->strTextureName));
 	pTexture->width = pImage->iWidth;
 	pTexture->height = pImage->iHeight;
@@ -180,7 +184,7 @@ gl_texture_t * GL_LoadTexture(TCHAR * szName,byte * pSource,size_t bufferSize,bo
 		FreeRawImage(pImage);
 		pTexture->source = 0;
 	}
-
+		
 	return pTexture;
 
 }

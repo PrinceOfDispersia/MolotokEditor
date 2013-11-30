@@ -77,7 +77,7 @@ XGUI_Sheet::~XGUI_Sheet()
 	if (!m_pBuffer) return;
 
 	g_pPlatform->MemoryPools()->Free(m_pBuffer);
-	GL_FreeTexture(m_pImage);
+	m_pImage.reset();
 
 	for(mSheetGlyph_t* g: m_vGlyphList)
 	{

@@ -6,12 +6,67 @@
 
 #include <Platform/Common/ApplicationCommon.h>
 
+using namespace tinyxml2;
+
 /*
  * Manager contstructor
  **/
 CConfigVarsManager::CConfigVarsManager(TCHAR * strFileName)
 {
 	m_strFilePath = strFileName;
+
+
+	byte * pBuffer;
+	size_t sz;
+	pBuffer = g_pPlatform->FileSystem()->LoadFile(strFileName,&sz);
+
+	tinyxml2::XMLDocument doc;
+	doc.LoadFromMemory((char*)pBuffer,sz);
+	g_pPlatform->FileSystem()->CloseFile(pBuffer);
+
+	XMLElement * varsSection = doc.FirstChildElement("ConfigVars");
+
+	if (varsSection)
+	{
+
+
+		XMLElement * pVar =  varsSection->FirstChildElement("Variable");
+
+		if (pVar)
+		{
+			cfgVar_t v;
+			memset(&v,0,sizeof(v));
+
+			const char * pName = pVar->Attribute("name");
+			const char * pValue = pVar->Attribute("value");
+
+			if (pName && pValue)
+			{
+				strncpy(v.strName,pName,sizeof(v.strName) - 1);
+				strncpy(v.strValue,pValue,sizeof(v.strName) - 1);
+
+				m_vVars.push_back(v);
+			}
+			
+
+			while(XMLElement * e = pVar->NextSiblingElement())
+			{
+				memset(&v,0,sizeof(v));
+
+				const char * pName = pVar->Attribute("name");
+				const char * pValue = pVar->Attribute("value");
+
+				if (pName && pValue)
+				{
+					strncpy(v.strName,pName,sizeof(v.strName) - 1);
+					strncpy(v.strValue,pValue,sizeof(v.strName) - 1);
+
+					m_vVars.push_back(v);
+				}
+			}
+		}
+		
+	}
 }
 
 /*
@@ -19,6 +74,26 @@ CConfigVarsManager::CConfigVarsManager(TCHAR * strFileName)
  **/
 CConfigVarsManager::~CConfigVarsManager()
 {
+	tinyxml2::XMLDocument d;
+	XMLElement * varsSection = d.NewElement("ConfigVars");
+
+	d.InsertFirstChild(varsSection);
+
+	for(cfgVar_t v: m_vVars)
+	{
+		XMLElement * varDesc = d.NewElement("Variable");
+		varDesc->SetAttribute("name",v.strName);
+		varDesc->SetAttribute("value",v.strValue);
+
+		varsSection->InsertEndChild(varDesc);
+	}
+
+	FILE * fp = g_pPlatform->FileSystem()->OpenFileLocal((TCHAR*)m_strFilePath.c_str(),_T("wb"));
+
+	d.SaveFile(fp,false);
+	
+	fclose(fp);
+
 	m_vVars.clear();
 	m_vVars.shrink_to_fit();
 }
@@ -40,6 +115,9 @@ int CConfigVarsManager::QueryVariable(char * strVariableName,char * defaultValue
 	strncpy(v.strName,strVariableName,sizeof(v.strName) - 1);
 	strncpy(v.strValue,defaultValue,sizeof(v.strValue) - 1);
 	
+	m_vVars.push_back(v);
+
+	return (int)m_vVars.size() - 1;
 }
 		
 /*

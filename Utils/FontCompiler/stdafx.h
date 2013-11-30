@@ -15,5 +15,6 @@
 #include <conio.h>
 #include <vector>
 #include <string.h>
+#include <memory>
 
 // TODO: Установите здесь ссылки на дополнительные заголовки, требующиеся для программы

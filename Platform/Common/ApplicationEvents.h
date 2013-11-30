@@ -11,7 +11,8 @@ namespace ME_Framework
 {
 	enum class eventTypes
 	{
-		EV_KB_KEY_DOWN = 0,
+		EV_GUI_EV_MASK = (1<<16),
+		EV_KB_KEY_DOWN,
 		EV_KB_KEY_UP,
 		EV_MOUSE_KEY_DOWN,
 		EV_MOUSE_KEY_UP,
@@ -20,6 +21,9 @@ namespace ME_Framework
 
 		
 	};
+
+	ENUM_FLAGS(eventTypes);	
+	
 
 	typedef struct  appEvent_s
 	{

@@ -34,8 +34,10 @@ typedef struct gl_texture_s
 void InitImageLib();
 void ShutdownImageLib();
 
-gl_texture_t * GL_LoadTexture(TCHAR * szName,byte * pSource,size_t bufferSize,bool keepRaw);
-void GL_FreeTexture(gl_texture_t*);
+typedef std::shared_ptr<gl_texture_t> pgl_texture_t;
+
+pgl_texture_t GL_LoadTexture(TCHAR * szName,byte * pSource,size_t bufferSize,bool keepRaw);
+
 rawImage_t * AllocRawImage(int sz);
 
 

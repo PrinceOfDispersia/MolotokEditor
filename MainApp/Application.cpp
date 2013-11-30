@@ -24,39 +24,36 @@ void ApplicationStart()
 
 	xgRect_t r;
 	r.pos = ME_Math::Vector2D(100,100);
-	r.ext = ME_Math::Vector2D(150,24);
+	r.ext = ME_Math::Vector2D(20,24);
+
+
+
+	for(int i = 0 ; i < 4 ; i++)
+	{
+		TAlign a[4] = {TAlign::alLeft,TAlign::alRight,TAlign::alTop,TAlign::alBottom};
+		int order[4] = {0,2,3,3};
+		TCHAR str[][16] = {_T("alLeft"),_T("alRight"),_T("alTop"),_T("alBottom")};
+
+		for(int j = 0 ; j < 3 ; j++)
+		{
+			XGUI_Button * pButton = new XGUI_Button(&r);		
+			pButton->SetCaption(String(VA(_T("%s"),str[i])));
+			pButton->SetAlign(a[i]);
+			pButton->SetAlignPriority(order[i]);
+			pManager->AddWidget(pButton);
+		}
+
+		
+	}
+	
 
 	XGUI_Button * pButton = new XGUI_Button(&r);
-	pButton->SetCaption(String(_T("The quick brown fox jumped over a lazy dog")));
+	pButton->SetCaption(String(_T("alClientArea")));	
+	pButton->SetAlign(TAlign::alClientArea);
 
 	pManager->AddWidget(pButton);
-
-	tinyxml2::XMLDocument doc;
-	
-	tinyxml2::XMLElement * e = doc.NewElement("GUIScheme");
-	tinyxml2::XMLElement * c = doc.NewElement("Colors");
-	tinyxml2::XMLElement * c2 = doc.NewElement("Desktop");
-
-	e->InsertFirstChild(c);
-	c->InsertFirstChild(c2);
-	
-	c2->SetAttribute("r",255);
-	c2->SetAttribute("g",0);
-	c2->SetAttribute("b",0);
-
-	doc.InsertFirstChild(e);
-
-	FILE * fp = fopen("1.xml","wb");
-
-	doc.SaveFile(fp,false);
-
-	fclose(fp);
-	
-
 	
 	
-	
-
 }
 
 /************************************************************************/
@@ -80,9 +77,9 @@ void ApplicationRun(float flFrameDelta)
 /************************************************************************/
 void ApplicationShutdown()
 {
-	// TODO: write here some code)
-	// 	
-	ShutdownImageLib();
+	ShutdownImageLib();	
+	delete pManager;
+	
 }
 
 /************************************************************************/
@@ -92,12 +89,8 @@ void ApplicationPumpEvent(ME_Framework::appEvent_t & ev)
 {
 	//_tprintf(_T("ApplicationPumpEvent(): eventid = %d, uParam1 = %d\n"),ev.eventid,ev.uParam1);
 
-	switch(ev.eventid)
+	if (flags(ev.eventid & eventTypes::EV_GUI_EV_MASK))
 	{
-	case eventTypes::EV_MOUSE_KEY_DOWN:
-	case eventTypes::EV_MOUSE_KEY_UP:
 		pManager->HandleEvent(ev);
-		break;
 	}
-
 }

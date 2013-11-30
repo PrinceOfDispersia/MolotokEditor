@@ -11,13 +11,30 @@ namespace ME_Framework
 {
 	namespace ME_XGUI
 	{
+		typedef struct guiSettings_s
+		{
+			color32_t m_cDesktopBG;
+		}guiSettings_t;
+
 		class XGUI_Manager
 		{
 			XGUI_Widget * m_pDesktop;
 			XGUI_Sheet  * m_pImagesSheet;
 			XGUI_Font * m_pGuiFont;
-		public:
 
+			guiSettings_t m_GuiSettings;
+
+			CConfigVarsManager* m_pGuiVars;
+						
+			void LoadVars();
+			void SaveVars();
+
+			bool m_bInEditorMode;
+
+		public:
+			bool IsInEditorMode() { return m_bInEditorMode; }
+
+			guiSettings_t * GuiSettings() { return &m_GuiSettings; }
 			mSheetGlyph_t * GetGUISheetGlyph(char * szName);
 
 			void Draw();

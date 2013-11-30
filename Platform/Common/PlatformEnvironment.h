@@ -153,12 +153,14 @@ namespace ME_Framework
 		 **/
 		~PlatformEnvironment()
 		{
-			delete m_pGlobalMemoryPool;
+			
 			delete m_pSystemLog;
 			delete m_pDeveloperLog;
 			
 			if (m_pOpenGLContext) delete m_pOpenGLContext;
 			if (m_pFileSystemProxy) delete m_pFileSystemProxy;
+
+			delete m_pGlobalMemoryPool;
 		}
 
 		// Implementation up to platform

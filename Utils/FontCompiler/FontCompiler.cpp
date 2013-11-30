@@ -62,7 +62,8 @@ void Help()
 	printf("UBFG Font compiler\n");
 	printf("==========================================\n");
 	printf("usage: FontCompiler.exe font.fnt font.ft2\n");
-	while (!_kbhit());
+	while(!_kbhit());
+
 	
 }
 

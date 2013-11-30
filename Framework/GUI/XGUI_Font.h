@@ -23,7 +23,7 @@ namespace ME_Framework
 			size_t m_nGlyphs;
 			size_t m_nKerningPairs;
 
-			gl_texture_t * m_pFontImage;
+			pgl_texture_t m_pFontImage;
 
 			byte * m_pSymbolMaps;
 			int m_nMaps;

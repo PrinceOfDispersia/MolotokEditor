@@ -17,3 +17,4 @@
 #include <gl/glext.h>
 
 #include <algorithm>
+#include <memory>

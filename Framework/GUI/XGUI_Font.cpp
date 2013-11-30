@@ -66,7 +66,7 @@ void XGUI_Font::Calc_TextRect(String & str,xgRect_t * rect)
 
 	}
 
-	rect->pos = ME_Math::Vector2D(0,o);
+	rect->pos = ME_Math::Vector2D(0,0);
 	rect->ext = ME_Math::Vector2D(w,h);
 }
 
@@ -148,16 +148,16 @@ void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 
 			
 
-			const float scale = 1;
 			
-			vec_t xofs = inf->xoffs * scale;
-			vec_t yofs = inf->yoffs * scale; 
+			
+			vec_t xofs = inf->xoffs;
+			vec_t yofs = inf->yoffs; 
 			
 			vec_t x1 = w + xofs + pos.x;
-			vec_t x2 = x1 + (inf->width * scale);
+			vec_t x2 = x1 + (inf->width);
 
 			vec_t y1 = yofs + pos.y;
-			vec_t y2 = y1 + (inf->height * scale);
+			vec_t y2 = y1 + (inf->height);
 
 			
 
@@ -170,7 +170,7 @@ void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
  			glTexCoord2f(c[0],c[3]);
  			glVertex2d(x1,y2);
 			
-			w+=(inf->orig_w) * scale;
+			w+=(inf->orig_w);
 						
 			
 		}
@@ -220,6 +220,6 @@ XGUI_Font::~XGUI_Font()
 {
 	g_pPlatform->MemoryPools()->Free(m_pHeader);
 	
-	GL_FreeTexture(m_pFontImage);	
+	m_pFontImage.reset();
 }
 

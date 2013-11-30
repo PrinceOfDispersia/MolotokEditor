@@ -181,8 +181,17 @@ LRESULT CWinOpenGLContext::WindowProc(UINT uMsg,WPARAM wParam,LPARAM lParam)
 			RECT r;
 			GetClientRect(m_hWnd,&r);
 			Resize(ME_Math::Vector2D(r.left,r.top),ME_Math::Vector2D(r.right - r.left,r.bottom - r.top));
+
+			appEvent_t e;
+			e.eventid = eventTypes::EV_WINDOW_RESIZE;
+			ApplicationPumpEvent(e);
+
 			return TRUE;
 		}
+	case WM_CLOSE:
+		PostQuitMessage(0);
+		
+		break;
 			
 	}
 
@@ -213,7 +222,7 @@ void CWinOpenGLContext::MainLoop()
 			if (GetMessage(&msg, NULL, 0, 0))
 			{
 				if (msg.message == WM_QUIT || msg.message == WM_CLOSE)
-				{
+				{					
 					return;
 				}
 
@@ -250,10 +259,6 @@ void CWinOpenGLContext::MainLoop()
 
 		// <============= 2D Viewport setup
 
-		
-
-			
-		// remove me
 		ApplicationRun(flFrameTime);						
 
 		SwapBuffers(m_hDC);
