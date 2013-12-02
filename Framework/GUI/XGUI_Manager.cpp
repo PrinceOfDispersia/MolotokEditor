@@ -14,6 +14,9 @@ mSheetGlyph_t * ME_XGUI::sprButtonHovered[9];
 mSheetGlyph_t * ME_XGUI::sprButtonNormal[9];
 mSheetGlyph_t * ME_XGUI::sprButtonPressed[9];
 
+/*
+ *	Function loads 3 by 3 set of glyphs for scalable widgets
+ **/
 void LoadScalableSet(mSheetGlyph_t * sprites[9],char mask[])
 {
 	char tmp[128];
@@ -73,10 +76,13 @@ XGUI_Manager::XGUI_Manager()
 	m_bInEditorMode = false;
 }
 
-
+/*
+ *	Initializes values from config file
+ **/
 void XGUI_Manager::LoadVars()
 {
 	m_GuiSettings.m_cDesktopBG = m_pGuiVars->GetColorValue(m_pGuiVars->QueryVariable("gui_desktop_bg_col","[45 45 48 255]"));
+	m_GuiSettings.m_cDesktopBG = m_pGuiVars->GetColorValue(m_pGuiVars->QueryVariable("gui_desktop_fg_col","[45 45 48 255]"));
 }
 
 
@@ -300,7 +306,7 @@ void XGUI_Manager::HandleEvent(ME_Framework::appEvent_t & ev)
 				r.pos = ME_Math::Vector2D(0,0);
 				m_pDesktop->SetRect(r);
 			}
-			break;
+		break;
 	}
 }
 

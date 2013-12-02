@@ -28,8 +28,6 @@ CConfigVarsManager::CConfigVarsManager(TCHAR * strFileName)
 
 	if (varsSection)
 	{
-
-
 		XMLElement * pVar =  varsSection->FirstChildElement("Variable");
 
 		if (pVar)
@@ -49,12 +47,13 @@ CConfigVarsManager::CConfigVarsManager(TCHAR * strFileName)
 			}
 			
 
-			while(XMLElement * e = pVar->NextSiblingElement())
+			XMLElement * e = pVar;
+			while(e = e->NextSiblingElement())
 			{
 				memset(&v,0,sizeof(v));
 
-				const char * pName = pVar->Attribute("name");
-				const char * pValue = pVar->Attribute("value");
+				const char * pName = e->Attribute("name");
+				const char * pValue = e->Attribute("value");
 
 				if (pName && pValue)
 				{
@@ -98,6 +97,9 @@ CConfigVarsManager::~CConfigVarsManager()
 	m_vVars.shrink_to_fit();
 }
 
+/*
+ *	Search for variable, or creates new if not found
+ **/
 int CConfigVarsManager::QueryVariable(char * strVariableName,char * defaultValue)
 {
 	int idx = 0;
