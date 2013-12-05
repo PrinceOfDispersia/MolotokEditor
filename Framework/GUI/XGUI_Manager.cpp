@@ -8,11 +8,17 @@
 
 using namespace ME_Framework::ME_XGUI;
 XGUI_Manager * g_pGUIManager;
+XGUI_Tesselator * g_pTesselator;
 
+// Resources
 
 mSheetGlyph_t * ME_XGUI::sprButtonHovered[9];
 mSheetGlyph_t * ME_XGUI::sprButtonNormal[9];
 mSheetGlyph_t * ME_XGUI::sprButtonPressed[9];
+
+mSheetGlyph_t * ME_XGUI::sprFloatingPanel[9];
+mSheetGlyph_t * ME_XGUI::sprDragHandleDotsNormal;
+mSheetGlyph_t * ME_XGUI::sprDragHandleDotsHovered;
 
 /*
  *	Function loads 3 by 3 set of glyphs for scalable widgets
@@ -47,8 +53,11 @@ XGUI_Manager::XGUI_Manager()
 
 	m_pImagesSheet = nullptr;
 
+	m_pTesselator = new XGUI_Tesselator(1024);
+	g_pTesselator = m_pTesselator;
+
 	if (!pBuffer) 
-		return;
+		Sys_FatalError(_T("Can't open GUI skin file!"));
 
 	m_pImagesSheet = new XGUI_Sheet(pBuffer,sz);
 
@@ -66,12 +75,50 @@ XGUI_Manager::XGUI_Manager()
 	LoadScalableSet(sprButtonNormal,"UI.ButtonBig.Normal");
 	LoadScalableSet(sprButtonHovered,"UI.ButtonBig.Hovered");
 	LoadScalableSet(sprButtonPressed,"UI.ButtonBig.Pressed");
+	LoadScalableSet(sprFloatingPanel,"FloatingPanel");
+
+	sprDragHandleDotsHovered = GetGUISheetGlyph("DragHandleDots.Hovered");
+	sprDragHandleDotsNormal = GetGUISheetGlyph("DragHandleDots.Normal");
 
 	m_pGuiVars = new CConfigVarsManager(_T("configs/gui_default_scheme.xml"));
 	LoadVars();
 	
 	xgRect_t r;
-	m_pDesktop = new XGUI_Widget(&r);
+	m_pDesktop = new XGUI_Widget(r);
+	m_pDesktop->SetAlign(TAlign::alClientArea);
+	m_pDesktop->RecalcRectWithAligment();
+
+
+	// Setup dock sites
+
+	TAlign a[] = {TAlign::alLeft,TAlign::alRight,TAlign::alTop,TAlign::alBottom};
+	int priority[] = {9998,9998,9999,9999};
+
+	r.ext = ME_Math::Vector2D(32,32);
+	r.pos = ME_Math::Vector2D(0,0);
+
+	for(int i = 0 ; i < 4 ; i++)
+	{
+		XGUI_Dock * pDock = new XGUI_Dock(r);
+
+		pDock->SetAlign(a[i]);
+		pDock->SetAlignPriority(priority[i]);
+
+		m_pDesktop->AddChildWidget(pDock);
+	}
+
+	r.pos = ME_Math::Vector2D(320,240);
+	r.ext = ME_Math::Vector2D(150,80);
+	XGUI_DockWindow * pTestWindow = new XGUI_DockWindow(r);
+
+	pTestWindow->SetZOrder(1);
+	
+	m_pDesktop->AddChildWidget(pTestWindow);
+
+	// Recalculate rects
+	m_pDesktop->RecalcItemsRects();
+
+	// dock sites setup end
 
 	m_bInEditorMode = false;
 }
@@ -81,8 +128,7 @@ XGUI_Manager::XGUI_Manager()
  **/
 void XGUI_Manager::LoadVars()
 {
-	m_GuiSettings.m_cDesktopBG = m_pGuiVars->GetColorValue(m_pGuiVars->QueryVariable("gui_desktop_bg_col","[45 45 48 255]"));
-	m_GuiSettings.m_cDesktopBG = m_pGuiVars->GetColorValue(m_pGuiVars->QueryVariable("gui_desktop_fg_col","[45 45 48 255]"));
+	m_GuiSettings.m_cDesktopBG = m_pGuiVars->GetColorValue(m_pGuiVars->QueryVariable("gui_desktop_bg_col","[45 45 48 255]"));	
 }
 
 
@@ -102,7 +148,9 @@ XGUI_Manager::~XGUI_Manager()
  **/
 void XGUI_Manager::Draw()
 {
+	m_pImagesSheet->Bind();
 	m_pDesktop->Render();
+	m_pTesselator->Flush();
 }
 
 /*
@@ -144,121 +192,6 @@ void XGUI_Manager::AddWidget(XGUI_Widget * pWidget)
 }
 
 /*
- *	Draw glyph from sheet
- **/
-void ME_Framework::ME_XGUI::XGUI_DrawSheetGlyph(mSheetGlyph_t * pGlyph,xgRect_t & r)
-{
-	glBegin(GL_QUADS);
-		glTexCoord2dv(pGlyph->c[0]);
-		glVertex2d(r.pos.x,r.pos.y);
-		glTexCoord2dv(pGlyph->c[1]);
-		glVertex2d(r.pos.x + r.ext.x,r.pos.y);
-		glTexCoord2dv(pGlyph->c[2]);
-		glVertex2d(r.pos.x + r.ext.x,r.pos.y + r.ext.y);
-		glTexCoord2dv(pGlyph->c[3]);
-		glVertex2d(r.pos.x,r.pos.y + r.ext.y);
-	glEnd();
-}
-
-/*
- * Renders fancy scalable glyph
- **/
-void ME_Framework::ME_XGUI::XGUI_DrawScalableSheetGlyph(mSheetGlyph_t * pGlyphs[9],xgRect_t & r)
-{
-	pGlyphs[0]->sheet->Bind();
-
-	ME_Math::Vector2D Vectors[9 * 4];
-	
-	int unscalable_top_x = (pGlyphs[0]->e[0] + pGlyphs[2]->e[0]);
-	int unscalable_mid_y = (pGlyphs[0]->e[1] + pGlyphs[7]->e[1]);
-	
-	vec_t top_extend_x = (r.ext.x) - unscalable_top_x;
-	vec_t top_extend_y = (r.ext.y) - unscalable_mid_y;
-
-	// Top left
-
-	Vectors[0].x = 0;										Vectors[0].y = 0;
-	Vectors[1].x = pGlyphs[0]->e[0];						Vectors[1].y = 0;
-	Vectors[2].x = pGlyphs[0]->e[0];						Vectors[2].y = pGlyphs[0]->e[1];
-	Vectors[3].x = 0;										Vectors[3].y = pGlyphs[0]->e[1];
-
-	// Top Middle
-
-	Vectors[4].x = pGlyphs[0]->e[0];						Vectors[4].y = 0;
-	Vectors[5].x = pGlyphs[0]->e[0] + top_extend_x;			Vectors[5].y = 0;
-	Vectors[6].x = pGlyphs[0]->e[0] + top_extend_x;			Vectors[6].y = pGlyphs[1]->e[1];
-	Vectors[7].x = pGlyphs[0]->e[0];						Vectors[7].y = pGlyphs[1]->e[1];
-
-	// Top right
-
-	Vectors[8].x =  Vectors[5].x;							Vectors[8].y = 0;
-	Vectors[9].x =	Vectors[5].x + pGlyphs[2]->e[0];		Vectors[9].y = 0;
-	Vectors[10].x = Vectors[5].x + pGlyphs[2]->e[0];		Vectors[10].y = pGlyphs[2]->e[1];
-	Vectors[11].x = Vectors[5].x;							Vectors[11].y = pGlyphs[2]->e[1];
-		
-	// Middle left
-
-	Vectors[12].x = 0;										Vectors[12].y = Vectors[3].y;
-	Vectors[13].x = pGlyphs[3]->e[0];						Vectors[13].y = Vectors[3].y;
-	Vectors[14].x = pGlyphs[3]->e[0];						Vectors[14].y = Vectors[3].y + top_extend_y;
-	Vectors[15].x = 0;										Vectors[15].y = Vectors[3].y + top_extend_y;
-
-	// Middle Middle
-
-	Vectors[16].x = pGlyphs[3]->e[0];						Vectors[16].y = Vectors[3].y;
-	Vectors[17].x = pGlyphs[3]->e[0] + top_extend_x;		Vectors[17].y = Vectors[3].y;
-	Vectors[18].x = pGlyphs[3]->e[0] + top_extend_x;		Vectors[18].y = Vectors[3].y + top_extend_y;
-	Vectors[19].x = pGlyphs[3]->e[0];						Vectors[19].y = Vectors[3].y + top_extend_y;
-
-	// Middle right
-
-	Vectors[20].x = Vectors[5].x;							Vectors[20].y = Vectors[3].y;
-	Vectors[21].x =	Vectors[17].x + pGlyphs[5]->e[0];		Vectors[21].y = Vectors[3].y;
-	Vectors[22].x = Vectors[17].x + pGlyphs[5]->e[0];		Vectors[22].y = Vectors[3].y  + top_extend_y;
-	Vectors[23].x = Vectors[5].x;							Vectors[23].y = Vectors[3].y  + top_extend_y;
-
-	// bottom left
-
-	Vectors[24].x = 0;										Vectors[24].y = Vectors[23].y;
-	Vectors[25].x = pGlyphs[6]->e[0];						Vectors[25].y = Vectors[23].y;
-	Vectors[26].x = pGlyphs[6]->e[0];						Vectors[26].y = Vectors[23].y + pGlyphs[6]->e[1]; 
-	Vectors[27].x = 0;										Vectors[27].y = Vectors[23].y + pGlyphs[6]->e[1];
-
-	// bottom Middle
-
-	Vectors[28].x = pGlyphs[6]->e[0];						Vectors[28].y = Vectors[23].y;
-	Vectors[29].x = pGlyphs[6]->e[0] + top_extend_x;		Vectors[29].y = Vectors[23].y;
-	Vectors[30].x = pGlyphs[6]->e[0] + top_extend_x;		Vectors[30].y = Vectors[23].y + pGlyphs[7]->e[1];
-	Vectors[31].x = pGlyphs[6]->e[0];						Vectors[31].y = Vectors[23].y + pGlyphs[7]->e[1];
-
-	// bottom right
-
-	Vectors[32].x = Vectors[30].x;							Vectors[32].y = Vectors[23].y;
-	Vectors[33].x =	Vectors[30].x + pGlyphs[8]->e[0];		Vectors[33].y = Vectors[23].y;
-	Vectors[34].x = Vectors[30].x + pGlyphs[8]->e[0];		Vectors[34].y = Vectors[23].y + pGlyphs[8]->e[1];
-	Vectors[35].x = Vectors[30].x;							Vectors[35].y = Vectors[23].y + pGlyphs[8]->e[1];
-
-
-	glBegin(GL_QUADS);
-
-	for(int i = 0 ; i < 36 ; i+=4)
-	{
-		//if (i / 4 == 4)  continue;
-
-		glTexCoord2dv(pGlyphs[i / 4]->c[0]);
-		glVertex2dv(Vectors[i] + r.pos);
-		glTexCoord2dv(pGlyphs[i / 4]->c[1]);
-		glVertex2dv(Vectors[i + 1]  + r.pos);
-		glTexCoord2dv(pGlyphs[i / 4]->c[2]);
-		glVertex2dv(Vectors[i + 2]  + r.pos);
-		glTexCoord2dv(pGlyphs[i / 4]->c[3]);
-		glVertex2dv(Vectors[i + 3]  + r.pos);
-	}
-	
-	glEnd();
-}
-
-/*
  *	Handles app event
  **/
 void XGUI_Manager::HandleEvent(ME_Framework::appEvent_t & ev)
@@ -284,7 +217,6 @@ void XGUI_Manager::HandleEvent(ME_Framework::appEvent_t & ev)
 		break;
 		case eventTypes::EV_MOUSE_KEY_UP:
 		{
-			
 			if (m_bInEditorMode)
 			{
 				XGUI_Widget * w = m_pDesktop->WidgetUnderCursor(g_pPlatform->GetCursorPos());
@@ -296,31 +228,166 @@ void XGUI_Manager::HandleEvent(ME_Framework::appEvent_t & ev)
 				}
 			}
 			m_pDesktop->HandleEvent(ev);
-			
 		}
 		break;
 		case eventTypes::EV_WINDOW_RESIZE:
-			{
-				xgRect_t r;
-				r.ext = g_pPlatform->GetClientAreaExtents();
-				r.pos = ME_Math::Vector2D(0,0);
-				m_pDesktop->SetRect(r);
-			}
+		{
+			xgRect_t r;
+			r.ext = g_pPlatform->GetClientAreaExtents();
+			r.pos = ME_Math::Vector2D(0,0);
+			m_pDesktop->SetRect(r);
+		}
 		break;
 	}
 }
 
 /*
- *	Renders untextured rectangle
+ *	Tesselator constructor allocates buffers
  **/
-void ME_Framework::ME_XGUI::XGUI_DrawRect(xgRect_t & r)
+XGUI_Tesselator::XGUI_Tesselator(int elementsCount)
 {
-	glBegin(GL_QUADS);
-		
-		glVertex2d(r.pos.x,r.pos.y);
-		glVertex2d(r.pos.x + r.ext.x,r.pos.y);
-		glVertex2d(r.pos.x + r.ext.x,r.pos.y + r.ext.y);
-		glVertex2d(r.pos.x,r.pos.y + r.ext.y);
+	m_pColors = (color32_t*)g_pPlatform->MemoryPools()->Alloc(elementsCount * sizeof(color32_t));
+	m_pVertexes = (ME_Math::Vector2D*)g_pPlatform->MemoryPools()->Alloc(elementsCount * sizeof(ME_Math::Vector2D));
+	m_pUVMapping = (ME_Math::Vector2D*)g_pPlatform->MemoryPools()->Alloc(elementsCount * sizeof(ME_Math::Vector2D));
 
-	glEnd();	
+	m_nElements = elementsCount;
+	m_nUsedElements = 0;
+	m_vTranslation = ME_Math::Vector2D(0,0);
+	m_cDefault.r = 255;
+	m_cDefault.g = 255;
+	m_cDefault.b = 255;
+	m_cDefault.a = 255;
+}
+
+/*
+ *	Tesselator destructor - free buffers
+ **/
+XGUI_Tesselator::~XGUI_Tesselator()
+{
+	g_pPlatform->MemoryPools()->Free(m_pColors);
+	g_pPlatform->MemoryPools()->Free(m_pVertexes);
+	g_pPlatform->MemoryPools()->Free(m_pUVMapping);
+}
+
+/*
+ *	Sets UV coordinates for current vertex
+ **/
+void XGUI_Tesselator::Coord2v(ME_Math::Vector2D & uv)
+{
+	m_pUVMapping[m_nUsedElements] = uv;
+}
+
+/*
+ *	Sets color for current vertex
+ **/
+void XGUI_Tesselator::Color32(color32_t & c)
+{
+	m_pColors[m_nUsedElements] = c;
+}
+
+/*
+ *	Pushes vertex
+ **/
+void XGUI_Tesselator::Vertex2v(ME_Math::Vector2D & vec)
+{
+	m_pVertexes[m_nUsedElements] = vec + m_vTranslation;
+	m_nUsedElements++;
+
+	if (m_nUsedElements < m_nElements)
+		m_pColors[m_nUsedElements] = m_cDefault;
+
+	if (m_nUsedElements == m_nElements) 
+		Flush();
+}
+
+/*
+ *	Sets translation of vertex
+ **/
+void XGUI_Tesselator::SetTranslation(ME_Math::Vector2D & vOrigin)
+{
+	m_vTranslation = vOrigin;
+}
+
+/*
+ *	Render buffers
+ **/
+void XGUI_Tesselator::Flush()
+{
+	if (m_nUsedElements == 0) return;
+
+	m_vTranslation = ME_Math::Vector2D(0,0);
+	
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	
+	glVertexPointer(2,GL_VECT,0,m_pVertexes);
+	glTexCoordPointer(2,GL_VECT,0,m_pUVMapping);
+	glColorPointer(4,GL_UNSIGNED_BYTE,0,m_pColors);
+
+	glDrawArrays(GL_QUADS,0,m_nUsedElements);
+
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+
+	m_nUsedElements = 0;
+}
+
+/*
+ *	Pushes vertex specified by separate coords
+ **/
+void XGUI_Tesselator::Vertex2(vec_t x,vec_t y)
+{
+	m_pVertexes[m_nUsedElements].x = x + m_vTranslation.x;
+	m_pVertexes[m_nUsedElements].y = y + m_vTranslation.y;
+	
+	m_nUsedElements++;
+	
+	if (m_nUsedElements < m_nElements)
+		m_pColors[m_nUsedElements] = m_cDefault;
+}
+
+/*
+ *	Pushes array of cords
+ **/
+void XGUI_Tesselator::Coord2a(ME_Math::Vector2D * pUV,int count)
+{
+	memcpy(&m_pUVMapping[m_nUsedElements],pUV,sizeof(ME_Math::Vector2D) * count);
+}
+
+/*
+ *	Pushes array of colors
+ **/
+void XGUI_Tesselator::Color32a(color32_t * c,int count)
+{
+	memcpy(&m_pColors[m_nUsedElements],c,sizeof(color32_t) * count);
+}
+
+void XGUI_Tesselator::Vertex2a(ME_Math::Vector2D * pVecs,int count)
+{
+	if (m_nUsedElements + count >= m_nElements)
+	{
+		int first = m_nElements - m_nUsedElements;
+		int second = count - first;
+
+		memcpy(&m_pVertexes[m_nUsedElements],pVecs,first * sizeof(ME_Math::Vector2D));
+		m_nUsedElements+=first;
+		Flush();
+
+		memcpy(&m_pVertexes[m_nUsedElements],&pVecs[second],second * sizeof(ME_Math::Vector2D));
+	}
+	else
+	{
+		memcpy(&m_pVertexes[m_nUsedElements],pVecs,count * sizeof(ME_Math::Vector2D));
+		m_nUsedElements+=count;
+	}	
+}
+
+/*
+ * Sets default color for verts
+ **/
+void XGUI_Tesselator::DefaultColor(color32_t  c)
+{
+	m_cDefault = c;
 }

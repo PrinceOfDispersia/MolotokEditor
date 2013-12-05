@@ -159,7 +159,10 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\Framework\ConfigVars.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Button.cpp" />
+    <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Dock.cpp" />
+    <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_DrawUtils.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Font.cpp" />
+    <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_GenericSkinnedButton.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Manager.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Sheet.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Widget.cpp" />
@@ -215,8 +218,10 @@
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Button.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Common.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Const.h" />
+    <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Dock.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Font.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\GUISheet.h" />
+    <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_GenericSkinnedButton.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Manager.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Resources.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Sheet.h" />

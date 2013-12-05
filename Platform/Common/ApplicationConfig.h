@@ -10,6 +10,12 @@
 // uses double precision vectors
 #define VECTOR_DOUBLE
 
+#ifdef VECTOR_DOUBLE
+#define GL_VECT GL_DOUBLE
+#else
+#define GL_VECT GL_FLOAT
+#endif
+
 // paranoid mode - apply additional checks
 #define PARANOID
 

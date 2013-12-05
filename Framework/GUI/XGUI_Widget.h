@@ -22,6 +22,8 @@ namespace ME_XGUI
 			
 		float m_flTimers[4];
 		std::vector<XGUI_Widget*> m_vChilds;
+		std::vector<XGUI_Widget*> m_vAlignOrderedChilds;
+		
 		XGUI_Widget * m_pParent;
 
 		int m_nWidgetNumber;
@@ -38,6 +40,8 @@ namespace ME_XGUI
 		String m_strHint;
 
 		void SortChilds();
+		void SortChildsByAlignOrder();
+
 		void CalcClientRect(xgRect_t & r);
 		void PointToClient(ME_Math::Vector2D & v);
 
@@ -53,7 +57,8 @@ namespace ME_XGUI
 		void RecalcRectWithAligment();
 		xgRect_t GetParentRect();
 
-
+		void RecalcDrag();
+		void RecursiveNotifyEveryone(ME_Framework::appEvent_t & ev);
 
 	public:
 
@@ -85,6 +90,7 @@ namespace ME_XGUI
 		void Render();		
 		void UpdateTimers(float flDelta);
 		void SetRect(xgRect_t & rect);
+		void RecalcItemsRects();
 
 		void DoThink();
 		virtual void Think();
@@ -93,8 +99,12 @@ namespace ME_XGUI
 		XGUI_Widget* WidgetUnderCursor(ME_Math::Vector2D pt);
 			
 
-		XGUI_Widget(xgRect_t * rect);
+		XGUI_Widget(xgRect_t & rect);
 		virtual ~XGUI_Widget();
+
+		const std::vector<XGUI_Widget*> & GetChilds();
+		const xgRect_t GetRect();
+		inline const bool IsDragged() { return m_bDragged; }
 	};
 }
 

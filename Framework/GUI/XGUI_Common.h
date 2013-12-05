@@ -16,6 +16,33 @@ namespace ME_Framework
 			ME_Math::Vector2D pos;
 			ME_Math::Vector2D ext;
 		}xgRect_t;
+
+		inline bool RectIntersection(xgRect_t & a,xgRect_t & b)
+		{
+			vec_t mins1[2],mins2[2],maxs1[2],maxs2[2];
+
+			mins1[0] = a.pos.x;
+			mins1[1] = a.pos.y;
+			
+			maxs1[0] = mins1[0] + a.ext.x;
+			maxs1[1] = mins1[1] + a.ext.y;
+
+			mins2[0] = b.pos.x;
+			mins2[1] = b.pos.y;
+
+			maxs2[0] = mins2[0] + b.ext.x;
+			maxs2[1] = mins2[1] + b.ext.y;
+
+			int count = 0;
+
+			for(int i = 0 ; i < 2; i++)
+			{
+				if ((maxs1[i] <= mins2[i]) || (mins1[i] >= maxs2[i]))
+					count++;
+			}
+
+			return count == 0;
+		}
 	}
 }
 

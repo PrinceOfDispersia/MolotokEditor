@@ -10,18 +10,15 @@ using namespace ME_Framework::ME_XGUI;
 using namespace ME_Framework::ME_OpenGLBackend;
 
 extern XGUI_Manager * g_pGUIManager;
+extern XGUI_Tesselator * g_pTesselator;
 
-XGUI_Widget::XGUI_Widget(xgRect_t * rect)
+XGUI_Widget::XGUI_Widget(xgRect_t & rect)
 {
-	m_Rect.pos = rect->pos;
-	m_Rect.ext = rect->ext;
+	m_Rect.pos = rect.pos;
+	m_Rect.ext = rect.ext;
 
 	m_Color = g_pGUIManager->GuiSettings()->m_cDesktopBG;
-	
-
 	m_ZOrder = 0;
-
-	
 	m_Anchors = TAnchor::akNone;
 
 	m_pParent = 0;
@@ -31,7 +28,7 @@ XGUI_Widget::XGUI_Widget(xgRect_t * rect)
 		m_flTimers[i] = 0;
 	}
 
-	m_Align = TAlign::alClientArea;
+	m_Align = TAlign::alNone;
 	SetRect(m_Rect);
 
 	m_bVisible = true;
@@ -66,7 +63,7 @@ void XGUI_Widget::RecalcRectWithAligment()
 				x1 = pr.pos.x; x2 = pr.pos.x + pr.ext.x;
 				y1 = pr.pos.y; y2 = pr.pos.y + pr.ext.y;
 
-				for(XGUI_Widget * w : m_pParent->m_vChilds)
+				for(XGUI_Widget * w : m_pParent->m_vAlignOrderedChilds)
 				{
 					if (w == this) continue;
 					if (w->m_Align == TAlign::alNone) continue;
@@ -119,9 +116,9 @@ void XGUI_Widget::RecalcRectWithAligment()
 				y1 = 0; y2 = y1 + m_Rect.ext.y;
 
 				// alTop pushes widgets at bottom side
-				for(XGUI_Widget * w : m_pParent->m_vChilds)
+				for(XGUI_Widget * w : m_pParent->m_vAlignOrderedChilds)
 				{
-					if (w->m_Align == TAlign::alNone) continue;
+					if (w->m_Align == TAlign::alNone || w->m_Align == TAlign::alClientArea) continue;
 					if (w == this) continue;
 					if (w->m_AlignPriority < m_AlignPriority) continue;
 					
@@ -173,15 +170,12 @@ void XGUI_Widget::RecalcRectWithAligment()
 				x1 = pr.pos.x; x2 = pr.pos.x + pr.ext.x;
 				y1 = pr.ext.y - m_Rect.ext.y; y2 = y1 + m_Rect.ext.y;
 
-				// alTop pushes widgets at bottom side
-				for(XGUI_Widget * w : m_pParent->m_vChilds)
+				for(XGUI_Widget * w : m_pParent->m_vAlignOrderedChilds)
 				{
-					if (w->m_Align == TAlign::alNone) continue;
+					if (w->m_Align == TAlign::alNone || w->m_Align == TAlign::alClientArea) continue;
 					if (w == this) continue;
 					if (w->m_AlignPriority < m_AlignPriority) continue;
-
 					
-
 					vec_t wx1,wx2,wy1,wy2;
 
 					wx1 = w->m_Rect.pos.x; wx2 = w->m_Rect.pos.x + w->m_Rect.ext.x;
@@ -229,14 +223,12 @@ void XGUI_Widget::RecalcRectWithAligment()
 				y1 = 0; y2 = y1 + pr.ext.y;
 
 				// alTop pushes widgets at bottom side
-				for(XGUI_Widget * w : m_pParent->m_vChilds)
+				for(XGUI_Widget * w : m_pParent->m_vAlignOrderedChilds)
 				{
-					if (w->m_Align == TAlign::alNone) continue;
+					if (w->m_Align == TAlign::alNone || w->m_Align == TAlign::alClientArea) continue;
 					if (w == this) continue;
 					if (w->m_AlignPriority < m_AlignPriority) continue;
-
 					
-
 					vec_t wx1,wx2,wy1,wy2;
 
 					wx1 = w->m_Rect.pos.x; wx2 = w->m_Rect.pos.x + w->m_Rect.ext.x;
@@ -283,9 +275,9 @@ void XGUI_Widget::RecalcRectWithAligment()
 				y1 = 0; y2 = y1 + pr.ext.y;
 
 				// alTop pushes widgets at bottom side
-				for(XGUI_Widget * w : m_pParent->m_vChilds)
+				for(XGUI_Widget * w : m_pParent->m_vAlignOrderedChilds)
 				{
-					if (w->m_Align == TAlign::alNone) continue;
+					if (w->m_Align == TAlign::alNone || w->m_Align == TAlign::alClientArea) continue;
 					if (w == this) continue;
 					if (w->m_AlignPriority < m_AlignPriority) continue;
 					
@@ -323,7 +315,6 @@ void XGUI_Widget::RecalcRectWithAligment()
 	}
 }
 
-
 /*
  *	Resize widget accounting to aligment
  **/
@@ -331,14 +322,36 @@ void XGUI_Widget::SetRect(xgRect_t & rect)
 {
 	m_Rect = rect;
 	
-	RecalcRectWithAligment();
+	RecalcItemsRects();
+}
 
-	for(XGUI_Widget * w : m_vChilds)
+/*
+ *	Recalculates items rects according to aligment
+ **/
+void XGUI_Widget::RecalcItemsRects()
+{
+	RecalcRectWithAligment();
+		
+
+
+	for(XGUI_Widget * w : m_vAlignOrderedChilds)
 	{
-		w->RecalcRectWithAligment();
+		w->RecalcItemsRects();
 	}
 }
 
+/*
+ *	Notifies every component in gui hierarchy with event
+ **/
+void XGUI_Widget::RecursiveNotifyEveryone(ME_Framework::appEvent_t & ev)
+{
+	for(XGUI_Widget * w : m_vChilds)
+	{
+		if (w->m_bVisible == false)  continue;
+		w->HandleEvent(ev);
+		w->RecursiveNotifyEveryone(ev);
+	}
+}
 
 /*
  *	Handles system event
@@ -350,13 +363,10 @@ void XGUI_Widget::HandleEvent(ME_Framework::appEvent_t & ev)
 	case eventTypes::EV_MOUSE_KEY_UP:
 		for(XGUI_Widget * c : m_vChilds)
 		{
-			if (c->m_bVisible)
-				c->HandleEvent(ev);
+			RecursiveNotifyEveryone(ev);			
 		}
 		break;
-	
 	}
-	
 }
 
 /*
@@ -364,10 +374,12 @@ void XGUI_Widget::HandleEvent(ME_Framework::appEvent_t & ev)
  **/
 void XGUI_Widget::Render()
 {
+	g_pTesselator->SetTranslation(m_vParentStart);
 	DrawComponent();
-
+	
 	for(XGUI_Widget * child: m_vChilds)
 	{
+		child->m_vParentStart = m_vParentStart + m_Rect.pos;
 		child->Render();
 	}
 }
@@ -408,7 +420,15 @@ void XGUI_Widget::UpdateTimers(float flDelta)
  **/
 XGUI_Widget::~XGUI_Widget()
 {
+	for(XGUI_Widget * w : m_vChilds)
+	{
+		delete w;
+	}
 
+	m_vChilds.clear();
+	m_vChilds.shrink_to_fit();
+
+	
 }
 
 /*
@@ -486,22 +506,31 @@ String & XGUI_Widget::GetCaption()
  **/
 void XGUI_Widget::AddChildWidget(XGUI_Widget * pWidget)
 {
+	m_vAlignOrderedChilds.push_back(pWidget);
 	m_vChilds.push_back(pWidget);
 	pWidget->m_pParent = this;
 
 	// Update rect with aligment
-	pWidget->SetRect(pWidget->m_Rect);
-	
-	pWidget->m_nWidgetNumber = m_nWidgetCounter++;
+	pWidget->SetRect(pWidget->m_Rect);	
+	pWidget->m_nWidgetNumber = m_nWidgetCounter++;	
 
+	SortChildsByAlignOrder();
 }
 
 /*
- *	Sorts childrens by ZOrder
+ *	Sorts children by ZOrder
  **/
 void XGUI_Widget::SortChilds()
 {
 	std::sort(m_vChilds.begin(),m_vChilds.end(),[] (XGUI_Widget* i,XGUI_Widget* j){return i->m_ZOrder < j->m_ZOrder;});
+}
+
+/*
+ *	Sorts children by align order
+ **/
+void XGUI_Widget::SortChildsByAlignOrder()
+{
+	std::sort(m_vAlignOrderedChilds.begin(),m_vAlignOrderedChilds.end(),[] (XGUI_Widget* i,XGUI_Widget* j){return i->m_AlignPriority > j->m_AlignPriority;});
 }
 
 /*
@@ -561,8 +590,7 @@ void XGUI_Widget::PointToClient(ME_Math::Vector2D & v)
 		pParent = pParent->m_pParent;
 		v-=pParent->m_Rect.pos;
 	}
-
-
+	
 }
 
 /*
@@ -570,6 +598,7 @@ void XGUI_Widget::PointToClient(ME_Math::Vector2D & v)
  **/
 void XGUI_Widget::DoThink()
 {
+	RecalcDrag();
 	Think();
 
 	for(XGUI_Widget * c: m_vChilds)
@@ -579,11 +608,11 @@ void XGUI_Widget::DoThink()
 }
 
 /*
- *	Performs widget draging if in editor mode
+ *	Performs widget draging if necceseary
  **/
-void XGUI_Widget::Think()
+void XGUI_Widget::RecalcDrag()
 {
-	if (g_pGUIManager->IsInEditorMode() && m_bDragged)
+	if (m_bDragged)
 	{
 		ME_Math::Vector2D v = g_pPlatform->GetCursorPos();
 		ME_Math::Vector2D v2 = v - m_vDragOrigin;
@@ -594,6 +623,14 @@ void XGUI_Widget::Think()
 		// Update aligment
 		SetRect(m_Rect);
 	}
+}
+
+/*
+ *	Widget think function
+ **/
+void XGUI_Widget::Think()
+{
+
 }
 
 /*
@@ -645,4 +682,20 @@ int XGUI_Widget::GetZOrder()
 int XGUI_Widget::GetAlignPriority()
 {
 	return m_AlignPriority;
+}
+
+/*
+ * returns widget rect
+ **/
+const xgRect_t XGUI_Widget::GetRect()
+{
+	return m_Rect;
+}
+
+/*
+ *	returns array of widget children
+ **/
+const std::vector<XGUI_Widget*> & XGUI_Widget::GetChilds()
+{
+	return m_vChilds;
 }

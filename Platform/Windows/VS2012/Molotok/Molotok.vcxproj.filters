@@ -216,6 +216,15 @@
     <ClCompile Include="..\..\..\..\Framework\ConfigVars.cpp">
       <Filter>Файлы исходного кода\Framework</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Dock.cpp">
+      <Filter>Файлы исходного кода\Framework\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_DrawUtils.cpp">
+      <Filter>Файлы исходного кода\Framework\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_GenericSkinnedButton.cpp">
+      <Filter>Файлы исходного кода\Framework\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Common\ApplicationCommon.h">
@@ -379,6 +388,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\Framework\ConfigVars.h">
       <Filter>Заголовочные файлы\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Dock.h">
+      <Filter>Заголовочные файлы\Framework\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_GenericSkinnedButton.h">
+      <Filter>Заголовочные файлы\Framework\GUI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

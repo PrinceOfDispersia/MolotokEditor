@@ -23,6 +23,7 @@ namespace ME_Framework
 		void GL_EnableState(GLStateList state);
 		void GL_DisableState(GLStateList state);
 		void GL_StateLock(GLStateList state,bool lock);
+
 	}
 }
 

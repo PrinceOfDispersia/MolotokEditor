@@ -251,6 +251,13 @@ namespace ME_Framework
 			{
 				return sqrt(x * x + y*y + z*z);
 			}
+
+			inline Vector3D operator   = (Vector2D & other)
+			{
+				x = other.x;
+				y = other.y;
+				return (*this);
+			}
 		};
 	}
 }

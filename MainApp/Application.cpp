@@ -24,35 +24,9 @@ void ApplicationStart()
 
 	xgRect_t r;
 	r.pos = ME_Math::Vector2D(100,100);
-	r.ext = ME_Math::Vector2D(20,24);
-
-
-
-	for(int i = 0 ; i < 4 ; i++)
-	{
-		TAlign a[4] = {TAlign::alLeft,TAlign::alRight,TAlign::alTop,TAlign::alBottom};
-		int order[4] = {0,2,3,3};
-		TCHAR str[][16] = {_T("alLeft"),_T("alRight"),_T("alTop"),_T("alBottom")};
-
-		for(int j = 0 ; j < 3 ; j++)
-		{
-			XGUI_Button * pButton = new XGUI_Button(&r);		
-			pButton->SetCaption(String(VA(_T("%s"),str[i])));
-			pButton->SetAlign(a[i]);
-			pButton->SetAlignPriority(order[i]);
-			pManager->AddWidget(pButton);
-		}
-
-		
-	}
-	
-
-	XGUI_Button * pButton = new XGUI_Button(&r);
-	pButton->SetCaption(String(_T("alClientArea")));	
-	pButton->SetAlign(TAlign::alClientArea);
-
+	r.ext = ME_Math::Vector2D(70,24);
+	XGUI_Button * pButton = new XGUI_Button(r);
 	pManager->AddWidget(pButton);
-	
 	
 }
 
