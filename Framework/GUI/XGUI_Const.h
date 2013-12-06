@@ -30,6 +30,18 @@ namespace ME_XGUI
 		akBottom = (1<<3),
 	};
 
+	enum class TOrientation
+	{
+		orHorizontal = 1,
+		orVertical
+	};
+
+	enum class TDockState
+	{
+		dsDocked = 1,
+		dsFloating
+	};
+
 	ENUM_FLAGS(TAnchor);
 }
 

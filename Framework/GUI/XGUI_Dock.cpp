@@ -25,7 +25,8 @@ void XGUI_Dock::DrawComponent()
 	glLineWidth(4);
 	glColor4f(0,1,0,1);
 
-	if (m_bRenderOutline) XGUI_DrawRectOutline(m_Rect);
+	if (m_bRenderOutline) 
+		XGUI_DrawRectOutline(m_Rect);
 
 	glLineWidth(1);
 }
@@ -42,11 +43,15 @@ void XGUI_Dock::Think()
 	m_bRenderOutline = false;
 
 	for(XGUI_Widget * w : c)
-	{
-		if (w->IsDragged() == false) continue;
+	{		
+		if (!w->IsDragged()) continue;		
+		if (!w->IsDockable()) continue;
+		
+
 		auto r = w->GetRect();
 		if (!RectIntersection(m_Rect,r)) continue;
 		
+		w->SetDockWidget(this);
 		m_bRenderOutline = true;
 	}
 }
@@ -70,6 +75,10 @@ XGUI_DockWindow::XGUI_DockWindow(xgRect_t & r) : XGUI_Widget(r)
 
 	m_pDragButton->SetButtonID(1);
 
+	m_Orientation = TOrientation::orVertical;
+	SetDockState(TDockState::dsFloating);
+
+	m_bDockable = true;
 }
 
 /*
@@ -92,16 +101,57 @@ void XGUI_DockWindow::DrawComponent()
  **/
 void XGUI_DockWindow::HandleEvent(ME_Framework::appEvent_t & pEvent)
 {
-	if (pEvent.eventid == eventTypes::EV_CHILD_BUTTON_PUSHED)
+	if (pEvent.eventid == eventTypes::EV_CHILD_BUTTON_PUSHED 
+							|| (pEvent.eventid == eventTypes::EV_MOUSE_KEY_DOWN && m_DockState == TDockState::dsFloating))
 	{
 		m_bDragged = true;
 		m_vDragOrigin = g_pPlatform->GetCursorPos();
+		
+		if (m_DockState == TDockState::dsDocked)
+		{
+			m_Rect.ext = m_PreDockRect.ext;
+			SetRect(m_Rect);
+		}
 		PointToClient(m_vDragOrigin);
+		SetDockState(TDockState::dsFloating);
 	}
-	else 
+	else if (pEvent.eventid == eventTypes::EV_CHILD_BUTTON_RELEASED 
+							|| (pEvent.eventid == eventTypes::EV_MOUSE_KEY_UP))
 	{
+		if (m_pDockWidget && m_DockState == TDockState::dsFloating)
+		{
+ 			xgRect_t r = m_pDockWidget->GetRect();
+ 			if (!RectIntersection(m_Rect,r))
+ 			{
+								
+ 				SetDockState(TDockState::dsFloating);
+ 				m_Rect.ext = m_PreDockRect.ext;
+ 				m_bDragged = false;
+ 				return;
+ 			}
+
+			m_PreDockRect = m_Rect;
+			SetRect(m_Rect = m_pDockWidget->GetRect());			
+			SetDockState(TDockState::dsDocked);
+			
+			switch(m_pDockWidget->GetAlign())
+			{
+			case TAlign::alTop:
+			case TAlign::alBottom:
+				m_Orientation = TOrientation::orHorizontal;
+				break;
+			case TAlign::alLeft:
+			case TAlign::alRight:
+				m_Orientation = TOrientation::orVertical;
+				break;
+			}
+
+			return;
+		}
 		m_bDragged = false;
+				
 	}
+
 }
 
 /*
@@ -109,16 +159,37 @@ void XGUI_DockWindow::HandleEvent(ME_Framework::appEvent_t & pEvent)
  **/
 void XGUI_DockWindow::Think()
 {
-	vec_t h = m_Rect.ext.y;
-	
-	xgRect_t r;
+	m_pDragButton->SetVisibilty(m_DockState == TDockState::dsDocked);
 
-	r.ext.x = 6;
-	r.ext.y = 20;
+	if (!m_pDragButton->GetVisibilty()) return;
 
-	r.pos.y = m_Rect.ext.y / 2 - r.ext.y / 2;
-	r.pos.x = 4;
+	switch(m_Orientation)
+	{
+	case TOrientation::orVertical:
+		{
+			xgRect_t r;
 
-	m_pDragButton->SetRect(r);
+			r.ext.x = 20;
+			r.ext.y = 6;
 
+			r.pos.x = m_Rect.ext.x / 2 - r.ext.x / 2;
+			r.pos.y = 4;
+
+			m_pDragButton->SetRect(r);
+		}
+		break;
+	case TOrientation::orHorizontal:
+		{
+			xgRect_t r;
+
+			r.ext.x = 6;
+			r.ext.y = 20;
+
+			r.pos.y = m_Rect.ext.y / 2 - r.ext.y / 2;
+			r.pos.x = 4;
+
+			m_pDragButton->SetRect(r);
+		}
+		break;
+	}
 }

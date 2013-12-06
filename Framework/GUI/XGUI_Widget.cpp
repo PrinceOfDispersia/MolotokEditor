@@ -41,6 +41,9 @@ XGUI_Widget::XGUI_Widget(xgRect_t & rect)
 
 	m_nWidgetCounter = 0;
 	m_nWidgetNumber = 0;
+
+	m_bDockable = false;
+	
 }
 
 /*
@@ -379,6 +382,7 @@ void XGUI_Widget::Render()
 	
 	for(XGUI_Widget * child: m_vChilds)
 	{
+		if (child->m_bVisible == false) continue;
 		child->m_vParentStart = m_vParentStart + m_Rect.pos;
 		child->Render();
 	}
@@ -594,6 +598,25 @@ void XGUI_Widget::PointToClient(ME_Math::Vector2D & v)
 }
 
 /*
+ *	Calculates relative to screen point position on screen
+ **/
+void XGUI_Widget::ClientToScreen(ME_Math::Vector2D & v)
+{
+	XGUI_Widget * pParent = m_pParent;
+
+	v+=m_Rect.pos;
+
+	// Traverse up hierarchy
+	//
+	while(pParent && pParent->m_pParent)
+	{
+		pParent = pParent->m_pParent;
+		v+=pParent->m_Rect.pos;
+	}
+	
+}
+
+/*
  *	Calls think procedure of self and childs
  **/
 void XGUI_Widget::DoThink()
@@ -698,4 +721,36 @@ const xgRect_t XGUI_Widget::GetRect()
 const std::vector<XGUI_Widget*> & XGUI_Widget::GetChilds()
 {
 	return m_vChilds;
+}
+
+/*
+ *	returns pointer to dock widget
+ **/
+XGUI_Widget * XGUI_Widget::GetDockWidget()
+{
+	return m_pDockWidget;
+}
+
+/*
+ *	sets dock widget
+ **/
+void XGUI_Widget::SetDockWidget(XGUI_Widget * w)
+{
+	m_pDockWidget = w;
+}
+
+/*
+ *	sets docking state
+ **/
+void XGUI_Widget::SetDockState(TDockState ds)
+{
+	m_DockState = ds;
+}
+
+/*
+ *	returns dock state
+ **/
+TDockState XGUI_Widget::GetDockState()
+{
+	return m_DockState;
 }

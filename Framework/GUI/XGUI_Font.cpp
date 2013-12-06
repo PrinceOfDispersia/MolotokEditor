@@ -9,6 +9,8 @@
 using namespace ME_XGUI;
 using namespace ME_OpenGLBackend;
 
+extern XGUI_Tesselator * g_pTesselator;
+
 /*
  *	Calculates area used when printing string
  **/
@@ -75,19 +77,6 @@ void XGUI_Font::Calc_TextRect(String & str,xgRect_t * rect)
  **/
 void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 {
-// 		glDisable(GL_TEXTURE_2D);
-// 		xgRect_t r;
-// 		Calc_TextRect(str,&r);
-// 
-// 		glColor4f(0,.5,0,1);
-// 		glBegin(GL_QUADS);
-// 		glVertex2d(pos.x,			pos.y + r.pos.y);
-// 		glVertex2d(pos.x + r.ext.x,	pos.y + r.pos.y);
-// 		glVertex2d(pos.x + r.ext.x,	pos.y + r.ext.y + r.pos.y);
-// 		glVertex2d(pos.x,			pos.y + r.ext.y + r.pos.y);
-// 		glEnd();
-// 
-
 		GL_EnableState(GLS_TEXTURE_2D);
 		GL_EnableState(GLS_BLEND);
 
@@ -99,7 +88,7 @@ void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 		vec_t w = 0;
 		vec_t h = 0;
 						
-		glBegin(GL_QUADS);
+		//glBegin(GL_QUADS);
 		
 		size_t i = 0;
 
@@ -161,20 +150,20 @@ void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 
 			
 
- 			glTexCoord2f(c[0],c[1]);
- 			glVertex2d(x1,y1);
- 			glTexCoord2f(c[2],c[1]);
- 			glVertex2d(x2,y1);
- 			glTexCoord2f(c[2],c[3]);
- 			glVertex2d(x2,y2);
- 			glTexCoord2f(c[0],c[3]);
- 			glVertex2d(x1,y2);
+ 			g_pTesselator->Coord2(c[0],c[1]);
+ 			g_pTesselator->Vertex2(x1,y1);
+ 			g_pTesselator->Coord2(c[2],c[1]);
+ 			g_pTesselator->Vertex2(x2,y1);
+ 			g_pTesselator->Coord2(c[2],c[3]);
+ 			g_pTesselator->Vertex2(x2,y2);
+ 			g_pTesselator->Coord2(c[0],c[3]);
+ 			g_pTesselator->Vertex2(x1,y2);
 			
 			w+=(inf->orig_w);
 						
 			
 		}
-		glEnd();
+		//glEnd();
 				
 		GL_DisableState(GLS_BLEND);
 
@@ -205,7 +194,7 @@ XGUI_Font::XGUI_Font(dFontHdr_t * pHeader,size_t sz)
 		byte * pFontImage = &pBits[pHeader->lumps[LUMP_FNT_IMAGE].start];
 		size_t imgSize = pHeader->lumps[LUMP_FNT_IMAGE].length;
 
-		m_pFontImage = GL_LoadTexture(_T("FontImage"),pFontImage,imgSize,false);
+		//m_pFontImage = GL_LoadTexture(_T("FontImage"),pFontImage,imgSize,false);
 
 		m_pSymbolMaps = &pBits[pHeader->lumps[LUMP_FNT_MAPS].start];
 		m_nMaps = pHeader->lumps[LUMP_FNT_MAPS].length / sizeof(byte);
@@ -223,3 +212,15 @@ XGUI_Font::~XGUI_Font()
 	m_pFontImage.reset();
 }
 
+void XGUI_Font::SetAtlas(pgl_texture_t pAtlas,ME_Math::Vector2D offset)
+{
+	m_pFontImage = pAtlas;
+
+	for(int i = 0 ; i < m_nGlyphs ; i++)
+	{
+		m_pGlyphs[i].xpos += (short)-m_vAtlasOffset.x + offset.x;
+		m_pGlyphs[i].ypos += (short)-m_vAtlasOffset.y + offset.y;
+	}
+
+	m_vAtlasOffset = offset;
+}

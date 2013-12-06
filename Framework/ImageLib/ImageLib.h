@@ -37,6 +37,7 @@ void ShutdownImageLib();
 typedef std::shared_ptr<gl_texture_t> pgl_texture_t;
 
 pgl_texture_t GL_LoadTexture(TCHAR * szName,byte * pSource,size_t bufferSize,bool keepRaw);
+pgl_texture_t GL_LoadTextureFromFS(TCHAR * szName);
 
 rawImage_t * AllocRawImage(int sz);
 

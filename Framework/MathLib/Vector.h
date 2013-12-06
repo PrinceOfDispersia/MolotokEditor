@@ -126,6 +126,12 @@ namespace ME_Framework
 				return sqrt(x * x + y*y);
 			}
 
+			inline void Init(vec_t _x = 0,vec_t _y = 0)
+			{
+				x = _x;
+				y = _y;
+			}
+
 		};
 
 		// 3D Vector
@@ -257,6 +263,13 @@ namespace ME_Framework
 				x = other.x;
 				y = other.y;
 				return (*this);
+			}
+
+			inline void Init(vec_t _x = 0,vec_t _y = 0,vec_t _z = 0)
+			{
+				x = _x;
+				y = _y;
+				z = _z;
 			}
 		};
 	}

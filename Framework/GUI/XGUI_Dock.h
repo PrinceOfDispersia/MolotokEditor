@@ -20,6 +20,10 @@ namespace ME_Framework
 		class XGUI_DockWindow: public XGUI_Widget
 		{
 			XGUI_GenericButton * m_pDragButton;
+			TOrientation m_Orientation;
+
+			
+
 		public:
 			XGUI_DockWindow(xgRect_t & r);
 		

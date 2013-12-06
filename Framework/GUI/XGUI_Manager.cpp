@@ -53,13 +53,21 @@ XGUI_Manager::XGUI_Manager()
 
 	m_pImagesSheet = nullptr;
 
-	m_pTesselator = new XGUI_Tesselator(1024);
+	// TODO: fix 
+	m_pTesselator = new XGUI_Tesselator(65536);
 	g_pTesselator = m_pTesselator;
 
 	if (!pBuffer) 
 		Sys_FatalError(_T("Can't open GUI skin file!"));
 
+	//	0,0
+	//	0,690
+	//	256,690
+	//
+	m_GuiAtlas = GL_LoadTextureFromFS(_T("gui/atlas_all.png"));
+
 	m_pImagesSheet = new XGUI_Sheet(pBuffer,sz);
+	m_pImagesSheet->SetAtlas(m_GuiAtlas,ME_Math::Vector2D(0,0));
 
 	g_pPlatform->FileSystem()->CloseFile(pBuffer);
 
@@ -69,6 +77,7 @@ XGUI_Manager::XGUI_Manager()
 		return;
 
 	m_pGuiFont = new XGUI_Font((dFontHdr_t*)pBuffer,sz);
+	m_pGuiFont->SetAtlas(m_GuiAtlas,ME_Math::Vector2D(0,690));
 
 	g_pGUIManager = this;
 
@@ -81,6 +90,7 @@ XGUI_Manager::XGUI_Manager()
 	sprDragHandleDotsNormal = GetGUISheetGlyph("DragHandleDots.Normal");
 
 	m_pGuiVars = new CConfigVarsManager(_T("configs/gui_default_scheme.xml"));
+	
 	LoadVars();
 	
 	xgRect_t r;
@@ -277,6 +287,13 @@ void XGUI_Tesselator::Coord2v(ME_Math::Vector2D & uv)
 	m_pUVMapping[m_nUsedElements] = uv;
 }
 
+void XGUI_Tesselator::Coord2(float u,float v)
+{
+	m_pUVMapping[m_nUsedElements].x = u;
+	m_pUVMapping[m_nUsedElements].y = v;
+}
+
+
 /*
  *	Sets color for current vertex
  **/
@@ -293,11 +310,13 @@ void XGUI_Tesselator::Vertex2v(ME_Math::Vector2D & vec)
 	m_pVertexes[m_nUsedElements] = vec + m_vTranslation;
 	m_nUsedElements++;
 
+	if (m_nUsedElements == (m_nElements)) 
+		Flush();
+
 	if (m_nUsedElements < m_nElements)
 		m_pColors[m_nUsedElements] = m_cDefault;
 
-	if (m_nUsedElements == m_nElements) 
-		Flush();
+
 }
 
 /*
@@ -343,16 +362,22 @@ void XGUI_Tesselator::Vertex2(vec_t x,vec_t y)
 	m_pVertexes[m_nUsedElements].y = y + m_vTranslation.y;
 	
 	m_nUsedElements++;
+
+	if (m_nUsedElements == m_nElements) 
+		Flush();
 	
 	if (m_nUsedElements < m_nElements)
 		m_pColors[m_nUsedElements] = m_cDefault;
 }
 
 /*
- *	Pushes array of cords
+ *	Pushes array of coords
  **/
 void XGUI_Tesselator::Coord2a(ME_Math::Vector2D * pUV,int count)
 {
+	if (m_nUsedElements + count >= m_nElements)
+		Flush();
+
 	memcpy(&m_pUVMapping[m_nUsedElements],pUV,sizeof(ME_Math::Vector2D) * count);
 }
 
@@ -361,27 +386,20 @@ void XGUI_Tesselator::Coord2a(ME_Math::Vector2D * pUV,int count)
  **/
 void XGUI_Tesselator::Color32a(color32_t * c,int count)
 {
+	if (m_nUsedElements + count >= m_nElements)
+		Flush();
+
 	memcpy(&m_pColors[m_nUsedElements],c,sizeof(color32_t) * count);
 }
 
 void XGUI_Tesselator::Vertex2a(ME_Math::Vector2D * pVecs,int count)
 {
 	if (m_nUsedElements + count >= m_nElements)
-	{
-		int first = m_nElements - m_nUsedElements;
-		int second = count - first;
-
-		memcpy(&m_pVertexes[m_nUsedElements],pVecs,first * sizeof(ME_Math::Vector2D));
-		m_nUsedElements+=first;
 		Flush();
-
-		memcpy(&m_pVertexes[m_nUsedElements],&pVecs[second],second * sizeof(ME_Math::Vector2D));
-	}
-	else
-	{
-		memcpy(&m_pVertexes[m_nUsedElements],pVecs,count * sizeof(ME_Math::Vector2D));
-		m_nUsedElements+=count;
-	}	
+	
+	memcpy(&m_pVertexes[m_nUsedElements],pVecs,count * sizeof(ME_Math::Vector2D));
+	m_nUsedElements+=count;
+	
 }
 
 /*

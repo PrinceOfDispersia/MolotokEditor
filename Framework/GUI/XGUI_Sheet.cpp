@@ -28,17 +28,18 @@ XGUI_Sheet::XGUI_Sheet(byte * pBuffer,size_t buffSize)
 
 	m_pHeader = (dSheetHDR_t *)m_pBuffer;
 
-	byte * pImageSource = &m_pBuffer[m_pHeader->image_offset];
-	size_t sz = m_pHeader->image_size;
+	//byte * pImageSource = &m_pBuffer[m_pHeader->image_offset];
+	//size_t sz = m_pHeader->image_size;
 
-	m_pImage = GL_LoadTexture(_T("GUISheet"),pImageSource,sz,false);
+	//m_pImage = GL_LoadTexture(_T("GUISheet"),pImageSource,sz,false);
+	m_pImage = nullptr;
 
 	dSheetGlyph_t * pGlyphs = (dSheetGlyph_t*)&m_pBuffer[m_pHeader->glyphs_offset];
 	int nGlyphs = m_pHeader->glyphs_count;
 
 	for(int i = 0 ; i < nGlyphs ; i++)
 	{
-		mSheetGlyph_t * mGlyph = (mSheetGlyph_t*)g_pPlatform->MemoryPools()->Alloc(sz);
+		mSheetGlyph_t * mGlyph = (mSheetGlyph_t*)g_pPlatform->MemoryPools()->Alloc(sizeof(mSheetGlyph_t));
 		dSheetGlyph_t * dGlyph = &pGlyphs[i];
 		
 		// 0 0
@@ -47,17 +48,20 @@ XGUI_Sheet::XGUI_Sheet(byte * pBuffer,size_t buffSize)
 		// 0 1
 		// 
 		
-		mGlyph->c[0].x = (vec_t)dGlyph->x / m_pImage->width;
-		mGlyph->c[0].y = 1 - (vec_t)dGlyph->y / m_pImage->height;
+		vec_t w = !m_pImage ? 0 : m_pImage->width;
+		vec_t h = !m_pImage ? 0 : m_pImage->height;
+		
+		mGlyph->c[0].x = (vec_t)dGlyph->x / w;
+		mGlyph->c[0].y = 1 - (vec_t)dGlyph->y / h;
 
-		mGlyph->c[1].x = (vec_t)(dGlyph->x + dGlyph->w) / m_pImage->width;
-		mGlyph->c[1].y = 1 - (vec_t)dGlyph->y / m_pImage->height;
+		mGlyph->c[1].x = (vec_t)(dGlyph->x + dGlyph->w) / w;
+		mGlyph->c[1].y = 1 - (vec_t)dGlyph->y / h;
 
-		mGlyph->c[2].x = (vec_t)(dGlyph->x + dGlyph->w) / m_pImage->width;
-		mGlyph->c[2].y = 1 - (vec_t)(dGlyph->y + dGlyph->h) / m_pImage->height;
+		mGlyph->c[2].x = (vec_t)(dGlyph->x + dGlyph->w) / w;
+		mGlyph->c[2].y = 1 - (vec_t)(dGlyph->y + dGlyph->h) / h;
 
-		mGlyph->c[3].x = (vec_t)(dGlyph->x) / m_pImage->width;
-		mGlyph->c[3].y = 1 - (vec_t)(dGlyph->y + dGlyph->h) / m_pImage->height;
+		mGlyph->c[3].x = (vec_t)(dGlyph->x) / w;
+		mGlyph->c[3].y = 1 - (vec_t)(dGlyph->y + dGlyph->h) / h;
 
 		mGlyph->e[0] = dGlyph->w;
 		mGlyph->e[1] = dGlyph->h;
@@ -94,7 +98,7 @@ XGUI_Sheet::~XGUI_Sheet()
  **/
 void XGUI_Sheet::Bind()
 {
-	glBindTexture(GL_TEXTURE_2D,m_pImage->texID);
+	//glBindTexture(GL_TEXTURE_2D,m_pImage->texID);
 }
 
 
@@ -110,4 +114,38 @@ mSheetGlyph_t * XGUI_Sheet::FindGlyph(char * szName)
 	}
 
 	 return 0;
+}
+
+void XGUI_Sheet::SetAtlas(pgl_texture_t pAtlas,ME_Math::Vector2D offset)
+{
+	m_pImage = pAtlas;
+
+	dSheetGlyph_t * pGlyphs = (dSheetGlyph_t*)&m_pBuffer[m_pHeader->glyphs_offset];
+	int nGlyphs = m_pHeader->glyphs_count;
+
+	for(int i = 0 ; i < nGlyphs ; i++)
+	{
+		mSheetGlyph_t * mGlyph = m_vGlyphList[i];
+		dSheetGlyph_t * dGlyph = &pGlyphs[i];
+
+
+		mGlyph->c[0].x = (vec_t)dGlyph->x / m_pImage->width;
+		mGlyph->c[0].y = 1 - (vec_t)dGlyph->y / m_pImage->height;
+
+		mGlyph->c[1].x = (vec_t)(dGlyph->x + dGlyph->w) / m_pImage->width;
+		mGlyph->c[1].y = 1 - (vec_t)dGlyph->y / m_pImage->height;
+
+		mGlyph->c[2].x = (vec_t)(dGlyph->x + dGlyph->w) / m_pImage->width;
+		mGlyph->c[2].y = 1 - (vec_t)(dGlyph->y + dGlyph->h) / m_pImage->height;
+
+		mGlyph->c[3].x = (vec_t)(dGlyph->x) / m_pImage->width;
+		mGlyph->c[3].y = 1 - (vec_t)(dGlyph->y + dGlyph->h) / m_pImage->height;
+
+		mGlyph->e[0] = dGlyph->w;
+		mGlyph->e[1] = dGlyph->h;
+
+				
+	}
+
+	m_vAtlasOffset = offset;
 }

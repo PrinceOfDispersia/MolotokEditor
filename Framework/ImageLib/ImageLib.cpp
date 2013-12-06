@@ -189,3 +189,17 @@ pgl_texture_t GL_LoadTexture(TCHAR * szName,byte * pSource,size_t bufferSize,boo
 
 }
 
+/*
+ *	Loads texture from file system
+ **/
+pgl_texture_t GL_LoadTextureFromFS(TCHAR * szName)
+{
+	size_t sz;
+	byte * pBits = g_pPlatform->FileSystem()->LoadFile(szName,&sz);
+
+	pgl_texture_t ret = GL_LoadTexture(szName,pBits,sz,false);
+
+	g_pPlatform->FileSystem()->CloseFile(pBits);
+
+	return ret;
+}

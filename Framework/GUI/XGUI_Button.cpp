@@ -84,9 +84,12 @@ void XGUI_Button::DrawTextLabel()
 	xt = strRect.pos.x; yt = strRect.pos.y - yofs;
 
 	
-	glColor4f(0.0f,0.0f,0.0f,1);
+	color32_t c;
+	c.r = 0; c.g = 0; c.b = 0; c.a = 255;
+	g_pTesselator->DefaultColor(c);
 
 	m_pGuiFont->Draw(ME_Math::Vector2D(xt,yt),m_strCaption);
+	g_pTesselator->ResetDefaultColor();
 }
 
 /*
@@ -115,7 +118,7 @@ void XGUI_Button::DrawComponent()
 	}
 	
 	g_pTesselator->ResetDefaultColor();
-	g_pTesselator->Flush();
+	//g_pTesselator->Flush();
 
 	DrawTextLabel();
 	

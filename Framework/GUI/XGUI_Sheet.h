@@ -34,7 +34,11 @@ namespace ME_Framework
 			
 			std::vector<mSheetGlyph_t*> m_vGlyphList;
 			pgl_texture_t  m_pImage;
+			ME_Math::Vector2D m_vAtlasOffset;
 		public:
+
+			void SetAtlas(pgl_texture_t pAtlas,ME_Math::Vector2D offset);
+
 			XGUI_Sheet(byte * pBuffer,size_t buffSize);
 			~XGUI_Sheet();
 

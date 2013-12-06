@@ -29,8 +29,9 @@ namespace ME_Framework
 			int m_nMaps;
 
 			short * m_pCodePages;
-			
+			ME_Math::Vector2D m_vAtlasOffset;
 		public:
+			void SetAtlas(pgl_texture_t pAtlas,ME_Math::Vector2D offset);
 			void Calc_TextRect(String & str,xgRect_t * rect);
 			void Draw(ME_Math::Vector2D pos,String str);
 

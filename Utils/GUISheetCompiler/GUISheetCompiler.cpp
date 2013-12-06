@@ -92,18 +92,18 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	// Load image
-	size_t szImage;
-	byte * pImage = LoadFile(argv[2],&szImage);
-
-	if (!szImage || !pImage)
-	{
-		_tprintf(_T("ERROR: file %s not found!\n"),argv[2]);
-
-		free(pImage);
-
-		while(!_kbhit());
-		return 1;
-	}
+// 	size_t szImage;
+// 	byte * pImage = LoadFile(argv[2],&szImage);
+// 
+// 	if (!szImage || !pImage)
+// 	{
+// 		_tprintf(_T("ERROR: file %s not found!\n"),argv[2]);
+// 
+// 		free(pImage);
+// 
+// 		while(!_kbhit());
+// 		return 1;
+// 	}
 
 	FILE * fp = _tfopen(argv[3],_T("wb"));
 
@@ -112,7 +112,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		_tprintf(_T("ERROR: can't open file %s for writing!\n"),argv[3]);
 	
 		free(pSkinDef);
-		free(pImage);
+		//free(pImage);
 
 		while(!_kbhit());
 		return 1;
@@ -136,10 +136,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		hdr.glyphs_count++;
 	}
 
-	hdr.image_offset = ftell(fp);
-	hdr.image_size = szImage;
+	hdr.image_offset = 0;//ftell(fp);
+	hdr.image_size = 0;//szImage;
 
-	fwrite(pImage,szImage,1,fp);
+	//fwrite(pImage,szImage,1,fp);
 
 	fseek(fp,0,SEEK_SET);
 
@@ -148,7 +148,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	fwrite(&hdr,sizeof(hdr),1,fp);
 	fclose(fp);
 
-	free(pImage);
+	//free(pImage);
 	free(pSkinDef);
 
 	return 0;

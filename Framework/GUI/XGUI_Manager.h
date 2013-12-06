@@ -28,11 +28,13 @@ namespace ME_Framework
 			color32_t m_cDefault;
 
 			ME_Math::Vector2D m_vTranslation;
+			
 		public:
 			XGUI_Tesselator(int elementsCount);
 			~XGUI_Tesselator();
 
 			void Coord2v(ME_Math::Vector2D & uv);
+			void Coord2(float u,float v);
 			void Color32(color32_t & c);
 			void Vertex2v(ME_Math::Vector2D & vec);
 			void Vertex2(vec_t x,vec_t y);
@@ -66,7 +68,7 @@ namespace ME_Framework
 			bool m_bInEditorMode;
 
 			XGUI_Tesselator * m_pTesselator;
-
+			pgl_texture_t m_GuiAtlas;
 		public:
 			bool IsInEditorMode() { return m_bInEditorMode; }
 

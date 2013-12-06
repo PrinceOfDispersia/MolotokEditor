@@ -43,7 +43,7 @@ namespace ME_XGUI
 		void SortChildsByAlignOrder();
 
 		void CalcClientRect(xgRect_t & r);
-		void PointToClient(ME_Math::Vector2D & v);
+		
 
 		float m_flHoveroutTimer;
 		
@@ -60,8 +60,15 @@ namespace ME_XGUI
 		void RecalcDrag();
 		void RecursiveNotifyEveryone(ME_Framework::appEvent_t & ev);
 
-	public:
+		bool m_bDockable;
+		TDockState m_DockState;
+		
+		XGUI_Widget * m_pDockWidget;
+		xgRect_t m_PreDockRect;
 
+	public:
+		void PointToClient(ME_Math::Vector2D & v);
+		void ClientToScreen(ME_Math::Vector2D & v);
 		void AddChildWidget(XGUI_Widget * pWidget);
 
 		// Setters
@@ -73,7 +80,9 @@ namespace ME_XGUI
 		void SetEnableState(bool bEnabled);
 		void SetCaption(String & str);
 		void SetZOrder(int order);
-
+		void SetDockWidget(XGUI_Widget * w);
+		void SetDockState(TDockState s);
+		
 		// Getters
 		XGUI_Widget *	GetParent();
 		TAlign			GetAlign();
@@ -83,6 +92,10 @@ namespace ME_XGUI
 		String &		GetCaption();
 		int				GetAlignPriority();
 		int				GetZOrder();
+		XGUI_Widget*	GetDockWidget();
+		TDockState		GetDockState();
+
+
 
 		virtual void HandleEvent(ME_Framework::appEvent_t & pEvent);
 		virtual void DrawComponent();
@@ -104,7 +117,9 @@ namespace ME_XGUI
 
 		const std::vector<XGUI_Widget*> & GetChilds();
 		const xgRect_t GetRect();
+
 		inline const bool IsDragged() { return m_bDragged; }
+		inline const bool IsDockable() { return m_bDockable; }
 	};
 }
 

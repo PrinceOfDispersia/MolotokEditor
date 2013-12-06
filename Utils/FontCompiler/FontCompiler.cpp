@@ -139,9 +139,6 @@ int _tmain(int argc, _TCHAR* argv[])
 		vKernings.push_back(p);
 	}
 	
-
-
-
 	FILE * fp = _tfopen(argv[2],_T("wb"));
 
 	dFontHdr_t hdr;
@@ -161,14 +158,14 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	fwrite(&vGlyphs[0],sizeof(dGlyphInfo_t),vGlyphs.size(),fp);
 	
-	// write kernings
+	// write kerning
 	hdr.lumps[LUMP_FNT_KERNING_PAIRS].start = ftell(fp);
 	hdr.lumps[LUMP_FNT_KERNING_PAIRS].length = vKernings.size() * sizeof(dKerningPairs_t);
 
 	fwrite(&vKernings[0],sizeof(dKerningPairs_t),vKernings.size(),fp);
 
 	// write image
-		FILE * fImage = fopen(szTextureName,"rb");
+	/*	FILE * fImage = fopen(szTextureName,"rb");
 
 		if (!fImage)
 		{
@@ -183,13 +180,13 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		byte * pImage = (byte*)malloc(szImage);
 		fread(pImage,szImage,1,fImage);
-		fclose(fImage);
+		fclose(fImage);*/
 	// 
 
-	hdr.lumps[LUMP_FNT_IMAGE].start = ftell(fp);
-	hdr.lumps[LUMP_FNT_IMAGE].length = szImage;
+	hdr.lumps[LUMP_FNT_IMAGE].start = 0;//ftell(fp);
+	hdr.lumps[LUMP_FNT_IMAGE].length = 0;//szImage;
 
-	fwrite(pImage,szImage,1,fp);
+	//fwrite(pImage,szImage,1,fp);
 
 	// Codepages
 	byte pages[256];
@@ -253,7 +250,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	vKernings.shrink_to_fit();
 
 	free(pSource);
-	free(pImage);
+	//free(pImage);
 
 	return 0;
 }
