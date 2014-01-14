@@ -19,19 +19,7 @@ void ApplicationStart()
 {
 	// Start image library
 	InitImageLib();
-
 	pManager = new XGUI_Manager;
-
-	for(int i = 0 ; i < 50 ; i++)
-	{
-		xgRect_t r;
-		r.pos = ME_Math::Vector2D(100 + i * 5,100 + i * 5);
-		r.ext = ME_Math::Vector2D(260,24);
-		XGUI_Button * pButton = new XGUI_Button(r);
-		pButton->SetCaption(String(_T("The quick brown fox jumped over a lazy dog")));
-		pManager->AddWidget(pButton);
-	}
-	
 	
 }
 

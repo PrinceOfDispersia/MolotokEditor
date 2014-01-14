@@ -173,6 +173,7 @@ namespace ME_Framework
 		float m_flFrameTime;
 
 		ME_Math::Vector2D GetCursorPos();
+		void SetCursorPos(ME_Math::Vector2D  v);
 
 		ME_Math::Vector2D GetClientAreaExtents();
 	};

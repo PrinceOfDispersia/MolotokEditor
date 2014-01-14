@@ -44,7 +44,11 @@ namespace ME_Framework
 			void Vertex2a(ME_Math::Vector2D * pVecs,int count);
 
 			void DefaultColor(color32_t c);
-			inline void ResetDefaultColor() { m_cDefault.r = m_cDefault.g = m_cDefault.b = m_cDefault.a = 255;}
+			inline void ResetDefaultColor() 
+			{ 
+				m_cDefault.r = m_cDefault.g = m_cDefault.b = m_cDefault.a = 255;
+				m_pColors[m_nUsedElements] = m_cDefault;
+			}
 
 			void SetTranslation(ME_Math::Vector2D & vOrigin);
 
@@ -56,7 +60,8 @@ namespace ME_Framework
 			XGUI_Widget * m_pDesktop;
 			
 			XGUI_Sheet  * m_pImagesSheet;
-			XGUI_Font * m_pGuiFont;
+			XGUI_Font * m_pGuiFontNormal;
+			XGUI_Font * m_pGuiFontSmall;
 
 			guiSettings_t m_GuiSettings;
 
@@ -69,6 +74,9 @@ namespace ME_Framework
 
 			XGUI_Tesselator * m_pTesselator;
 			pgl_texture_t m_GuiAtlas;
+
+			bool m_bCursorLocked;
+			xgRect_t m_CursorLockRect;
 		public:
 			bool IsInEditorMode() { return m_bInEditorMode; }
 
@@ -81,6 +89,11 @@ namespace ME_Framework
 			void Think(float flTimeDelta);
 
 			void HandleEvent(ME_Framework::appEvent_t & ev);
+			
+			void LockCursor(xgRect_t rect);
+			void UnlockCursor();
+
+			void LockCursorInDesktop();
 
 			XGUI_Manager();
 			~XGUI_Manager();

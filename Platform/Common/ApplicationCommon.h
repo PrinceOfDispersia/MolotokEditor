@@ -11,6 +11,7 @@
 #include <Platform/Common/ApplicationConfig.h>
 #include <Framework/BasicMacros.h>
 #include <Framework/BasicTypes.h>
+#include <Framework/DebugConsole.h>
 
 
 // >=== PORTING NOTES: Change this header with appropriate for your platform
@@ -34,7 +35,7 @@
 
 #include <Framework/GUI/XGUI.h>
 
-// Platform independent appication callbacks
+// Platform independent application callbacks
 extern void ApplicationStart();
 extern void ApplicationRun(float flFrameDelta);
 extern void ApplicationShutdown();

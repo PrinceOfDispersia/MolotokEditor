@@ -11,7 +11,20 @@ namespace ME_XGUI
 {
 	class XGUI_Manager;
 
-	class XGUI_Widget
+	class XGUI_Widget;
+
+	typedef std::weak_ptr<XGUI_Widget> TWidgetWeakPtr;
+	typedef std::shared_ptr<XGUI_Widget> TWidgetSharedPtr;
+
+	inline bool operator == (TWidgetWeakPtr a,TWidgetWeakPtr b)
+	{
+		if (!a.lock()) return false;
+		if (!b.lock()) return false;
+
+		return a.lock().get() == b.lock().get();
+	}
+
+	class XGUI_Widget: public std::enable_shared_from_this<XGUI_Widget>
 	{
 		friend XGUI_Manager;
 	protected:
@@ -21,7 +34,7 @@ namespace ME_XGUI
 		unsigned int m_ZOrder;
 			
 		float m_flTimers[4];
-		std::vector<XGUI_Widget*> m_vChilds;
+		std::vector<TWidgetSharedPtr> m_vChilds;
 		std::vector<XGUI_Widget*> m_vAlignOrderedChilds;
 		
 		XGUI_Widget * m_pParent;
@@ -47,7 +60,9 @@ namespace ME_XGUI
 
 		float m_flHoveroutTimer;
 		
-		XGUI_Font * m_pGuiFont;
+		XGUI_Font * m_pGuiFontNormal;
+		XGUI_Font * m_pGuiFontSmall;
+		
 		
 		ME_Math::Vector2D m_vDragOrigin;
 		bool m_bDragged;
@@ -66,6 +81,15 @@ namespace ME_XGUI
 		XGUI_Widget * m_pDockWidget;
 		xgRect_t m_PreDockRect;
 
+		// Left Top Right Bottom
+		ME_Math::Vector2D m_vMargins[2];
+		
+		virtual void OnWidgetDocked(TWidgetSharedPtr w) {};
+		virtual void OnWidgetUndocked(TWidgetSharedPtr w) {};
+
+		void RealignDockedItems(TItemAlignOrder order);
+
+		std::vector<TWidgetWeakPtr> m_vDockedWidgets;
 	public:
 		void PointToClient(ME_Math::Vector2D & v);
 		void ClientToScreen(ME_Math::Vector2D & v);
@@ -82,19 +106,20 @@ namespace ME_XGUI
 		void SetZOrder(int order);
 		void SetDockWidget(XGUI_Widget * w);
 		void SetDockState(TDockState s);
-		
+		void SetDragged(bool val);
+				
 		// Getters
-		XGUI_Widget *	GetParent();
-		TAlign			GetAlign();
-		TAnchor			GetAnchors();
-		bool			GetVisibilty();
-		bool			GetEnableState();
+		XGUI_Widget *	GetParent() const;
+		TAlign			GetAlign() const;
+		TAnchor			GetAnchors() const;
+		bool			GetVisibilty() const;
+		bool			GetEnableState() const;
 		String &		GetCaption();
-		int				GetAlignPriority();
-		int				GetZOrder();
-		XGUI_Widget*	GetDockWidget();
-		TDockState		GetDockState();
-
+		int				GetAlignPriority() const;
+		int				GetZOrder() const;
+		XGUI_Widget*	GetDockWidget() const;
+		TDockState		GetDockState()  const;
+		bool			IsDragged() const;
 
 
 		virtual void HandleEvent(ME_Framework::appEvent_t & pEvent);
@@ -115,8 +140,10 @@ namespace ME_XGUI
 		XGUI_Widget(xgRect_t & rect);
 		virtual ~XGUI_Widget();
 
-		const std::vector<XGUI_Widget*> & GetChilds();
-		const xgRect_t GetRect();
+		const std::vector<TWidgetSharedPtr> & GetChilds();
+		xgRect_t & GetRect();
+
+		void SetPos(vec_t x,vec_t y);
 
 		inline const bool IsDragged() { return m_bDragged; }
 		inline const bool IsDockable() { return m_bDockable; }

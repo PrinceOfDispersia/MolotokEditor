@@ -15,6 +15,32 @@ namespace ME_Framework
 		{
 			ME_Math::Vector2D pos;
 			ME_Math::Vector2D ext;
+
+			inline vec_t Left()
+			{
+				return pos.x;
+			}
+
+			inline vec_t Top()
+			{
+				return pos.y;
+			}
+
+			inline vec_t Right()
+			{
+				return pos.x + ext.x;
+			}
+
+			inline vec_t Bottom()
+			{
+				return pos.y + ext.y;
+			}
+
+			inline ME_Math::Vector2D BottomRight()
+			{
+				return pos + ext;
+			}
+			
 		}xgRect_t;
 
 		inline bool RectIntersection(xgRect_t & a,xgRect_t & b)

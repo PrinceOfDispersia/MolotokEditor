@@ -77,18 +77,8 @@ void XGUI_Font::Calc_TextRect(String & str,xgRect_t * rect)
  **/
 void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 {
-		GL_EnableState(GLS_TEXTURE_2D);
-		GL_EnableState(GLS_BLEND);
-
-		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
- 		glBindTexture(GL_TEXTURE_2D,m_pFontImage->texID);
-		
-
 		vec_t w = 0;
 		vec_t h = 0;
-						
-		//glBegin(GL_QUADS);
 		
 		size_t i = 0;
 
@@ -135,10 +125,6 @@ void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 			c[2] = (x + inf->width) / m_pFontImage->width;
 			c[3] = 1 - ( (y + inf->height) / m_pFontImage->height);
 
-			
-
-			
-			
 			vec_t xofs = inf->xoffs;
 			vec_t yofs = inf->yoffs; 
 			
@@ -147,9 +133,7 @@ void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 
 			vec_t y1 = yofs + pos.y;
 			vec_t y2 = y1 + (inf->height);
-
 			
-
  			g_pTesselator->Coord2(c[0],c[1]);
  			g_pTesselator->Vertex2(x1,y1);
  			g_pTesselator->Coord2(c[2],c[1]);
@@ -163,10 +147,6 @@ void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 						
 			
 		}
-		//glEnd();
-				
-		GL_DisableState(GLS_BLEND);
-
 }
 
 /*
@@ -218,8 +198,8 @@ void XGUI_Font::SetAtlas(pgl_texture_t pAtlas,ME_Math::Vector2D offset)
 
 	for(int i = 0 ; i < m_nGlyphs ; i++)
 	{
-		m_pGlyphs[i].xpos += (short)-m_vAtlasOffset.x + offset.x;
-		m_pGlyphs[i].ypos += (short)-m_vAtlasOffset.y + offset.y;
+		m_pGlyphs[i].xpos += (short)(-m_vAtlasOffset.x + offset.x);
+		m_pGlyphs[i].ypos += (short)(-m_vAtlasOffset.y + offset.y);
 	}
 
 	m_vAtlasOffset = offset;

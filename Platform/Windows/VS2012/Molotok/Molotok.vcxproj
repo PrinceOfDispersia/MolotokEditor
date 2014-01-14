@@ -158,6 +158,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\Framework\ConfigVars.cpp" />
+    <ClCompile Include="..\..\..\..\Framework\DebugConsole.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Button.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Dock.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_DrawUtils.cpp" />
@@ -212,6 +213,7 @@
     <ClInclude Include="..\..\..\..\Framework\BasicMacros.h" />
     <ClInclude Include="..\..\..\..\Framework\BasicTypes.h" />
     <ClInclude Include="..\..\..\..\Framework\ConfigVars.h" />
+    <ClInclude Include="..\..\..\..\Framework\DebugConsole.h" />
     <ClInclude Include="..\..\..\..\Framework\EnumFlags.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\Font_FT2.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI.h" />

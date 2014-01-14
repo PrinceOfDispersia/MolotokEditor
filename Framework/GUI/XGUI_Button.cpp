@@ -67,7 +67,7 @@ void XGUI_Button::DrawTextLabel()
 {
 	// TODO: calc this once when resize\moved\label change?
 	xgRect_t strRect;
-	m_pGuiFont->Calc_TextRect(m_strCaption,&strRect);
+	m_pGuiFontNormal->Calc_TextRect(m_strCaption,&strRect);
 
 	xgRect_t cl = m_Rect;
 	CalcClientRect(cl);
@@ -88,7 +88,7 @@ void XGUI_Button::DrawTextLabel()
 	c.r = 0; c.g = 0; c.b = 0; c.a = 255;
 	g_pTesselator->DefaultColor(c);
 
-	m_pGuiFont->Draw(ME_Math::Vector2D(xt,yt),m_strCaption);
+	m_pGuiFontNormal->Draw(ME_Math::Vector2D(xt,yt),m_strCaption);
 	g_pTesselator->ResetDefaultColor();
 }
 
@@ -97,13 +97,6 @@ void XGUI_Button::DrawTextLabel()
  **/
 void XGUI_Button::DrawComponent()
 {
-	GL_EnableState(GLS_TEXTURE_2D);
-	GL_EnableState(GLS_BLEND);
-	GL_DisableState(GLS_DEPTH_TEST);
-	
-	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-	glColor4ubv((GLubyte*)&m_Color);
-	
 	g_pTesselator->ResetDefaultColor();
 
 	if (!m_bPressed)
@@ -118,10 +111,9 @@ void XGUI_Button::DrawComponent()
 	}
 	
 	g_pTesselator->ResetDefaultColor();
-	//g_pTesselator->Flush();
-
-	DrawTextLabel();
 	
+	DrawTextLabel();
+
 }
 
 /*

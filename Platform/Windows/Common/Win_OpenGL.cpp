@@ -198,6 +198,9 @@ LRESULT CWinOpenGLContext::WindowProc(UINT uMsg,WPARAM wParam,LPARAM lParam)
 	return DefWindowProc(m_hWnd,uMsg,wParam,lParam);
 }
 
+bool g_bMouseKeys[3];
+
+
 /*
  *	Main loop of "Graphical" application
  **/

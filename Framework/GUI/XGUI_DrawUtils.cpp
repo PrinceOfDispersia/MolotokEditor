@@ -6,6 +6,7 @@
 
 #include <Platform/Common/ApplicationCommon.h>
 
+using namespace ME_Framework::ME_OpenGLBackend;
 extern ME_XGUI::XGUI_Tesselator * g_pTesselator;
 
 /*
@@ -139,6 +140,8 @@ void ME_Framework::ME_XGUI::XGUI_DrawRect(xgRect_t & r)
  **/
 void ME_Framework::ME_XGUI::XGUI_DrawRectOutline(xgRect_t & r)
 {
+	GL_DisableState(GLS_TEXTURE_2D);
+
 	glBegin(GL_LINE_LOOP);
 		
 		glVertex2d(r.pos.x,r.pos.y);
@@ -147,5 +150,7 @@ void ME_Framework::ME_XGUI::XGUI_DrawRectOutline(xgRect_t & r)
 		glVertex2d(r.pos.x,r.pos.y + r.ext.y);
 
 	glEnd();	
+
+	GL_EnableState(GLS_TEXTURE_2D);
 }
 

@@ -7,6 +7,7 @@
 #include <Platform/Common/ApplicationCommon.h>
 
 using namespace ME_Framework::ME_XGUI;
+using namespace ME_Framework::ME_OpenGLBackend;
 XGUI_Manager * g_pGUIManager;
 XGUI_Tesselator * g_pTesselator;
 
@@ -44,6 +45,27 @@ void LoadScalableSet(mSheetGlyph_t * sprites[9],char mask[])
 }
 
 /*
+ *	Font loading routine
+ **/
+XGUI_Font * LoadFont(TCHAR * path,pgl_texture_t atlasTexture,ME_Math::Vector2D atlasOffset)
+{
+	size_t sz;
+	byte * pBuffer = g_pPlatform->FileSystem()->LoadFile(path,&sz);
+
+	if (!pBuffer)
+		return 0;
+
+	XGUI_Font * pRet;
+
+	pRet = new XGUI_Font((dFontHdr_t*)pBuffer,sz);
+	pRet->SetAtlas(atlasTexture,atlasOffset);
+
+	g_pPlatform->FileSystem()->CloseFile(pBuffer);
+
+	return pRet;
+}
+
+/*
  *	Constructor
  **/
 XGUI_Manager::XGUI_Manager()
@@ -51,11 +73,8 @@ XGUI_Manager::XGUI_Manager()
 	size_t sz;
 	byte * pBuffer = g_pPlatform->FileSystem()->LoadFile(_T("gui/skin.bin"),&sz);
 
+	m_GuiAtlas = GL_LoadTextureFromFS(_T("gui/atlas_all.png"));
 	m_pImagesSheet = nullptr;
-
-	// TODO: fix 
-	m_pTesselator = new XGUI_Tesselator(65536);
-	g_pTesselator = m_pTesselator;
 
 	if (!pBuffer) 
 		Sys_FatalError(_T("Can't open GUI skin file!"));
@@ -64,22 +83,23 @@ XGUI_Manager::XGUI_Manager()
 	//	0,690
 	//	256,690
 	//
-	m_GuiAtlas = GL_LoadTextureFromFS(_T("gui/atlas_all.png"));
+	
 
 	m_pImagesSheet = new XGUI_Sheet(pBuffer,sz);
 	m_pImagesSheet->SetAtlas(m_GuiAtlas,ME_Math::Vector2D(0,0));
 
 	g_pPlatform->FileSystem()->CloseFile(pBuffer);
 
-	pBuffer = g_pPlatform->FileSystem()->LoadFile(_T("gui/fonts/segoeui9.ft2"),&sz);
+	
 
-	if (!pBuffer)
-		return;
-
-	m_pGuiFont = new XGUI_Font((dFontHdr_t*)pBuffer,sz);
-	m_pGuiFont->SetAtlas(m_GuiAtlas,ME_Math::Vector2D(0,690));
-
+	// TODO: fix 
+	m_pTesselator = new XGUI_Tesselator(65536);
+	g_pTesselator = m_pTesselator;
+	
 	g_pGUIManager = this;
+
+	m_pGuiFontNormal = LoadFont(_T("gui/fonts/SegoeUI9.ft2"),m_GuiAtlas,ME_Math::Vector2D(0,690));
+	m_pGuiFontSmall = LoadFont(_T("gui/fonts/SegoeUI8.ft2"),m_GuiAtlas,ME_Math::Vector2D(256,690));
 
 	LoadScalableSet(sprButtonNormal,"UI.ButtonBig.Normal");
 	LoadScalableSet(sprButtonHovered,"UI.ButtonBig.Hovered");
@@ -113,24 +133,40 @@ XGUI_Manager::XGUI_Manager()
 
 		pDock->SetAlign(a[i]);
 		pDock->SetAlignPriority(priority[i]);
-
-		m_pDesktop->AddChildWidget(pDock);
+		
+		AddWidget(pDock);
 	}
 
-	r.pos = ME_Math::Vector2D(320,240);
-	r.ext = ME_Math::Vector2D(150,80);
-	XGUI_DockWindow * pTestWindow = new XGUI_DockWindow(r);
+	for(int i = 0 ; i < 4 ; i++)
+	{
+		r.pos = ME_Math::Vector2D(320 + i * 15,240);
+		r.ext = ME_Math::Vector2D(150,80);
+		XGUI_DockWindow * pTestWindow = new XGUI_DockWindow(r);
+		pTestWindow->SetZOrder(1);
 
-	pTestWindow->SetZOrder(1);
+		pTestWindow->SetCaption(String(VA(_T("Window #%d"),i+1)));
+
+		for(int i = 0 ; i < 40 ; i++)
+		{
+			const int sz = 24;
+
+			xgRect_t r;
+			r.pos = ME_Math::Vector2D(5+i*sz,16);
+			r.ext = ME_Math::Vector2D(sz,sz);
+			XGUI_Button * pButton = new XGUI_Button(r);
+			pTestWindow->AddChildWidget(pButton);
+		}
+
+		AddWidget(pTestWindow);
+	}
 	
-	m_pDesktop->AddChildWidget(pTestWindow);
-
 	// Recalculate rects
 	m_pDesktop->RecalcItemsRects();
 
 	// dock sites setup end
 
 	m_bInEditorMode = false;
+	m_bCursorLocked = false;
 }
 
 /*
@@ -150,7 +186,7 @@ XGUI_Manager::~XGUI_Manager()
 	delete m_pDesktop;
 	delete m_pImagesSheet;
 	delete m_pGuiVars;
-	delete m_pGuiFont;
+	delete m_pGuiFontNormal;
 }
 
 /*
@@ -159,7 +195,15 @@ XGUI_Manager::~XGUI_Manager()
 void XGUI_Manager::Draw()
 {
 	m_pImagesSheet->Bind();
+
+	GL_EnableState(GLS_TEXTURE_2D);
+	GL_EnableState(GLS_BLEND);
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
 	m_pDesktop->Render();
+
+	
+	
 	m_pTesselator->Flush();
 }
 
@@ -168,6 +212,20 @@ void XGUI_Manager::Draw()
  **/
 void XGUI_Manager::Think(float flDeltaTime)
 {
+	if (m_bCursorLocked)
+	{
+		ME_Math::Vector2D v = g_pPlatform->GetCursorPos();
+
+		if (v.x < m_CursorLockRect.pos.x) v.x = m_CursorLockRect.pos.x;			
+		if (v.x > (m_CursorLockRect.pos.x + m_CursorLockRect.ext.x))  v.x = m_CursorLockRect.pos.x + m_CursorLockRect.ext.x;
+
+		if (v.y < m_CursorLockRect.pos.y) v.y = m_CursorLockRect.pos.y;			
+		if (v.y > (m_CursorLockRect.pos.y + m_CursorLockRect.ext.y))  v.y = m_CursorLockRect.pos.y + m_CursorLockRect.ext.y;
+
+		g_pPlatform->SetCursorPos(v);
+	}
+
+
 	m_pDesktop->SortChilds();
 	m_pDesktop->UpdateTimers(flDeltaTime);
 	m_pDesktop->DoThink();
@@ -194,7 +252,10 @@ mSheetGlyph_t * XGUI_Manager::GetGUISheetGlyph(char * szName)
  **/
 void XGUI_Manager::AddWidget(XGUI_Widget * pWidget)
 {
-	pWidget->m_pGuiFont = m_pGuiFont;
+	pWidget->m_pGuiFontNormal = m_pGuiFontNormal;
+	pWidget->m_pGuiFontSmall = m_pGuiFontSmall;
+
+
 	m_pDesktop->AddChildWidget(pWidget);
 	
 	// Recalc aligments
@@ -218,7 +279,7 @@ void XGUI_Manager::HandleEvent(ME_Framework::appEvent_t & ev)
 					ME_Math::Vector2D v = g_pPlatform->GetCursorPos();
 					w->PointToClient(v);
 					w->m_vDragOrigin = v;
-					w->m_bDragged = true;
+					w->SetDragged(true);
 				}
 				else 
 					w->HandleEvent(ev);
@@ -234,7 +295,7 @@ void XGUI_Manager::HandleEvent(ME_Framework::appEvent_t & ev)
 				{
 					ME_Math::Vector2D v = g_pPlatform->GetCursorPos();
 					w->PointToClient(v);					
-					w->m_bDragged = false;
+					w->SetDragged(false);
 				}
 			}
 			m_pDesktop->HandleEvent(ev);
@@ -408,4 +469,30 @@ void XGUI_Tesselator::Vertex2a(ME_Math::Vector2D * pVecs,int count)
 void XGUI_Tesselator::DefaultColor(color32_t  c)
 {
 	m_cDefault = c;
+	m_pColors[m_nUsedElements] = m_cDefault;
+}
+
+/*
+ *	Enables cursor lock
+ **/
+void XGUI_Manager::LockCursor(xgRect_t rect)
+{
+	m_bCursorLocked = true;
+	m_CursorLockRect = rect;
+}
+
+/*
+ *	Disables cursor lock
+ **/
+void XGUI_Manager::UnlockCursor()
+{
+	m_bCursorLocked = false;
+}
+
+/*
+ *	Locks cursor within desktop area
+ **/
+void XGUI_Manager::LockCursorInDesktop()
+{
+	LockCursor(m_pDesktop->GetRect());
 }

@@ -123,6 +123,20 @@ ME_Math::Vector2D PlatformEnvironment::GetCursorPos()
 	return  ME_Math::Vector2D(pt.x,pt.y);
 }
 
+/*
+ *	Sets cursor position within client area
+ **/
+void PlatformEnvironment::SetCursorPos(ME_Math::Vector2D v)
+{
+	POINT pt;
+	pt.x = (long)v.x; pt.y = (long)v.y;
+
+	ClientToScreen(((CWinOpenGLContext*)g_pPlatform->GetOpenGLContext())->m_hWnd,&pt);
+
+	::SetCursorPos(pt.x,pt.y);
+}
+
+
 /************************************************************************/
 /*			Entry point for windows application			                */
 /************************************************************************/

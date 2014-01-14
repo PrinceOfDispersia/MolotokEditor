@@ -1,8 +1,8 @@
 /*
- *	Molotok Editor, 2013 (C) PrinceOfDispersia
- *	XGUI_Widget.cpp - basic gui widget class
- *
- **/
+*	Molotok Editor, 2013 (C) PrinceOfDispersia
+*	XGUI_Widget.cpp - basic gui widget class
+*
+**/
 
 #include <Platform/Common/ApplicationCommon.h>
 
@@ -14,6 +14,9 @@ extern XGUI_Tesselator * g_pTesselator;
 
 XGUI_Widget::XGUI_Widget(xgRect_t & rect)
 {
+	m_vChilds.clear();
+	m_vAlignOrderedChilds.clear();
+
 	m_Rect.pos = rect.pos;
 	m_Rect.ext = rect.ext;
 
@@ -43,12 +46,14 @@ XGUI_Widget::XGUI_Widget(xgRect_t & rect)
 	m_nWidgetNumber = 0;
 
 	m_bDockable = false;
-	
+
+	m_pDockWidget = 0;
+
 }
 
 /*
- *	Function recalculates widget rect corresponding to widget alignment
- **/
+*	Function recalculates widget rect corresponding to widget alignment
+**/
 void XGUI_Widget::RecalcRectWithAligment()
 {
 	switch(m_Align)
@@ -78,17 +83,17 @@ void XGUI_Widget::RecalcRectWithAligment()
 
 					switch(w->m_Align)
 					{
-						case TAlign::alTop:
-							if (wy2 > y1)	y1 = wy2;						
+					case TAlign::alTop:
+						if (wy2 > y1)	y1 = wy2;						
 						break;
-						case TAlign::alBottom:
-							if (wy1 < y2)	y2 = wy1;													
+					case TAlign::alBottom:
+						if (wy1 < y2)	y2 = wy1;													
 						break;
-						case TAlign::alLeft:
-							if (wx2 > x1)	x1 = wx2;							
+					case TAlign::alLeft:
+						if (wx2 > x1)	x1 = wx2;							
 						break;
-						case TAlign::alRight:
-							if (wx1 < x2)	x2 = wx1;							
+					case TAlign::alRight:
+						if (wx1 < x2)	x2 = wx1;							
 						break;
 					}
 				}
@@ -105,7 +110,7 @@ void XGUI_Widget::RecalcRectWithAligment()
 	case TAlign::alTop:
 		{
 			xgRect_t pr = GetParentRect();
-			
+
 			if (!m_pParent)
 			{
 				m_Rect.pos = ME_Math::Vector2D(0,0);
@@ -124,7 +129,7 @@ void XGUI_Widget::RecalcRectWithAligment()
 					if (w->m_Align == TAlign::alNone || w->m_Align == TAlign::alClientArea) continue;
 					if (w == this) continue;
 					if (w->m_AlignPriority < m_AlignPriority) continue;
-					
+
 					vec_t wx1,wx2,wy1,wy2;
 
 					wx1 = w->m_Rect.pos.x; wx2 = w->m_Rect.pos.x + w->m_Rect.ext.x;
@@ -132,30 +137,30 @@ void XGUI_Widget::RecalcRectWithAligment()
 
 					switch (w->m_Align)
 					{
-						case TAlign::alLeft:
-							if (x1 < wx2) x1 = wx2;
-							break;
-						case TAlign::alRight:
-							if (x2 > wx1) x2 = wx1;
-							break;
-						case TAlign::alTop:
-							if (w->m_nWidgetNumber < m_nWidgetNumber)
-							{
-								y1+=w->m_Rect.ext.y;
-								y2+=w->m_Rect.ext.y;
-							}
-							break;
+					case TAlign::alLeft:
+						if (x1 < wx2) x1 = wx2;
+						break;
+					case TAlign::alRight:
+						if (x2 > wx1) x2 = wx1;
+						break;
+					case TAlign::alTop:
+						if (w->m_nWidgetNumber < m_nWidgetNumber)
+						{
+							y1+=w->m_Rect.ext.y;
+							y2+=w->m_Rect.ext.y;
+						}
+						break;
 					}
 				}
-				
+
 				m_Rect.pos.x = x1;
 				m_Rect.pos.y = y1;
 				m_Rect.ext.x = x2 - x1;
 				m_Rect.ext.y = y2 - y1;
 			}
-			
 
-			
+
+
 		}
 		break;
 	case TAlign::alBottom:
@@ -178,7 +183,7 @@ void XGUI_Widget::RecalcRectWithAligment()
 					if (w->m_Align == TAlign::alNone || w->m_Align == TAlign::alClientArea) continue;
 					if (w == this) continue;
 					if (w->m_AlignPriority < m_AlignPriority) continue;
-					
+
 					vec_t wx1,wx2,wy1,wy2;
 
 					wx1 = w->m_Rect.pos.x; wx2 = w->m_Rect.pos.x + w->m_Rect.ext.x;
@@ -207,7 +212,7 @@ void XGUI_Widget::RecalcRectWithAligment()
 				m_Rect.ext.x = x2 - x1;
 				m_Rect.ext.y = y2 - y1;
 			}
-			
+
 		}
 		break;
 	case TAlign::alLeft:
@@ -231,7 +236,7 @@ void XGUI_Widget::RecalcRectWithAligment()
 					if (w->m_Align == TAlign::alNone || w->m_Align == TAlign::alClientArea) continue;
 					if (w == this) continue;
 					if (w->m_AlignPriority < m_AlignPriority) continue;
-					
+
 					vec_t wx1,wx2,wy1,wy2;
 
 					wx1 = w->m_Rect.pos.x; wx2 = w->m_Rect.pos.x + w->m_Rect.ext.x;
@@ -259,7 +264,7 @@ void XGUI_Widget::RecalcRectWithAligment()
 				m_Rect.ext.x = x2 - x1;
 				m_Rect.ext.y = y2 - y1;
 			}
-			
+
 		}		
 		break;
 	case TAlign::alRight:
@@ -283,7 +288,7 @@ void XGUI_Widget::RecalcRectWithAligment()
 					if (w->m_Align == TAlign::alNone || w->m_Align == TAlign::alClientArea) continue;
 					if (w == this) continue;
 					if (w->m_AlignPriority < m_AlignPriority) continue;
-					
+
 
 					vec_t wx1,wx2,wy1,wy2;
 
@@ -312,30 +317,32 @@ void XGUI_Widget::RecalcRectWithAligment()
 				m_Rect.ext.x = x2 - x1;
 				m_Rect.ext.y = y2 - y1;
 			}
-			
+
 		}
 		break;
 	}
+
+	ME_Framework::appEvent_t e;
+	e.eventid = eventTypes::EV_ALIGN_PERFORMED;
+	HandleEvent(e);
 }
 
 /*
- *	Resize widget accounting to aligment
- **/
+*	Resize widget accounting to aligment
+**/
 void XGUI_Widget::SetRect(xgRect_t & rect)
 {
 	m_Rect = rect;
-	
+
 	RecalcItemsRects();
 }
 
 /*
- *	Recalculates items rects according to aligment
- **/
+*	Recalculates items rects according to aligment
+**/
 void XGUI_Widget::RecalcItemsRects()
 {
 	RecalcRectWithAligment();
-		
-
 
 	for(XGUI_Widget * w : m_vAlignOrderedChilds)
 	{
@@ -344,11 +351,11 @@ void XGUI_Widget::RecalcItemsRects()
 }
 
 /*
- *	Notifies every component in gui hierarchy with event
- **/
+*	Notifies every component in gui hierarchy with event
+**/
 void XGUI_Widget::RecursiveNotifyEveryone(ME_Framework::appEvent_t & ev)
 {
-	for(XGUI_Widget * w : m_vChilds)
+	for(TWidgetSharedPtr w : m_vChilds)
 	{
 		if (w->m_bVisible == false)  continue;
 		w->HandleEvent(ev);
@@ -357,14 +364,14 @@ void XGUI_Widget::RecursiveNotifyEveryone(ME_Framework::appEvent_t & ev)
 }
 
 /*
- *	Handles system event
- **/
+*	Handles system event
+**/
 void XGUI_Widget::HandleEvent(ME_Framework::appEvent_t & ev)
 {
 	switch(ev.eventid)
 	{
 	case eventTypes::EV_MOUSE_KEY_UP:
-		for(XGUI_Widget * c : m_vChilds)
+		for(TWidgetSharedPtr c : m_vChilds)
 		{
 			RecursiveNotifyEveryone(ev);			
 		}
@@ -373,14 +380,14 @@ void XGUI_Widget::HandleEvent(ME_Framework::appEvent_t & ev)
 }
 
 /*
- *	Render widget and childrens
- **/
+*	Render widget and childrens
+**/
 void XGUI_Widget::Render()
 {
 	g_pTesselator->SetTranslation(m_vParentStart);
 	DrawComponent();
-	
-	for(XGUI_Widget * child: m_vChilds)
+
+	for(TWidgetSharedPtr child: m_vChilds)
 	{
 		if (child->m_bVisible == false) continue;
 		child->m_vParentStart = m_vParentStart + m_Rect.pos;
@@ -389,9 +396,9 @@ void XGUI_Widget::Render()
 }
 
 /*
- *	Draws widget
- *
- **/
+*	Draws widget
+*
+**/
 void XGUI_Widget::DrawComponent()
 {
 	GL_DisableState(GLS_TEXTURE_2D);
@@ -400,17 +407,20 @@ void XGUI_Widget::DrawComponent()
 	glColor4ubv((GLubyte*)&m_Color);
 	glBegin(GL_QUADS);
 
-		glVertex2d(m_Rect.pos.x,m_Rect.pos.y);
-		glVertex2d(m_Rect.pos.x + m_Rect.ext.x,m_Rect.pos.y);
-		glVertex2d(m_Rect.pos.x + m_Rect.ext.x,m_Rect.pos.y + m_Rect.ext.y);
-		glVertex2d(m_Rect.pos.x,m_Rect.pos.y + m_Rect.ext.y);
+	glVertex2d(m_Rect.pos.x,m_Rect.pos.y);
+	glVertex2d(m_Rect.pos.x + m_Rect.ext.x,m_Rect.pos.y);
+	glVertex2d(m_Rect.pos.x + m_Rect.ext.x,m_Rect.pos.y + m_Rect.ext.y);
+	glVertex2d(m_Rect.pos.x,m_Rect.pos.y + m_Rect.ext.y);
 
 	glEnd();
+
+	GL_EnableState(GLS_TEXTURE_2D);
+	GL_EnableState(GLS_BLEND);
 }
 
 /*
- *	Updates timers of widget
- **/
+*	Updates timers of widget
+**/
 void XGUI_Widget::UpdateTimers(float flDelta)
 {
 	for(int i = 0 ; i < ARRAY_SIZE(m_flTimers); i++)
@@ -420,24 +430,22 @@ void XGUI_Widget::UpdateTimers(float flDelta)
 }
 
 /*
- *	Destructor 
- **/
+*	Destructor 
+**/
 XGUI_Widget::~XGUI_Widget()
 {
-	for(XGUI_Widget * w : m_vChilds)
+	for(TWidgetSharedPtr w : m_vChilds)
 	{
-		delete w;
+		w.reset();
 	}
 
 	m_vChilds.clear();
 	m_vChilds.shrink_to_fit();
-
-	
 }
 
 /*
- *	Property accessors
- **/
+*	Property accessors
+**/
 
 // Setters
 void XGUI_Widget::SetParent(XGUI_Widget * pParent)
@@ -471,27 +479,27 @@ void XGUI_Widget::SetCaption(String & str)
 }
 
 // Getters
-XGUI_Widget * XGUI_Widget::GetParent()
+XGUI_Widget * XGUI_Widget::GetParent() const
 {
 	return m_pParent;
 }
 
-TAlign XGUI_Widget::GetAlign()
+TAlign XGUI_Widget::GetAlign() const
 {
 	return m_Align;
 }
 
-TAnchor XGUI_Widget::GetAnchors()
+TAnchor XGUI_Widget::GetAnchors() const
 {
 	return m_Anchors;
 }
 
-bool XGUI_Widget::GetVisibilty()
+bool XGUI_Widget::GetVisibilty() const
 {
 	return m_bVisible;
 }
 
-bool XGUI_Widget::GetEnableState()
+bool XGUI_Widget::GetEnableState() const
 {
 	return m_bEnabled;
 }
@@ -502,16 +510,16 @@ String & XGUI_Widget::GetCaption()
 }
 
 /*
- *	Property accessors end
- **/
+*	Property accessors end
+**/
 
 /*
- *	Adds child widget
- **/
+*	Adds child widget
+**/
 void XGUI_Widget::AddChildWidget(XGUI_Widget * pWidget)
 {
 	m_vAlignOrderedChilds.push_back(pWidget);
-	m_vChilds.push_back(pWidget);
+	m_vChilds.push_back(TWidgetSharedPtr(pWidget));
 	pWidget->m_pParent = this;
 
 	// Update rect with aligment
@@ -522,53 +530,61 @@ void XGUI_Widget::AddChildWidget(XGUI_Widget * pWidget)
 }
 
 /*
- *	Sorts children by ZOrder
- **/
+*	Sorts children by ZOrder
+**/
 void XGUI_Widget::SortChilds()
 {
-	std::sort(m_vChilds.begin(),m_vChilds.end(),[] (XGUI_Widget* i,XGUI_Widget* j){return i->m_ZOrder < j->m_ZOrder;});
+	std::sort(m_vChilds.begin(),m_vChilds.end(),[] (TWidgetSharedPtr i,TWidgetSharedPtr j){return i->m_ZOrder < j->m_ZOrder;});
 }
 
 /*
- *	Sorts children by align order
- **/
+*	Sorts children by align order
+**/
 void XGUI_Widget::SortChildsByAlignOrder()
 {
 	std::sort(m_vAlignOrderedChilds.begin(),m_vAlignOrderedChilds.end(),[] (XGUI_Widget* i,XGUI_Widget* j){return i->m_AlignPriority > j->m_AlignPriority;});
 }
 
 /*
- *	Marks child items under cursor or self if no childs marked
- **/
+*	Marks child items under cursor or self if no childs marked
+**/
 XGUI_Widget* XGUI_Widget::WidgetUnderCursor(ME_Math::Vector2D pt)
 {
+
+	xgRect_t r = m_Rect;
+	CalcClientRect(r);
+
+	if (!(pt.x >= r.pos.x && pt.x <= r.pos.x + r.ext.x)
+		|| !(pt.y >= r.pos.y && pt.y <= r.pos.y + r.ext.y))
+	{
+		return 0;
+	}
+
 	for(auto it = m_vChilds.rbegin() ; it < m_vChilds.rend() ; it++)
 	{
-		XGUI_Widget * c = (*it);
+		XGUI_Widget * c = (*it).get();
 
 		if (c->m_bVisible == false) 
 			continue;
-		
+
 		XGUI_Widget * w = c->WidgetUnderCursor(pt);
 		if (w)
 			return w;
 	}
 
-	xgRect_t r = m_Rect;
-	CalcClientRect(r);
 
 	if (pt.x >= r.pos.x && pt.x <= r.pos.x + r.ext.x)
 		if (pt.y >= r.pos.y && pt.y <= r.pos.y + r.ext.y)
 		{
 			return this;
 		}
-		
-	return 0;
+
+		return 0;
 }
 
 /*
- * Calculates client area rect
- **/
+* Calculates client area rect
+**/
 void XGUI_Widget::CalcClientRect(xgRect_t & r)
 {
 	if (m_pParent)
@@ -579,8 +595,8 @@ void XGUI_Widget::CalcClientRect(xgRect_t & r)
 }
 
 /*
- *	Calculates point position relative to control rect
- **/
+*	Calculates point position relative to control rect
+**/
 void XGUI_Widget::PointToClient(ME_Math::Vector2D & v)
 {
 	XGUI_Widget * pParent = m_pParent;
@@ -594,12 +610,12 @@ void XGUI_Widget::PointToClient(ME_Math::Vector2D & v)
 		pParent = pParent->m_pParent;
 		v-=pParent->m_Rect.pos;
 	}
-	
+
 }
 
 /*
- *	Calculates relative to screen point position on screen
- **/
+*	Calculates relative to screen point position on screen
+**/
 void XGUI_Widget::ClientToScreen(ME_Math::Vector2D & v)
 {
 	XGUI_Widget * pParent = m_pParent;
@@ -613,26 +629,26 @@ void XGUI_Widget::ClientToScreen(ME_Math::Vector2D & v)
 		pParent = pParent->m_pParent;
 		v+=pParent->m_Rect.pos;
 	}
-	
+
 }
 
 /*
- *	Calls think procedure of self and childs
- **/
+*	Calls think procedure of self and childs
+**/
 void XGUI_Widget::DoThink()
 {
 	RecalcDrag();
 	Think();
 
-	for(XGUI_Widget * c: m_vChilds)
+	for(TWidgetSharedPtr c: m_vChilds)
 	{
 		c->DoThink();
 	}
 }
 
 /*
- *	Performs widget draging if necceseary
- **/
+*	Performs widget dragging if necceseary
+**/
 void XGUI_Widget::RecalcDrag()
 {
 	if (m_bDragged)
@@ -649,16 +665,16 @@ void XGUI_Widget::RecalcDrag()
 }
 
 /*
- *	Widget think function
- **/
+*	Widget think function
+**/
 void XGUI_Widget::Think()
 {
 
 }
 
 /*
- *	Returns rect of widget's parent, or client area rect if widget has no parent
- **/
+*	Returns rect of widget's parent, or client area rect if widget has no parent
+**/
 xgRect_t XGUI_Widget::GetParentRect()
 {
 	if (m_pParent)
@@ -676,81 +692,208 @@ xgRect_t XGUI_Widget::GetParentRect()
 }
 
 /*
- *	Sets zorder property of widget, bigger value = closer to viewer
- **/
+*	Sets zorder property of widget, bigger value = closer to viewer
+**/
 void XGUI_Widget::SetZOrder(int order)
 {
 	m_ZOrder = order;
 }
 
 /*
- *	Sets align priority
- **/
+*	Sets align priority
+**/
 void XGUI_Widget::SetAlignPriority(int alignPriority)
 {
 	m_AlignPriority = alignPriority;
 }
 
 /*
- *	returns ZOrder of widget
- **/
-int XGUI_Widget::GetZOrder()
+*	returns ZOrder of widget
+**/
+int XGUI_Widget::GetZOrder() const
 {
 	return m_ZOrder;
 }
 
 /*
- *	returns align priority of widget
- **/
-int XGUI_Widget::GetAlignPriority()
+*	returns align priority of widget
+**/
+int XGUI_Widget::GetAlignPriority() const
 {
 	return m_AlignPriority;
 }
 
 /*
- * returns widget rect
- **/
-const xgRect_t XGUI_Widget::GetRect()
+* returns widget rect
+**/
+xgRect_t & XGUI_Widget::GetRect()
 {
 	return m_Rect;
 }
 
 /*
- *	returns array of widget children
- **/
-const std::vector<XGUI_Widget*> & XGUI_Widget::GetChilds()
+*	returns array of widget children
+**/
+const std::vector<TWidgetSharedPtr> & XGUI_Widget::GetChilds()
 {
 	return m_vChilds;
 }
 
 /*
- *	returns pointer to dock widget
- **/
-XGUI_Widget * XGUI_Widget::GetDockWidget()
+*	returns pointer to dock widget
+**/
+XGUI_Widget * XGUI_Widget::GetDockWidget() const
 {
 	return m_pDockWidget;
 }
 
 /*
- *	sets dock widget
- **/
+*	sets dock widget
+**/
 void XGUI_Widget::SetDockWidget(XGUI_Widget * w)
 {
 	m_pDockWidget = w;
+	//w->OnWidgetDocked(this);
 }
 
 /*
- *	sets docking state
- **/
+*	sets docking state
+**/
 void XGUI_Widget::SetDockState(TDockState ds)
 {
 	m_DockState = ds;
+	if (m_pDockWidget) 
+	{
+		switch(ds)
+		{
+		case TDockState::dsDocked:
+			m_pDockWidget->OnWidgetDocked(shared_from_this());
+			break;
+		case TDockState::dsFloating:
+			m_pDockWidget->OnWidgetUndocked(shared_from_this());
+			break;
+		}
+
+	}
+
 }
 
 /*
- *	returns dock state
- **/
-TDockState XGUI_Widget::GetDockState()
+*	returns dock state
+**/
+TDockState XGUI_Widget::GetDockState() const
 {
 	return m_DockState;
+}
+
+/*
+*	returns drag state
+**/
+bool XGUI_Widget::IsDragged() const 
+{
+	return m_bDragged; 
+}
+
+/*
+*	Toggles element dragged and blocks cursor from getting out of app window
+**/
+void XGUI_Widget::SetDragged(bool val) 
+{ 
+	if (val)
+	{
+		g_pGUIManager->LockCursorInDesktop();
+	}
+	else g_pGUIManager->UnlockCursor();
+
+	m_bDragged = val; 
+}
+
+/*
+*	Realigns childs according order
+**/
+void XGUI_Widget::RealignDockedItems(TItemAlignOrder order)
+{
+	vec_t xofs = GetRect().pos.x;
+	vec_t yofs = GetRect().pos.y;
+
+	vec_t xnew = 0;
+	vec_t ynew = 0;
+
+	switch(order)
+	{
+	case TItemAlignOrder::iaUpDownLeftToRight:
+		{
+
+			switch(m_Align)
+			{
+			case TAlign::alNone:
+			case TAlign::alTop:
+				{			
+					for(TWidgetWeakPtr wc : m_vDockedWidgets)
+					{
+						TWidgetSharedPtr c = wc.lock();
+
+						if (yofs + c->GetRect().ext.y > ynew)
+						{
+							ynew = (yofs + c->GetRect().ext.y);
+						}
+
+						c->SetPos(xofs,yofs);
+
+						xofs+=c->GetRect().ext.x;
+
+						if (xofs >= m_Rect.Right())
+						{
+							xofs = m_Rect.Left();
+							yofs = ynew;
+						}
+					}
+				}
+				break;
+			case TAlign::alBottom:
+				{
+					ynew = GetRect().Bottom();
+					vec_t yofs = GetRect().Bottom();
+
+					ME_Framework::appEvent_t e;
+					e.eventid = eventTypes::EV_ALIGN_PERFORMED;
+
+					for(TWidgetWeakPtr wc : m_vDockedWidgets)
+					{
+						TWidgetSharedPtr c = wc.lock();
+							
+						if ((yofs - (c->GetRect().ext.y)) < ynew)
+						{
+							ynew = (yofs - (c->GetRect().ext.y));
+						}
+
+						c->SetPos(xofs,ynew);
+						
+						xofs+=c->GetRect().ext.x;
+
+						if (xofs >= m_Rect.Right())
+						{
+							xofs = m_Rect.Left();
+							yofs = ynew;
+						}
+
+						c->HandleEvent(e);
+					}
+
+				}
+				break;
+			}
+		}
+
+	};
+
+}
+
+/*
+*	Sets widget position to specified coords
+**/
+void XGUI_Widget::SetPos(vec_t x,vec_t y)
+{
+	m_Rect.pos.x = x;
+	m_Rect.pos.y = y;
 }

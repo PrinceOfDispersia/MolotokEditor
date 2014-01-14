@@ -225,6 +225,9 @@
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_GenericSkinnedButton.cpp">
       <Filter>Файлы исходного кода\Framework\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\Framework\DebugConsole.cpp">
+      <Filter>Файлы исходного кода\Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Common\ApplicationCommon.h">
@@ -394,6 +397,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_GenericSkinnedButton.h">
       <Filter>Заголовочные файлы\Framework\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\DebugConsole.h">
+      <Filter>Заголовочные файлы\Framework</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
