@@ -154,19 +154,6 @@ int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 	// Parse command line
 	ParseCommandLine(GetCommandLine());
 		
-
-	// Alloc windows console, 
-	// TODO: fix codepages issues - it probably works fine only with Russian and English
-	// and will screw up on Chinese or something like that
-	AllocConsole();
-	FILE * console = freopen( "CONOUT$", "w+t", stdout);
-
-	// switch it to unicode if necessary
-	if (sizeof(TCHAR) == 2)
-	{
-		_setmode(_fileno(console), _O_U16TEXT);
-	}
-	
 	g_pPlatform->SystemLog()->Log(_T("Platform environment initialized\n"));
 
 	// Initialize file system
@@ -178,6 +165,7 @@ int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 	// Initialize OpenGL
 	IOpenGLContext * pContext = new CWinOpenGLContext();
 	g_pPlatform->SetOpenGLContext(pContext);
+	
 	pContext->MainLoop();		
 	
 	
@@ -185,8 +173,7 @@ int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 	ApplicationShutdown();
 	FreeParsedCommandLine();
 
-	FreeConsole();
-	fclose(console);
+	ME_Console::Stop();
 
 	delete ME_Framework::g_pPlatform;		
 }

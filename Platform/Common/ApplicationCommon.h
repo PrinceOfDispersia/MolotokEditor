@@ -11,7 +11,6 @@
 #include <Platform/Common/ApplicationConfig.h>
 #include <Framework/BasicMacros.h>
 #include <Framework/BasicTypes.h>
-#include <Framework/DebugConsole.h>
 
 
 // >=== PORTING NOTES: Change this header with appropriate for your platform
@@ -33,6 +32,7 @@
 #include <Platform/Common/MouseKeys.h>
 #include <Platform/Common/ApplicationEvents.h>
 
+#include <Framework/DebugConsole.h>
 #include <Framework/GUI/XGUI.h>
 
 // Platform independent application callbacks

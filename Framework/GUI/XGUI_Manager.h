@@ -99,7 +99,9 @@ namespace ME_Framework
 			~XGUI_Manager();
 
 			void AddWidget(XGUI_Widget * pWidget);
+			void Gui_Printf(vec_t x,vec_t y,TCHAR * string);
 
+			XGUI_Font * Get_GuiFont(TGuiFontTypes fontType);
 		};
 
 

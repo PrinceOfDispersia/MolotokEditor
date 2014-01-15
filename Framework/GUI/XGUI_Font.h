@@ -35,6 +35,8 @@ namespace ME_Framework
 			void Calc_TextRect(String & str,xgRect_t * rect);
 			void Draw(ME_Math::Vector2D pos,String str);
 
+			void DrawTextWithCarret(vec_t x,vec_t y,TCHAR * strBuffer,size_t carretOffset);
+
 			XGUI_Font(dFontHdr_t * pHeader,size_t sz);
 			~XGUI_Font();
 		};

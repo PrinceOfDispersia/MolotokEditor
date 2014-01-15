@@ -15,5 +15,6 @@ namespace ME_Framework
 		extern mSheetGlyph_t * sprFloatingPanel[9];
 		extern mSheetGlyph_t * sprDragHandleDotsNormal;
 		extern mSheetGlyph_t * sprDragHandleDotsHovered;
+		extern mSheetGlyph_t * sprWhite;
 	}
 }

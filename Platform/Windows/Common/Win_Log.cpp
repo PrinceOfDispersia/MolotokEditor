@@ -45,7 +45,7 @@ void LogFile::Log(TCHAR * format,...)
 		break;
 	}
 		
-	_tprintf(_T("[%s]%s"),logTypeString,buffer);
+	ME_Console::Printf(_T("[%s]%s"),logTypeString,buffer);
 
 	
 }

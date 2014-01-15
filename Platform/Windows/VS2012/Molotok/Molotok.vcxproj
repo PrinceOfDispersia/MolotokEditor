@@ -265,6 +265,7 @@
     <ClInclude Include="..\..\..\Common\OpenGLContext.h" />
     <ClInclude Include="..\..\..\Common\PlatformEnvironment.h" />
     <ClInclude Include="..\..\Common\PlatformCommon.h" />
+    <ClInclude Include="..\..\Common\Win_Keys.h" />
     <ClInclude Include="..\..\Common\Win_OpenGL.h" />
     <ClInclude Include="..\..\Common\Win_Timer.h" />
   </ItemGroup>

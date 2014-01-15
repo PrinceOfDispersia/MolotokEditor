@@ -441,6 +441,12 @@ XGUI_Widget::~XGUI_Widget()
 
 	m_vChilds.clear();
 	m_vChilds.shrink_to_fit();
+
+	m_vDockedWidgets.clear();
+	m_vDockedWidgets.shrink_to_fit();
+
+	m_vAlignOrderedChilds.clear();
+	m_vAlignOrderedChilds.shrink_to_fit();
 }
 
 /*

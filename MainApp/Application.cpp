@@ -20,7 +20,7 @@ void ApplicationStart()
 	// Start image library
 	InitImageLib();
 	pManager = new XGUI_Manager;
-	
+		
 }
 
 /************************************************************************/
@@ -55,6 +55,10 @@ void ApplicationShutdown()
 void ApplicationPumpEvent(ME_Framework::appEvent_t & ev)
 {
 	//_tprintf(_T("ApplicationPumpEvent(): eventid = %d, uParam1 = %d\n"),ev.eventid,ev.uParam1);
+
+	
+	if (ME_Console::HandleEvent(ev)) return;
+	
 
 	if (flags(ev.eventid & eventTypes::EV_GUI_EV_MASK))
 	{

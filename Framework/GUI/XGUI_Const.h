@@ -46,6 +46,12 @@ namespace ME_Framework
 			iaUpDownLeftToRight
 		};
 
+		enum class TGuiFontTypes
+		{
+			gfSmall,
+			gfNormal
+		};
+
 		ENUM_FLAGS(TAnchor);
 	}
 

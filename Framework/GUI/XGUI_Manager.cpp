@@ -21,6 +21,8 @@ mSheetGlyph_t * ME_XGUI::sprFloatingPanel[9];
 mSheetGlyph_t * ME_XGUI::sprDragHandleDotsNormal;
 mSheetGlyph_t * ME_XGUI::sprDragHandleDotsHovered;
 
+mSheetGlyph_t * ME_XGUI::sprWhite;
+
 /*
  *	Function loads 3 by 3 set of glyphs for scalable widgets
  **/
@@ -108,6 +110,7 @@ XGUI_Manager::XGUI_Manager()
 
 	sprDragHandleDotsHovered = GetGUISheetGlyph("DragHandleDots.Hovered");
 	sprDragHandleDotsNormal = GetGUISheetGlyph("DragHandleDots.Normal");
+	sprWhite = GetGUISheetGlyph("White");
 
 	m_pGuiVars = new CConfigVarsManager(_T("configs/gui_default_scheme.xml"));
 	
@@ -167,6 +170,8 @@ XGUI_Manager::XGUI_Manager()
 
 	m_bInEditorMode = false;
 	m_bCursorLocked = false;
+
+	ME_Console::Start();
 }
 
 /*
@@ -201,9 +206,11 @@ void XGUI_Manager::Draw()
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
 	m_pDesktop->Render();
+	
+	// 
+	ME_Console::Draw();
+	//
 
-	
-	
 	m_pTesselator->Flush();
 }
 
@@ -495,4 +502,31 @@ void XGUI_Manager::UnlockCursor()
 void XGUI_Manager::LockCursorInDesktop()
 {
 	LockCursor(m_pDesktop->GetRect());
+}
+
+/*
+ *	Renders strign with default font
+ **/
+
+void XGUI_Manager::Gui_Printf(vec_t x,vec_t y,TCHAR * string)
+{
+	m_pGuiFontNormal->Draw(ME_Math::Vector2D(x,y),string);
+}
+
+/*
+ *	Returns specified font pointer
+ **/
+XGUI_Font * XGUI_Manager::Get_GuiFont(TGuiFontTypes fontType)
+{
+	switch(fontType)
+	{
+	case TGuiFontTypes::gfSmall:
+			return m_pGuiFontSmall;
+		break;
+	case TGuiFontTypes::gfNormal:
+			return m_pGuiFontNormal;
+		break;
+	}
+
+	return 0;
 }

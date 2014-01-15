@@ -48,7 +48,6 @@ size_t Sys_SafeSprintf(TCHAR * dest,size_t destSize,TCHAR * format,...)
 	if (written == -1)
 	{
 	#ifdef PARANOID
-		// TODO: replace with console log, cause fatal error is too brutal
 		g_pPlatform->DeveloperLog()->Log(_T("Sys_SafeSprintf(): buffer overflow!"));
 	#endif
 		// null-terminate

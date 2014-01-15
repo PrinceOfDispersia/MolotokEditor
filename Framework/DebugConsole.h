@@ -4,6 +4,7 @@
  *
  **/
 
+
 namespace ME_Framework
 {
 	namespace ME_Console
@@ -21,10 +22,14 @@ namespace ME_Framework
 
 			int intValue;
 			float flValue;
+
+			bool isCommand;
 		}convar_t;
 
-		void Draw();
-		void OnKeyPressed();
+		void Draw();		
+		bool HandleEvent(ME_Framework::appEvent_t & ev);
+
+		void Printf(TCHAR* fmt,...);
 	}
 }
 

@@ -32,7 +32,6 @@ void XGUI_Font::Calc_TextRect(String & str,xgRect_t * rect)
 
 	for(size_t i = 0 ; i < sz ; i++)
 	{
-
 		TCHAR sym = ptr[i];
 
 		int idx = -1;
@@ -203,4 +202,115 @@ void XGUI_Font::SetAtlas(pgl_texture_t pAtlas,ME_Math::Vector2D offset)
 	}
 
 	m_vAtlasOffset = offset;
+}
+
+/*
+ *	Draws text with carret in specified position
+ **/
+void XGUI_Font::DrawTextWithCarret(vec_t px,vec_t py,TCHAR * ptr,size_t carretOffset)
+{
+	vec_t w = 0;
+	vec_t h = 0;
+
+	size_t i = 0;
+	
+	while(*ptr)
+	{
+		if (i == (carretOffset))
+		{
+			color32_t c = {255,255,255,255};
+			g_pTesselator->DefaultColor(c);
+
+			xgRect_t r;
+			r.pos.x = w + px;
+			r.pos.y = py;
+
+			r.ext.x = 1;
+			r.ext.y = 16;
+
+			XGUI_DrawSheetGlyph(sprWhite,r);
+
+			g_pTesselator->ResetDefaultColor();
+			//w+=4;
+		}
+
+		TCHAR sym = *ptr;
+
+		int idx = -1;
+		byte page = sym >> 8;
+
+		for(int j = 0 ; j < m_nMaps ; j++)
+		{
+			if (m_pSymbolMaps[j] == page)
+			{
+				idx = j;
+				break;
+			}
+		}
+
+		if (idx == -1) continue;
+
+		byte b = sym & 0x00FF;
+		idx = m_pCodePages[(idx * 256) + b];
+
+
+
+		dGlyphInfo_t * inf = &m_pGlyphs[idx];
+
+
+		float c[4];
+
+		float x,y;
+
+		x =  (float)inf->xpos;
+		y =  (float)inf->ypos;
+
+		c[0] = x / m_pFontImage->width;
+		c[1] = 1 - (y / m_pFontImage->height);
+
+		c[2] = (x + inf->width) / m_pFontImage->width;
+		c[3] = 1 - ( (y + inf->height) / m_pFontImage->height);
+
+		vec_t xofs = inf->xoffs;
+		vec_t yofs = inf->yoffs; 
+
+		vec_t x1 = w + xofs + px;
+		vec_t x2 = x1 + (inf->width);
+
+		vec_t y1 = yofs + py;
+		vec_t y2 = y1 + (inf->height);
+
+		g_pTesselator->Coord2(c[0],c[1]);
+		g_pTesselator->Vertex2(x1,y1);
+		g_pTesselator->Coord2(c[2],c[1]);
+		g_pTesselator->Vertex2(x2,y1);
+		g_pTesselator->Coord2(c[2],c[3]);
+		g_pTesselator->Vertex2(x2,y2);
+		g_pTesselator->Coord2(c[0],c[3]);
+		g_pTesselator->Vertex2(x1,y2);
+
+
+
+		w+=(inf->orig_w);
+		ptr++;
+		i++;
+	}
+
+	if (i == (carretOffset))
+	{
+		color32_t c = {255,255,255,255};
+		g_pTesselator->DefaultColor(c);
+
+		xgRect_t r;
+		r.pos.x = w + px;
+		r.pos.y = py;
+
+		r.ext.x = 1;
+		r.ext.y = 16;
+
+		XGUI_DrawSheetGlyph(sprWhite,r);
+
+		g_pTesselator->ResetDefaultColor();
+		//w+=4;
+	}
 }

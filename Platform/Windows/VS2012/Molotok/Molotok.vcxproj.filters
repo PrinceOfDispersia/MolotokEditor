@@ -401,5 +401,8 @@
     <ClInclude Include="..\..\..\..\Framework\DebugConsole.h">
       <Filter>Заголовочные файлы\Framework</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Common\Win_Keys.h">
+      <Filter>Заголовочные файлы\Platform\Windows\Common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

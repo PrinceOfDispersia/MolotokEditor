@@ -291,6 +291,13 @@ bool CWinOpenGLContext::TranslateToEvent(UINT uMsg,WPARAM wParam,LPARAM lParam)
 		return true;
 	}
 	
+	if (uMsg == WM_CHAR)
+	{
+		m_tmpEvent.eventid = eventTypes::EV_KB_CHAR;
+		m_tmpEvent.uParam1 = wParam;
+		return true;
+	}
+
 	else if (uMsg == WM_LBUTTONDOWN || uMsg == WM_MBUTTONDOWN || uMsg == WM_RBUTTONDOWN)
 	{
 		m_tmpEvent.eventid = eventTypes::EV_MOUSE_KEY_DOWN;
