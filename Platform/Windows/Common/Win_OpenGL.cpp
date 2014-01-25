@@ -49,7 +49,7 @@ void CWinOpenGLContext::RegisterWindowClass()
 	m_Wc.cbWndExtra           = 0;
 	m_Wc.hInstance            = g_hInstance;
 	m_Wc.hIcon                = NULL;
-	m_Wc.hCursor              = LoadCursor(NULL, IDC_ARROW);
+	m_Wc.hCursor              = NULL;//LoadCursor(NULL, IDC_ARROW);
 	m_Wc.hbrBackground        = NULL;
 	m_Wc.lpszMenuName         = NULL;
 	m_Wc.lpszClassName        = _T(WND_CLASSNAME);

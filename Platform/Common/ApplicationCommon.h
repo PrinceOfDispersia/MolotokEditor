@@ -24,6 +24,7 @@
 #include <Platform/Common/CommonUtils.h>
 
 #include <Framework/MathLib/Math.h>
+#include <Platform/Common/MouseCursor.h>
 #include <Platform/Common/OpenGLContext.h>
 #include <Platform/Common/PlatformEnvironment.h>
 #include <Framework/Framework.h>

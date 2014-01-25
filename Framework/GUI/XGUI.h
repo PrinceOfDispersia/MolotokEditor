@@ -14,4 +14,6 @@
 #include "XGUI_GenericSkinnedButton.h"
 #include "XGUI_Resources.h"
 #include "XGUI_Button.h"
+#include "XGUI_Window.h"
 #include "XGUI_Dock.h"
+

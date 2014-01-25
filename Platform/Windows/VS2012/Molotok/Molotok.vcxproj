@@ -169,6 +169,7 @@
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Manager.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Sheet.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Widget.cpp" />
+    <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Window.cpp" />
     <ClCompile Include="..\..\..\..\Framework\ImageLib\ImageLib.cpp" />
     <ClCompile Include="..\..\..\..\Framework\ImageLib\Image_Png.cpp" />
     <ClCompile Include="..\..\..\..\Framework\OpenGLBackend.cpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Resources.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Sheet.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Widget.h" />
+    <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Window.h" />
     <ClInclude Include="..\..\..\..\Framework\ImageLib\ImageLib.h" />
     <ClInclude Include="..\..\..\..\Framework\ImageLib\Image_Png.h" />
     <ClInclude Include="..\..\..\..\Framework\MathLib\Math.h" />
@@ -263,6 +265,7 @@
     <ClInclude Include="..\..\..\Common\CommonUtils.h" />
     <ClInclude Include="..\..\..\Common\FileSystemProxy.h" />
     <ClInclude Include="..\..\..\Common\MemoryManager.h" />
+    <ClInclude Include="..\..\..\Common\MouseCursor.h" />
     <ClInclude Include="..\..\..\Common\MouseKeys.h" />
     <ClInclude Include="..\..\..\Common\OpenGLContext.h" />
     <ClInclude Include="..\..\..\Common\PlatformEnvironment.h" />

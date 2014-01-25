@@ -137,6 +137,45 @@ void PlatformEnvironment::SetCursorPos(ME_Math::Vector2D v)
 	::SetCursorPos(pt.x,pt.y);
 }
 
+/*
+ *	Sets specified cursor
+ **/
+void PlatformEnvironment::SetCursor(eMouseCursors cur)
+{
+	
+	//HWND wnd = ((CWinOpenGLContext*)g_pPlatform->GetOpenGLContext())->m_hWnd;
+
+	HCURSOR hCur;
+
+	switch (cur)
+	{
+	case mcNormal:
+		hCur = LoadCursor(NULL,IDC_ARROW);
+		break;
+	case mcSizeSWNE:
+		hCur = LoadCursor(NULL,IDC_SIZENESW);
+		break;
+	case mcSizeNWSE:
+		hCur = LoadCursor(NULL,IDC_SIZENWSE);
+		break;
+	case mcSizeVertical:
+		hCur = LoadCursor(NULL,IDC_SIZENS);
+		break;
+	case mcSizeHorizontal:
+		hCur = LoadCursor(NULL,IDC_SIZEWE);
+		break;
+	case mcSizeCenter:		
+		hCur = LoadCursor(NULL,IDC_SIZEALL);
+		break;
+	default:
+		hCur = LoadCursor(NULL,IDC_ARROW);
+		break;
+	}
+
+	::SetCursor(hCur);
+
+	
+}
 
 /************************************************************************/
 /*			Entry point for windows application			                */

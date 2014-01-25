@@ -21,6 +21,9 @@ mSheetGlyph_t * ME_XGUI::sprFloatingPanel[9];
 mSheetGlyph_t * ME_XGUI::sprDragHandleDotsNormal;
 mSheetGlyph_t * ME_XGUI::sprDragHandleDotsHovered;
 
+mSheetGlyph_t * ME_XGUI::sprDialogActive[9];
+mSheetGlyph_t * ME_XGUI::sprDialogInActive[9];
+
 mSheetGlyph_t * ME_XGUI::sprWhite;
 
 /*
@@ -110,6 +113,11 @@ XGUI_Manager::XGUI_Manager()
 
 	sprDragHandleDotsHovered = GetGUISheetGlyph("DragHandleDots.Hovered");
 	sprDragHandleDotsNormal = GetGUISheetGlyph("DragHandleDots.Normal");
+
+	LoadScalableSet(sprDialogActive,"dialogWnd.Active");
+	LoadScalableSet(sprDialogInActive,"dialogWnd.InActive");
+
+
 	sprWhite = GetGUISheetGlyph("White");
 
 	m_pGuiVars = new CConfigVarsManager(_T("configs/gui_default_scheme.xml"));
@@ -163,6 +171,18 @@ XGUI_Manager::XGUI_Manager()
 		AddWidget(pTestWindow);
 	}
 	*/
+
+	for(int i = 0 ; i < 4 ; i++)
+	{
+		xgRect_t r;
+		r.pos = ME_Math::Vector2D(40*i,40*i);
+		r.ext = ME_Math::Vector2D(320,240);
+
+		XGUI_Window * w = new XGUI_Window(r);
+		AddWidget(w);
+
+	}
+
 	// Recalculate rects
 	m_pDesktop->RecalcItemsRects();
 
@@ -222,6 +242,8 @@ void XGUI_Manager::Draw()
  **/
 void XGUI_Manager::Think(float flDeltaTime)
 {
+	g_pPlatform->SetCursor(mcNormal);
+
 	if (m_bCursorLocked)
 	{
 		ME_Math::Vector2D v = g_pPlatform->GetCursorPos();
@@ -244,6 +266,7 @@ void XGUI_Manager::Think(float flDeltaTime)
 
 	if (w)
 	{
+		if (w!= m_pDesktop) g_pPlatform->SetCursor(mcSizeCenter);
 		w->m_flHoveroutTimer = g_pPlatform->TimeElapsed();
 	}
 }

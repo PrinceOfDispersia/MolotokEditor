@@ -228,6 +228,9 @@
     <ClCompile Include="..\..\..\..\Framework\DebugConsole.cpp">
       <Filter>Файлы исходного кода\Framework</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Window.cpp">
+      <Filter>Файлы исходного кода\Framework\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Common\ApplicationCommon.h">
@@ -403,6 +406,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Common\Win_Keys.h">
       <Filter>Заголовочные файлы\Platform\Windows\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Window.h">
+      <Filter>Заголовочные файлы\Framework\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\MouseCursor.h">
+      <Filter>Заголовочные файлы\Platform\Common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

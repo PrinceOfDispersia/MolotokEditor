@@ -655,7 +655,7 @@ void XGUI_Widget::DoThink()
 	for(TWidgetSharedPtr c: m_vChilds)
 	{
 		c->DoThink();
-	}
+	}	
 }
 
 /*

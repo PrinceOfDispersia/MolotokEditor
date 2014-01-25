@@ -61,7 +61,7 @@ namespace ME_Framework
 		}
 	};
 #endif
-
+	
 	/*
 	 *	Generic environment used by application
 	 **/
@@ -174,6 +174,7 @@ namespace ME_Framework
 
 		ME_Math::Vector2D GetCursorPos();
 		void SetCursorPos(ME_Math::Vector2D  v);
+		void SetCursor(eMouseCursors cur);
 
 		ME_Math::Vector2D GetClientAreaExtents();
 	};
