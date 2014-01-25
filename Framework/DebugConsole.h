@@ -9,6 +9,7 @@ namespace ME_Framework
 {
 	namespace ME_Console
 	{
+		void LoadGraphics();
 		void Start();
 		void Stop();
 
@@ -28,6 +29,7 @@ namespace ME_Framework
 
 		void Draw();		
 		bool HandleEvent(ME_Framework::appEvent_t & ev);
+		void HandleEnter();
 
 		void Printf(TCHAR* fmt,...);
 	}

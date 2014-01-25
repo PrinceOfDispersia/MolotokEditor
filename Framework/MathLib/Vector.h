@@ -19,10 +19,8 @@ namespace ME_Framework
 			Vector2D(vec_t _x = 0,vec_t _y = 0): x(_x),y(_y) {};
 						
 			// Array operator
-			vec_t operator [](int idx) 
+			vec_t & operator [](int idx) 
 			{
-				assert(idx < 0 || idx > 1);
-
 				switch (idx)
 				{
 				case 0:
@@ -32,6 +30,9 @@ namespace ME_Framework
 				default:
 					assert(_T("Should never happen") && false);
 				}
+
+				return x;
+				
 			}
 
 			// Addition

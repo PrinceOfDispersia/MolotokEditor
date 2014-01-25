@@ -11,10 +11,7 @@ namespace ME_XGUI
 {
 	class XGUI_Manager;
 
-	class XGUI_Widget;
-
-	typedef std::weak_ptr<XGUI_Widget> TWidgetWeakPtr;
-	typedef std::shared_ptr<XGUI_Widget> TWidgetSharedPtr;
+	
 
 	inline bool operator == (TWidgetWeakPtr a,TWidgetWeakPtr b)
 	{
@@ -34,7 +31,7 @@ namespace ME_XGUI
 		unsigned int m_ZOrder;
 			
 		float m_flTimers[4];
-		std::vector<TWidgetSharedPtr> m_vChilds;
+		TWidgetVector m_vChilds;
 		std::vector<XGUI_Widget*> m_vAlignOrderedChilds;
 		
 		XGUI_Widget * m_pParent;
@@ -57,7 +54,6 @@ namespace ME_XGUI
 
 		void CalcClientRect(xgRect_t & r);
 		
-
 		float m_flHoveroutTimer;
 		
 		XGUI_Font * m_pGuiFontNormal;
@@ -75,21 +71,9 @@ namespace ME_XGUI
 		void RecalcDrag();
 		void RecursiveNotifyEveryone(ME_Framework::appEvent_t & ev);
 
-		bool m_bDockable;
-		TDockState m_DockState;
-		
-		XGUI_Widget * m_pDockWidget;
-		xgRect_t m_PreDockRect;
-
 		// Left Top Right Bottom
 		ME_Math::Vector2D m_vMargins[2];
-		
-		virtual void OnWidgetDocked(TWidgetSharedPtr w) {};
-		virtual void OnWidgetUndocked(TWidgetSharedPtr w) {};
-
-		void RealignDockedItems(TItemAlignOrder order);
-
-		std::vector<TWidgetWeakPtr> m_vDockedWidgets;
+				
 	public:
 		void PointToClient(ME_Math::Vector2D & v);
 		void ClientToScreen(ME_Math::Vector2D & v);
@@ -104,8 +88,7 @@ namespace ME_XGUI
 		void SetEnableState(bool bEnabled);
 		void SetCaption(String & str);
 		void SetZOrder(int order);
-		void SetDockWidget(XGUI_Widget * w);
-		void SetDockState(TDockState s);
+
 		void SetDragged(bool val);
 				
 		// Getters
@@ -117,8 +100,7 @@ namespace ME_XGUI
 		String &		GetCaption();
 		int				GetAlignPriority() const;
 		int				GetZOrder() const;
-		XGUI_Widget*	GetDockWidget() const;
-		TDockState		GetDockState()  const;
+
 		bool			IsDragged() const;
 
 
@@ -140,13 +122,13 @@ namespace ME_XGUI
 		XGUI_Widget(xgRect_t & rect);
 		virtual ~XGUI_Widget();
 
-		const std::vector<TWidgetSharedPtr> & GetChilds();
+		const TWidgetVector & GetChilds();
 		xgRect_t & GetRect();
 
 		void SetPos(vec_t x,vec_t y);
 
 		inline const bool IsDragged() { return m_bDragged; }
-		inline const bool IsDockable() { return m_bDockable; }
+		
 	};
 }
 

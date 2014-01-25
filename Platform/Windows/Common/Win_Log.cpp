@@ -28,10 +28,10 @@ void LogFile::Log(TCHAR * format,...)
 	len *= sizeof(TCHAR);*/
 
 	
-	TCHAR buffer[32768];
+	TCHAR buffer[8192];
 	
-	_vsntprintf( buffer, 32768, format, args );
-	buffer[32767] = 0;
+	_vsntprintf( buffer, 8192, format, args );
+	buffer[8191] = 0;
 
 	TCHAR * logTypeString = 0;
 

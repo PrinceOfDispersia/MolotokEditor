@@ -314,3 +314,118 @@ void XGUI_Font::DrawTextWithCarret(vec_t px,vec_t py,TCHAR * ptr,size_t carretOf
 		//w+=4;
 	}
 }
+
+void XGUI_Font::DrawMultilineTextInRect(xgRect_t & r,TCHAR * strBuffer)
+{
+	vec_t w = 0;
+	vec_t h = 0;
+
+	size_t i = 0;
+	TCHAR * ptr = strBuffer;
+
+	vec_t px = r.pos.x;
+	vec_t py = r.pos.y;
+
+	vec_t px2 = r.pos.x + r.ext.x;
+	vec_t py2 = r.pos.y + r.ext.y;
+
+	size_t charsInLine = 0;
+
+	vec_t dh = 0;
+	
+	g_pTesselator->Flush();
+
+	GL_SetScissor(r.pos.x,r.pos.y,r.ext.x,r.ext.y);
+	GL_EnableScissorTest();
+
+	
+	
+
+	while(*ptr)
+	{
+		if (*ptr == '\n')
+		{
+			w = 0;
+			h += dh + 1;
+			charsInLine = 0;
+			ptr++;
+			continue;
+		}
+
+		if (py + h > py2) break;
+
+		TCHAR sym = *ptr;
+
+		int idx = -1;
+		byte page = sym >> 8;
+
+		for(int j = 0 ; j < m_nMaps ; j++)
+		{
+			if (m_pSymbolMaps[j] == page)
+			{
+				idx = j;
+				break;
+			}
+		}
+
+		if (idx == -1) continue;
+
+		byte b = sym & 0x00FF;
+		idx = m_pCodePages[(idx * 256) + b];
+		
+		dGlyphInfo_t * inf = &m_pGlyphs[idx];
+		
+		float c[4];
+
+		float x,y;
+
+		x =  (float)inf->xpos;
+		y =  (float)inf->ypos;
+
+		c[0] = x / m_pFontImage->width;
+		c[1] = 1 - (y / m_pFontImage->height);
+
+		c[2] = (x + inf->width) / m_pFontImage->width;
+		c[3] = 1 - ( (y + inf->height) / m_pFontImage->height);
+
+		vec_t xofs = charsInLine > 0 ? inf->xoffs : 0;
+		vec_t yofs = inf->yoffs; 
+
+		vec_t x1 = w + xofs + px;
+		vec_t x2 = x1 + (inf->width);
+
+		vec_t y1 = yofs + py + h;
+		vec_t y2 = y1 + (inf->height);
+
+		if (inf->height > dh)
+		{
+			dh = inf->height;
+		}
+
+		if (x2 > px2)
+		{
+			w = 0;
+			h += dh + 1;
+			charsInLine = 0;			
+			continue;;
+		}
+
+		g_pTesselator->Coord2(c[0],c[1]);
+		g_pTesselator->Vertex2(x1,y1);
+		g_pTesselator->Coord2(c[2],c[1]);
+		g_pTesselator->Vertex2(x2,y1);
+		g_pTesselator->Coord2(c[2],c[3]);
+		g_pTesselator->Vertex2(x2,y2);
+		g_pTesselator->Coord2(c[0],c[3]);
+		g_pTesselator->Vertex2(x1,y2);
+		
+		w+=(inf->orig_w);
+		ptr++;
+		i++;
+		charsInLine++;
+	}
+
+	g_pTesselator->Flush();
+	GL_DisableScissorTest();
+
+}

@@ -45,9 +45,7 @@ XGUI_Widget::XGUI_Widget(xgRect_t & rect)
 	m_nWidgetCounter = 0;
 	m_nWidgetNumber = 0;
 
-	m_bDockable = false;
-
-	m_pDockWidget = 0;
+	
 
 }
 
@@ -357,7 +355,8 @@ void XGUI_Widget::RecursiveNotifyEveryone(ME_Framework::appEvent_t & ev)
 {
 	for(TWidgetSharedPtr w : m_vChilds)
 	{
-		if (w->m_bVisible == false)  continue;
+		if (w->m_bVisible == false)  
+			continue;
 		w->HandleEvent(ev);
 		w->RecursiveNotifyEveryone(ev);
 	}
@@ -442,9 +441,6 @@ XGUI_Widget::~XGUI_Widget()
 	m_vChilds.clear();
 	m_vChilds.shrink_to_fit();
 
-	m_vDockedWidgets.clear();
-	m_vDockedWidgets.shrink_to_fit();
-
 	m_vAlignOrderedChilds.clear();
 	m_vAlignOrderedChilds.shrink_to_fit();
 }
@@ -456,6 +452,16 @@ XGUI_Widget::~XGUI_Widget()
 // Setters
 void XGUI_Widget::SetParent(XGUI_Widget * pParent)
 {
+	if (m_pParent != nullptr)
+	{
+		auto it = std::find(m_pParent->m_vChilds.begin(),m_pParent->m_vChilds.end(),shared_from_this());
+
+		if (*it)
+		{
+			g_pGUIManager->Safe_QueryWidgetRemove(*it,m_pParent->m_vChilds);
+		}
+	}
+
 	m_pParent = pParent;
 }
 
@@ -740,57 +746,11 @@ xgRect_t & XGUI_Widget::GetRect()
 /*
 *	returns array of widget children
 **/
-const std::vector<TWidgetSharedPtr> & XGUI_Widget::GetChilds()
+const TWidgetVector & XGUI_Widget::GetChilds()
 {
 	return m_vChilds;
 }
 
-/*
-*	returns pointer to dock widget
-**/
-XGUI_Widget * XGUI_Widget::GetDockWidget() const
-{
-	return m_pDockWidget;
-}
-
-/*
-*	sets dock widget
-**/
-void XGUI_Widget::SetDockWidget(XGUI_Widget * w)
-{
-	m_pDockWidget = w;
-	//w->OnWidgetDocked(this);
-}
-
-/*
-*	sets docking state
-**/
-void XGUI_Widget::SetDockState(TDockState ds)
-{
-	m_DockState = ds;
-	if (m_pDockWidget) 
-	{
-		switch(ds)
-		{
-		case TDockState::dsDocked:
-			m_pDockWidget->OnWidgetDocked(shared_from_this());
-			break;
-		case TDockState::dsFloating:
-			m_pDockWidget->OnWidgetUndocked(shared_from_this());
-			break;
-		}
-
-	}
-
-}
-
-/*
-*	returns dock state
-**/
-TDockState XGUI_Widget::GetDockState() const
-{
-	return m_DockState;
-}
 
 /*
 *	returns drag state
@@ -812,94 +772,4 @@ void XGUI_Widget::SetDragged(bool val)
 	else g_pGUIManager->UnlockCursor();
 
 	m_bDragged = val; 
-}
-
-/*
-*	Realigns childs according order
-**/
-void XGUI_Widget::RealignDockedItems(TItemAlignOrder order)
-{
-	vec_t xofs = GetRect().pos.x;
-	vec_t yofs = GetRect().pos.y;
-
-	vec_t xnew = 0;
-	vec_t ynew = 0;
-
-	switch(order)
-	{
-	case TItemAlignOrder::iaUpDownLeftToRight:
-		{
-
-			switch(m_Align)
-			{
-			case TAlign::alNone:
-			case TAlign::alTop:
-				{			
-					for(TWidgetWeakPtr wc : m_vDockedWidgets)
-					{
-						TWidgetSharedPtr c = wc.lock();
-
-						if (yofs + c->GetRect().ext.y > ynew)
-						{
-							ynew = (yofs + c->GetRect().ext.y);
-						}
-
-						c->SetPos(xofs,yofs);
-
-						xofs+=c->GetRect().ext.x;
-
-						if (xofs >= m_Rect.Right())
-						{
-							xofs = m_Rect.Left();
-							yofs = ynew;
-						}
-					}
-				}
-				break;
-			case TAlign::alBottom:
-				{
-					ynew = GetRect().Bottom();
-					vec_t yofs = GetRect().Bottom();
-
-					ME_Framework::appEvent_t e;
-					e.eventid = eventTypes::EV_ALIGN_PERFORMED;
-
-					for(TWidgetWeakPtr wc : m_vDockedWidgets)
-					{
-						TWidgetSharedPtr c = wc.lock();
-							
-						if ((yofs - (c->GetRect().ext.y)) < ynew)
-						{
-							ynew = (yofs - (c->GetRect().ext.y));
-						}
-
-						c->SetPos(xofs,ynew);
-						
-						xofs+=c->GetRect().ext.x;
-
-						if (xofs >= m_Rect.Right())
-						{
-							xofs = m_Rect.Left();
-							yofs = ynew;
-						}
-
-						c->HandleEvent(e);
-					}
-
-				}
-				break;
-			}
-		}
-
-	};
-
-}
-
-/*
-*	Sets widget position to specified coords
-**/
-void XGUI_Widget::SetPos(vec_t x,vec_t y)
-{
-	m_Rect.pos.x = x;
-	m_Rect.pos.y = y;
 }

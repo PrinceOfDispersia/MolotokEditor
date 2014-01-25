@@ -24,6 +24,10 @@ namespace ME_Framework
 		void GL_DisableState(GLStateList state);
 		void GL_StateLock(GLStateList state,bool lock);
 
+		void GL_EnableScissorTest();
+		void GL_DisableScissorTest();
+		void GL_SetScissor(vec_t l,vec_t t,vec_t w,vec_t h);
+
 	}
 }
 

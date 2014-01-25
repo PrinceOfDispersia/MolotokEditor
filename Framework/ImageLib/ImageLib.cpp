@@ -122,14 +122,14 @@ void InitImageLib()
  **/
 void ShutdownImageLib()
 {
-	/*for(pgl_texture_t  pTexture: g_TexturesPool)
-	{
-		pTexture.reset();
-	}*/
+	//for(pgl_texture_t  pTexture: g_TexturesPool)
+	//{
+	//		pTexture.reset();
+	//	}
 
 	g_TexturesPool.clear();
 	g_TexturesPool.shrink_to_fit();
-	//pImgMemoryPool->UnlinkFromParent();
+	
 	//delete g_pImgMemoryPool;
 }
 

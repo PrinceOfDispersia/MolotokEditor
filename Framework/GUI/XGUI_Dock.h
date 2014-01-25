@@ -3,7 +3,7 @@
  *	XGUI_Dock.h - dock and dockable container classes
  *
  **/
-
+/*
 namespace ME_Framework
 {
 	namespace ME_XGUI
@@ -11,9 +11,12 @@ namespace ME_Framework
 		class XGUI_Dock: public XGUI_Widget
 		{
 			bool m_bRenderOutline;
+			xgRect_t m_OutlineRect;
 		protected:
 			virtual void OnWidgetDocked(TWidgetSharedPtr w);
 			virtual void OnWidgetUndocked(TWidgetSharedPtr w);
+
+			void RecalcRectUsingContents();
 		public:
 			XGUI_Dock(xgRect_t & r);
 			virtual void DrawComponent();
@@ -28,6 +31,7 @@ namespace ME_Framework
 						
 
 			void RecalcItemPositions();
+
 			
 		public:
 			XGUI_DockWindow(xgRect_t & r);
@@ -38,4 +42,4 @@ namespace ME_Framework
 		};
 	}
 
-}
+}*/

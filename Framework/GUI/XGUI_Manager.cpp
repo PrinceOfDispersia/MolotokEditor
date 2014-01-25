@@ -123,9 +123,9 @@ XGUI_Manager::XGUI_Manager()
 
 
 	// Setup dock sites
-
-	TAlign a[] = {TAlign::alLeft,TAlign::alRight,TAlign::alTop,TAlign::alBottom};
-	int priority[] = {9998,9998,9999,9999};
+/*
+	TAlign a[] = {TAlign::alTop,TAlign::alBottom,TAlign::alLeft,TAlign::alRight};
+	int priority[] = {9998,9998,9997,9997};
 
 	r.ext = ME_Math::Vector2D(32,32);
 	r.pos = ME_Math::Vector2D(0,0);
@@ -162,7 +162,7 @@ XGUI_Manager::XGUI_Manager()
 
 		AddWidget(pTestWindow);
 	}
-	
+	*/
 	// Recalculate rects
 	m_pDesktop->RecalcItemsRects();
 
@@ -171,7 +171,7 @@ XGUI_Manager::XGUI_Manager()
 	m_bInEditorMode = false;
 	m_bCursorLocked = false;
 
-	ME_Console::Start();
+	ME_Console::LoadGraphics();
 }
 
 /*
@@ -192,6 +192,8 @@ XGUI_Manager::~XGUI_Manager()
 	delete m_pImagesSheet;
 	delete m_pGuiVars;
 	delete m_pGuiFontNormal;
+	delete m_pTesselator;
+	delete m_pGuiFontSmall;
 }
 
 /*
@@ -212,6 +214,7 @@ void XGUI_Manager::Draw()
 	//
 
 	m_pTesselator->Flush();
+	Perform_WidgetRemoving();
 }
 
 /*
@@ -417,8 +420,9 @@ void XGUI_Tesselator::Flush()
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
-
+	
 	m_nUsedElements = 0;
+	ResetDefaultColor();
 }
 
 /*
@@ -529,4 +533,32 @@ XGUI_Font * XGUI_Manager::Get_GuiFont(TGuiFontTypes fontType)
 	}
 
 	return 0;
+}
+
+/*
+ *	Removes all widgets queryied to be removed
+ **/
+void XGUI_Manager::Perform_WidgetRemoving()
+{
+	for(widgetReferenceRemoveQuery_t q : m_vWidgetsToRemove)
+	{
+		auto it = std::find(q.container.begin(),q.container.end(),q.ptr);
+
+		if (*it)
+		{
+			//q.container.erase(it);
+		}
+	}
+
+	m_vWidgetsToRemove.clear();
+}
+
+
+/*
+ *	Adds widget remove query to list
+ **/
+void XGUI_Manager::Safe_QueryWidgetRemove(TWidgetSharedPtr ptr,TWidgetVector & vec)
+{
+	//widgetReferenceRemoveQuery_s q(ptr,vec);
+	//m_vWidgetsToRemove.push_back(q);
 }

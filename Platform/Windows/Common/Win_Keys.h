@@ -12,4 +12,5 @@
 #define KBD_DOWN VK_DOWN
 #define KBD_HOME VK_HOME
 #define KBD_END VK_END
+#define KBD_ENTER VK_RETURN
 #define KBD_DELETE VK_DELETE

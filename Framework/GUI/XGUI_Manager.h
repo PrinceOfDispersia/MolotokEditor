@@ -16,6 +16,16 @@ namespace ME_Framework
 			color32_t m_cDesktopBG;
 		}guiSettings_t;
 
+		
+		typedef struct widgetReferenceRemoveQuery_s
+		{
+			TWidgetVector & container;
+			TWidgetSharedPtr ptr;
+
+			widgetReferenceRemoveQuery_s(TWidgetSharedPtr _ptr,TWidgetVector & v): ptr(_ptr),container(v){};
+		}widgetReferenceRemoveQuery_t;
+
+		typedef std::vector<widgetReferenceRemoveQuery_t> TRemoveQueryVector;
 
 		class XGUI_Tesselator
 		{
@@ -77,6 +87,11 @@ namespace ME_Framework
 
 			bool m_bCursorLocked;
 			xgRect_t m_CursorLockRect;
+
+			void Perform_WidgetRemoving();
+
+			 TRemoveQueryVector m_vWidgetsToRemove;
+
 		public:
 			bool IsInEditorMode() { return m_bInEditorMode; }
 
@@ -102,6 +117,8 @@ namespace ME_Framework
 			void Gui_Printf(vec_t x,vec_t y,TCHAR * string);
 
 			XGUI_Font * Get_GuiFont(TGuiFontTypes fontType);
+
+			void Safe_QueryWidgetRemove(TWidgetSharedPtr ptr,TWidgetVector & vec);
 		};
 
 

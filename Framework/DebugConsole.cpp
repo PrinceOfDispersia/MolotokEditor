@@ -13,22 +13,32 @@ using namespace ME_Framework::ME_XGUI;
 extern XGUI_Tesselator * g_pTesselator;
 extern XGUI_Manager * g_pGUIManager;
 
+#pragma warning(disable:4267)
+
 XGUI_Font * g_pConsoleFont;
 
+/*
+ *	Console data structure
+ **/
 typedef struct conState_s
 {
 	std::vector<convar_s> m_vVarsAndProcs;
 	TCHAR m_strConBuffer[32768];
+	size_t m_conBufferOffset;
 
 	bool m_bVisible;
 
-	TCHAR m_strInputBuffer[128];
+	TCHAR m_strConPrompt;
+	TCHAR m_strInputBuffer[1024];
 	size_t m_InputCarretOffset;
 
 }conState_t;
 
 conState_t g_Console;
 
+/*
+ *	Draws console
+ **/
 void ME_Console::Draw()
 {
 	if (!g_Console.m_bVisible) return;
@@ -45,8 +55,16 @@ void ME_Console::Draw()
 	r.pos = ME_Math::Vector2D(0,0);
 	r.ext = ext;
 	r.ext.y /= 2;
-
+	
 	XGUI_DrawSheetGlyph(sprWhite,r);
+
+	g_pTesselator->ResetDefaultColor();
+
+	xgRect_t r2 = r;
+	r2.pos.x = 2;
+	r2.ext.x -= 4;
+	r2.ext.y -= 10;
+	g_pConsoleFont->DrawMultilineTextInRect(r2,g_Console.m_strConBuffer);
 
 	r.pos.y = (ext.y / 2) - 4;
 	r.ext.y = 4;
@@ -56,13 +74,14 @@ void ME_Console::Draw()
 
 	XGUI_DrawSheetGlyph(sprWhite,r);
 	
-	g_pTesselator->ResetDefaultColor();
-
-	g_pConsoleFont->Draw(ME_Math::Vector2D(2,0),g_Console.m_strConBuffer);
-	g_pConsoleFont->DrawTextWithCarret(2,ext.y / 2 - 20,g_Console.m_strInputBuffer,g_Console.m_InputCarretOffset);
-
+	g_pTesselator->ResetDefaultColor();	
+	g_pConsoleFont->DrawTextWithCarret(2,ext.y / 2 - 20,&g_Console.m_strConPrompt,g_Console.m_InputCarretOffset+1);
+	
 }
 
+/*
+ *	Console event handler
+ **/
 bool ME_Console::HandleEvent(ME_Framework::appEvent_t & ev)
 {
 	if (ev.eventid != eventTypes::EV_KB_KEY_DOWN && ev.eventid != eventTypes::EV_KB_CHAR) return false;
@@ -137,34 +156,64 @@ bool ME_Console::HandleEvent(ME_Framework::appEvent_t & ev)
 		g_Console.m_InputCarretOffset = _tcslen(g_Console.m_strInputBuffer);
 	}
 
+	if (ev.eventid == eventTypes::EV_KB_KEY_DOWN && ev.uParam1 == KBD_ENTER)
+		HandleEnter();
+
 	return true;
 }
 
+/*
+ *	Enter handler
+ **/
+void ME_Console::HandleEnter()
+{
+	Printf(_T("%s\n"),g_Console.m_strInputBuffer);
+
+	g_Console.m_InputCarretOffset = 0;
+	*g_Console.m_strInputBuffer = 0;
+}
+
+/*
+ *	Console initializier
+ **/
 void ME_Console::Start()
 {
 	g_Console.m_vVarsAndProcs.clear();
-	
 	g_Console.m_InputCarretOffset = 0;
+	g_Console.m_conBufferOffset = 0;
 	*g_Console.m_strInputBuffer = 0;
+	g_Console.m_strConPrompt = _T('>');
 	memset(g_Console.m_strInputBuffer,0,sizeof(g_Console.m_strInputBuffer));
-		
+}
+
+
+/*
+ *	Graphics loader
+ **/
+void ME_Console::LoadGraphics()
+{
 	g_pConsoleFont = g_pGUIManager->Get_GuiFont(TGuiFontTypes::gfNormal);
 }
 
+/*
+ *	Console destructor
+ **/
 void ME_Console::Stop()
 {
 	g_Console.m_vVarsAndProcs.clear();
 	g_Console.m_vVarsAndProcs.shrink_to_fit();
 }
 
+/*
+ *	Console printf routine
+ **/
 void ME_Console::Printf(TCHAR* format,...)
 {
 	va_list		argptr;
-
-	TCHAR * dest = g_Console.m_strConBuffer;
-	TCHAR * s = dest;
-	size_t destSize = 32768;
-
+		
+	TCHAR s[1024];
+	size_t destSize = 1024;
+	
 	va_start( argptr, format );
 	int written = _vsntprintf( s, destSize, format, argptr );
 	va_end( argptr );
@@ -172,7 +221,33 @@ void ME_Console::Printf(TCHAR* format,...)
 	if (written == -1)
 	{
 		// null-terminate
-		dest[destSize-1] = 0;
+		s[destSize-1] = 0;
 	}
-		
+	
+	size_t takenSpace = (written == -1 ? destSize : written);
+	size_t writeOffset = g_Console.m_conBufferOffset;
+
+	if ((g_Console.m_conBufferOffset + takenSpace + 1) > ARRAY_SIZE(g_Console.m_strConBuffer))
+	{
+		size_t offset = 0;
+		for(int i = (takenSpace) ; i < ARRAY_SIZE(g_Console.m_strConBuffer)-1 ; i++)
+		{
+			if (!g_Console.m_strConBuffer[i]) break;
+			g_Console.m_strConBuffer[offset] = g_Console.m_strConBuffer[i];
+			offset++;
+		}
+
+		writeOffset = offset;
+	}
+
+	for(size_t i = 0 ; i < takenSpace ; i++)
+	{
+		g_Console.m_strConBuffer[i + writeOffset] = s[i];
+	}
+
+	g_Console.m_strConBuffer[writeOffset+takenSpace] = 0;
+	g_Console.m_conBufferOffset = g_Console.m_conBufferOffset + takenSpace;
+
+	if (g_Console.m_conBufferOffset > ARRAY_SIZE(g_Console.m_strConBuffer)) 
+		g_Console.m_conBufferOffset = ARRAY_SIZE(g_Console.m_strConBuffer);
 }

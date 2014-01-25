@@ -9,6 +9,7 @@
 #include <fcntl.h>
 #include <Platform/Common/ApplicationCommon.h>
 #include "../Common/Win_Timer.h"
+#include <vld.h>
 #include "../Common/Win_OpenGL.h"
 
 HINSTANCE g_hInstance;
@@ -148,6 +149,9 @@ int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 	// Start timer
 	Sys_TimerStart();
 
+	// Initialize console
+	ME_Console::Start();
+
 	// Initialize environment
 	ME_Framework::g_pPlatform = new PlatformEnvironment;
 	
@@ -155,6 +159,7 @@ int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 	ParseCommandLine(GetCommandLine());
 		
 	g_pPlatform->SystemLog()->Log(_T("Platform environment initialized\n"));
+	//ME_Console::Printf(_T("[\n"));
 
 	// Initialize file system
 	TCHAR workDir[4096];
@@ -165,7 +170,6 @@ int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 	// Initialize OpenGL
 	IOpenGLContext * pContext = new CWinOpenGLContext();
 	g_pPlatform->SetOpenGLContext(pContext);
-	
 	pContext->MainLoop();		
 	
 	
@@ -176,4 +180,5 @@ int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 	ME_Console::Stop();
 
 	delete ME_Framework::g_pPlatform;		
+
 }

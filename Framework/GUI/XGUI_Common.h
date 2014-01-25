@@ -40,6 +40,14 @@ namespace ME_Framework
 			{
 				return pos + ext;
 			}
+
+			inline xgRect_s operator +(xgRect_s a)
+			{
+				xgRect_s c;
+				c.pos = this->pos;
+				c.ext = a.ext + this->ext;
+				return c;
+			}
 			
 		}xgRect_t;
 
@@ -69,7 +77,17 @@ namespace ME_Framework
 
 			return count == 0;
 		}
+
+		class XGUI_Widget;
+
+		typedef std::weak_ptr<XGUI_Widget> TWidgetWeakPtr;
+		typedef std::shared_ptr<XGUI_Widget> TWidgetSharedPtr;
+		typedef std::vector<TWidgetSharedPtr> TWidgetVector;
+
 	}
+
+
+
 }
 
 #endif
