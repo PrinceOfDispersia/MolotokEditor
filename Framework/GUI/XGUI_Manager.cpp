@@ -172,10 +172,10 @@ XGUI_Manager::XGUI_Manager()
 	}
 	*/
 
-	for(int i = 0 ; i < 4 ; i++)
+	for(int i = 0 ; i < 1 ; i++)
 	{
 		xgRect_t r;
-		r.pos = ME_Math::Vector2D(40*i,40*i);
+		r.pos = ME_Math::Vector2D(400,400);
 		r.ext = ME_Math::Vector2D(320,240);
 
 		XGUI_Window * w = new XGUI_Window(r);
@@ -265,8 +265,7 @@ void XGUI_Manager::Think(float flDeltaTime)
 	XGUI_Widget * w = m_pDesktop->WidgetUnderCursor(g_pPlatform->GetCursorPos());
 
 	if (w)
-	{
-		if (w!= m_pDesktop) g_pPlatform->SetCursor(mcSizeCenter);
+	{		
 		w->m_flHoveroutTimer = g_pPlatform->TimeElapsed();
 	}
 }
@@ -310,7 +309,7 @@ void XGUI_Manager::HandleEvent(ME_Framework::appEvent_t & ev)
 				if (m_bInEditorMode)
 				{
 					ME_Math::Vector2D v = g_pPlatform->GetCursorPos();
-					w->PointToClient(v);
+					w->ScreenToClient(v);
 					w->m_vDragOrigin = v;
 					w->SetDragged(true);
 				}
@@ -327,7 +326,7 @@ void XGUI_Manager::HandleEvent(ME_Framework::appEvent_t & ev)
 				if (w)
 				{
 					ME_Math::Vector2D v = g_pPlatform->GetCursorPos();
-					w->PointToClient(v);					
+					w->ScreenToClient(v);					
 					w->SetDragged(false);
 				}
 			}

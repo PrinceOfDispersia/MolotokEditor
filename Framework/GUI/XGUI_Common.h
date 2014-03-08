@@ -48,6 +48,14 @@ namespace ME_Framework
 				c.ext = a.ext + this->ext;
 				return c;
 			}
+
+			inline xgRect_s operator +(ME_Math::Vector2D v)
+			{
+				xgRect_s c;
+				c.pos = this->pos + v;
+				c.ext = this->ext;
+				return c; 
+			}
 			
 		}xgRect_t;
 

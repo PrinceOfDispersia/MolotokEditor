@@ -609,7 +609,7 @@ void XGUI_Widget::CalcClientRect(xgRect_t & r)
 /*
 *	Calculates point position relative to control rect
 **/
-void XGUI_Widget::PointToClient(ME_Math::Vector2D & v)
+void XGUI_Widget::ScreenToClient(ME_Math::Vector2D & v)
 {
 	XGUI_Widget * pParent = m_pParent;
 
@@ -668,7 +668,7 @@ void XGUI_Widget::RecalcDrag()
 		ME_Math::Vector2D v = g_pPlatform->GetCursorPos();
 		ME_Math::Vector2D v2 = v - m_vDragOrigin;
 
-		PointToClient(v2);			
+		ScreenToClient(v2);			
 		m_Rect.pos += v2;		
 
 		// Update aligment

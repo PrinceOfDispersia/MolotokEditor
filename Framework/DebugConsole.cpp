@@ -22,7 +22,7 @@ XGUI_Font * g_pConsoleFont;
  **/
 typedef struct conState_s
 {
-	std::vector<convar_s> m_vVarsAndProcs;
+	std::vector<convar_s*> m_vVarsAndProcs;
 	TCHAR m_strConBuffer[32768];
 	size_t m_conBufferOffset;
 
@@ -31,6 +31,7 @@ typedef struct conState_s
 	TCHAR m_strConPrompt;
 	TCHAR m_strInputBuffer[1024];
 	size_t m_InputCarretOffset;
+	
 
 }conState_t;
 
@@ -167,10 +168,56 @@ bool ME_Console::HandleEvent(ME_Framework::appEvent_t & ev)
  **/
 void ME_Console::HandleEnter()
 {
-	Printf(_T("%s\n"),g_Console.m_strInputBuffer);
+	bool bHandled = false;
+
+	TCHAR* args[16];
+	memset(&args,0,sizeof(args));
+
+	size_t c = Sys_DisassembleStringToTokenArray(g_Console.m_strInputBuffer,_T(' '),args,16);
+
+
+	for(auto v: g_Console.m_vVarsAndProcs)
+	{
+		if (!_tcscmp(v->strName,g_Console.m_strInputBuffer))
+		{
+			if (v->isCommand)
+			{
+				v->ExecutionHandler(c,args);
+				
+			}
+			else
+			{
+				if (c == 1)	
+				{
+					Printf(_T("%s = %s\n"),v->strName,v->strValue);
+				}
+				else if (c >= 2)
+				{
+					Printf(_T("%s set to %s\n"),v->strName,args[1]);
+					
+					v->flValue = _ttof(args[1]);
+					v->intValue = _ttoi(args[1]);
+					Sys_SafeStrCopy(v->strValue,args[1],ARRAY_SIZE(v->strValue));
+				}
+			}
+			bHandled = true;
+			break;
+		}
+	}
+
+	if (!bHandled) 
+		Printf(_T("Unknown command: \"%s\" !\n"),g_Console.m_strInputBuffer);
 
 	g_Console.m_InputCarretOffset = 0;
 	*g_Console.m_strInputBuffer = 0;
+}
+
+void Con_Help(size_t c,TCHAR * args[])
+{
+	for(auto v : g_Console.m_vVarsAndProcs)
+	{
+		Printf(_T("%s:\t%s\t%s\n"),v->strName,(v->isCommand ? _T("command") : _T("variable")),v->strDescription);
+	}
 }
 
 /*
@@ -184,6 +231,7 @@ void ME_Console::Start()
 	*g_Console.m_strInputBuffer = 0;
 	g_Console.m_strConPrompt = _T('>');
 	memset(g_Console.m_strInputBuffer,0,sizeof(g_Console.m_strInputBuffer));
+		
 }
 
 
@@ -192,7 +240,14 @@ void ME_Console::Start()
  **/
 void ME_Console::LoadGraphics()
 {
-	g_pConsoleFont = g_pGUIManager->Get_GuiFont(TGuiFontTypes::gfNormal);
+	g_pConsoleFont = g_pGUIManager->Get_GuiFont(TGuiFontTypes::gfSmall);
+
+	RegisterConsoleObject(_T("help"),_T("displays this list"),Con_Help);
+
+	RegisterConsoleObject(_T("r_test1"),_T("Debug variable #1"),_T("0"));
+	RegisterConsoleObject(_T("r_test2"),_T("Debug variable #2"),_T("0"));
+	RegisterConsoleObject(_T("r_test3"),_T("Debug variable #3"),_T("0"));
+	RegisterConsoleObject(_T("r_test4"),_T("Debug variable #4"),_T("0"));
 }
 
 /*
@@ -200,6 +255,11 @@ void ME_Console::LoadGraphics()
  **/
 void ME_Console::Stop()
 {
+	for(auto v : g_Console.m_vVarsAndProcs)
+	{
+		g_pPlatform->MemoryPools()->Free(v);
+	}
+
 	g_Console.m_vVarsAndProcs.clear();
 	g_Console.m_vVarsAndProcs.shrink_to_fit();
 }
@@ -250,4 +310,61 @@ void ME_Console::Printf(TCHAR* format,...)
 
 	if (g_Console.m_conBufferOffset > ARRAY_SIZE(g_Console.m_strConBuffer)) 
 		g_Console.m_conBufferOffset = ARRAY_SIZE(g_Console.m_strConBuffer);
+}
+
+//************************************
+// Method:    RegisterConsoleObject
+// FullName:  ME_Framework::ME_Console::RegisterConsoleObject
+// Access:    public 
+// Returns:   convar_t*
+// Qualifier:
+// Parameter: TCHAR * strName
+// Parameter: TCHAR * strDescription
+// Parameter: TCHAR * defaultValue
+//************************************
+convar_t* ME_Console::RegisterConsoleObject(TCHAR * strName,TCHAR * strDescription,TCHAR * defaultValue)
+{
+	convar_t * v = (convar_t *)g_pPlatform->MemoryPools()->Alloc(sizeof(convar_t));
+	
+	v->ExecutionHandler = 0;
+	v->flValue = _ttof(defaultValue);
+	v->intValue = _ttoi(defaultValue);
+	Sys_SafeStrCopy(v->strValue,defaultValue,ARRAY_SIZE(v->strValue));
+	v->isCommand = false;
+	
+	Sys_SafeStrCopy(v->strName,strName,ARRAY_SIZE(v->strName));
+	Sys_SafeStrCopy(v->strDescription,strDescription,ARRAY_SIZE(v->strDescription));	
+	Sys_SafeStrCopy(v->strDefaultValue,defaultValue,ARRAY_SIZE(v->strDefaultValue));
+	
+	g_Console.m_vVarsAndProcs.push_back(v);
+
+	return v;
+}
+
+//************************************
+// Method:    RegisterConsoleObject
+// FullName:  RegisterConsoleObject
+// Access:    public 
+// Returns:   convar_t*
+// Qualifier:
+// Parameter: TCHAR * strName
+// Parameter: TCHAR * strDescription
+// Parameter: void 
+// Parameter: * Handler
+// Parameter: 
+//************************************
+convar_t* ME_Console::RegisterConsoleObject(TCHAR * strName,TCHAR * strDescription,void (*Handler)(size_t argc,TCHAR * argv[]))
+{
+	convar_t * v = (convar_t *)g_pPlatform->MemoryPools()->Alloc(sizeof(convar_t));
+
+	v->ExecutionHandler = 0;
+	v->ExecutionHandler = Handler;
+	v->isCommand = true;
+
+	Sys_SafeStrCopy(v->strName,strName,ARRAY_SIZE(v->strName));
+	Sys_SafeStrCopy(v->strDescription,strDescription,ARRAY_SIZE(v->strDescription));
+
+	g_Console.m_vVarsAndProcs.push_back(v);
+
+	return v;
 }

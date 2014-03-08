@@ -18,6 +18,9 @@ size_t Sys_SafeSprintf(TCHAR * dest,size_t destSize,TCHAR * format,...);
 bool Sys_SafeStrCopy(TCHAR * dest,TCHAR * source,size_t destSize);
 TCHAR * Sys_StrDup(TCHAR * source);
 
+
+size_t Sys_DisassembleStringToTokenArray(TCHAR * strPtr,TCHAR divisor,TCHAR ** destArray,size_t destSize);
+
 /*
  *	Log file class, implementation up to platform code
  **/

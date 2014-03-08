@@ -8,7 +8,7 @@ namespace ME_Framework
 {
 	namespace ME_XGUI
 	{
-		enum class eWindowButtons
+		enum eWindowButtons
 		{
 			btnClose,
 			btnMaximize,
@@ -19,6 +19,8 @@ namespace ME_Framework
 		/* Basic window class */
 		class XGUI_Window: public XGUI_Widget
 		{
+			
+			void CheckBorders();
 		public:
 			
 			XGUI_Window(xgRect_t & r);

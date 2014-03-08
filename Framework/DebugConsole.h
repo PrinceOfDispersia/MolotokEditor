@@ -15,11 +15,12 @@ namespace ME_Framework
 
 		typedef struct convar_s 
 		{
-			char strName[256];
-			char strDefaultValue[256];
-			char strDescription[256];
+			TCHAR strName[256];
+			TCHAR strValue[256];
+			TCHAR strDefaultValue[256];
+			TCHAR strDescription[256];
 
-			void (*ExecutionHandler)();
+			void (*ExecutionHandler)(size_t argc,TCHAR * argv[]);
 
 			int intValue;
 			float flValue;
@@ -32,6 +33,9 @@ namespace ME_Framework
 		void HandleEnter();
 
 		void Printf(TCHAR* fmt,...);
+
+		convar_t* RegisterConsoleObject(TCHAR * strName,TCHAR * strDescription,void (*Handler)(size_t argc,TCHAR * argv[]));
+		convar_t* RegisterConsoleObject(TCHAR * strName,TCHAR * strDescription,TCHAR * defaultValue);
 	}
 }
 

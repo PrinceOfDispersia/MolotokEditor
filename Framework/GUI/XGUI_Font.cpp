@@ -34,6 +34,12 @@ void XGUI_Font::Calc_TextRect(String & str,xgRect_t * rect)
 	{
 		TCHAR sym = ptr[i];
 
+		if (sym == _T('\t'))
+		{
+			w+=30;
+			continue;
+		}
+
 		int idx = -1;
 		byte page = sym >> 8;
 
@@ -67,8 +73,8 @@ void XGUI_Font::Calc_TextRect(String & str,xgRect_t * rect)
 
 	}
 
-	rect->pos = ME_Math::Vector2D(0,0);
-	rect->ext = ME_Math::Vector2D(w,h);
+	rect->pos = ME_Math::Vector2D(0,o);
+	rect->ext = ME_Math::Vector2D(w,h-o);
 }
 
 /*
@@ -88,6 +94,12 @@ void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 		{
 
 			TCHAR sym = ptr[i];
+
+			if (sym == _T('\t'))
+			{
+				w+=30;
+				continue;
+			}
 
 			int idx = -1;
 			byte page = sym >> 8;
@@ -290,8 +302,12 @@ void XGUI_Font::DrawTextWithCarret(vec_t px,vec_t py,TCHAR * ptr,size_t carretOf
 		g_pTesselator->Vertex2(x1,y2);
 
 
-
-		w+=(inf->orig_w);
+		if (sym == _T('\t'))
+		{
+			w+=30;
+		}
+		else 
+			w+=(inf->orig_w);
 		ptr++;
 		i++;
 	}
@@ -419,7 +435,12 @@ void XGUI_Font::DrawMultilineTextInRect(xgRect_t & r,TCHAR * strBuffer)
 		g_pTesselator->Coord2(c[0],c[3]);
 		g_pTesselator->Vertex2(x1,y2);
 		
-		w+=(inf->orig_w);
+		if (sym == _T('\t'))
+		{
+			w+=30;
+		}
+		else 
+			w+=(inf->orig_w);
 		ptr++;
 		i++;
 		charsInLine++;

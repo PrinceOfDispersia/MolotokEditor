@@ -97,3 +97,46 @@ TCHAR * Sys_StrDup(TCHAR * source)
 
 	return pRet;
 }
+
+/************************************************************************/
+/*			Disassembles string into array of substrings
+ *			last element contains part remaining part of source string.
+ *			Modifies original string
+/************************************************************************/
+size_t Sys_DisassembleStringToTokenArray(TCHAR * strPtr,TCHAR divisor,TCHAR ** destArray,size_t destSize)
+{
+	size_t curr_array_pos = 0;
+
+	size_t startOfs = 0;
+	size_t currOfs = 0;
+
+	while(true)
+	{
+		if (strPtr[currOfs] == divisor)
+		{
+
+			destArray[curr_array_pos] = &strPtr[startOfs];
+
+			curr_array_pos++;
+
+			if (curr_array_pos < destSize)
+				strPtr[currOfs] = 0;
+			else return destSize;
+			
+			currOfs++;
+			startOfs = currOfs;
+			
+		}
+			
+		
+		currOfs++;
+
+		if (!strPtr[currOfs]) 
+		{
+			destArray[curr_array_pos] = &strPtr[startOfs];
+			return curr_array_pos+1;
+		}
+
+	}
+
+}

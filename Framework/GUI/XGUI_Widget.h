@@ -75,7 +75,7 @@ namespace ME_XGUI
 		ME_Math::Vector2D m_vMargins[2];
 				
 	public:
-		void PointToClient(ME_Math::Vector2D & v);
+		void ScreenToClient(ME_Math::Vector2D & v);
 		void ClientToScreen(ME_Math::Vector2D & v);
 		void AddChildWidget(XGUI_Widget * pWidget);
 
