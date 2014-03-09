@@ -68,12 +68,14 @@ namespace ME_XGUI
 		void RecalcRectWithAligment();
 		xgRect_t GetParentRect();
 
-		void RecalcDrag();
+		virtual void RecalcDrag();
 		void RecursiveNotifyEveryone(ME_Framework::appEvent_t & ev);
 
 		// Left Top Right Bottom
 		ME_Math::Vector2D m_vMargins[2];
-				
+			
+		eMouseCursors m_CurrentCursor;
+
 	public:
 		void ScreenToClient(ME_Math::Vector2D & v);
 		void ClientToScreen(ME_Math::Vector2D & v);

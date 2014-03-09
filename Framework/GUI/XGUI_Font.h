@@ -30,10 +30,21 @@ namespace ME_Framework
 
 			short * m_pCodePages;
 			ME_Math::Vector2D m_vAtlasOffset;
+
+			bool m_bShouldApplyColoring;
+			color32_t m_TextColor;
+
 		public:
+			void SetTextColor(byte r,byte g,byte b,byte a);
+
 			void SetAtlas(pgl_texture_t pAtlas,ME_Math::Vector2D offset);
 			void Calc_TextRect(String & str,xgRect_t * rect);
 			void Draw(ME_Math::Vector2D pos,String str);
+
+			void Draw(vec_t x,vec_t y,String str)
+			{
+				Draw(ME_Math::Vector2D(x,y),str);
+			}
 
 			void DrawTextWithCarret(vec_t x,vec_t y,TCHAR * strBuffer,size_t carretOffset);
 			void DrawMultilineTextInRect(xgRect_t & r,TCHAR * strBuffer);

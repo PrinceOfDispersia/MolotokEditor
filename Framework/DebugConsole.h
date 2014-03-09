@@ -36,6 +36,8 @@ namespace ME_Framework
 
 		convar_t* RegisterConsoleObject(TCHAR * strName,TCHAR * strDescription,void (*Handler)(size_t argc,TCHAR * argv[]));
 		convar_t* RegisterConsoleObject(TCHAR * strName,TCHAR * strDescription,TCHAR * defaultValue);
+
+		float Cvar_GetFloat(TCHAR* strName);
 	}
 }
 

@@ -90,6 +90,11 @@ void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 		const TCHAR * ptr = str.c_str();
 		size_t sz = str.Length();
 
+		if (m_bShouldApplyColoring)
+		{
+			g_pTesselator->DefaultColor(m_TextColor);
+		}
+
 		for(size_t i = 0 ; i < sz ; i++)
 		{
 
@@ -158,6 +163,13 @@ void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 						
 			
 		}
+
+		if (m_bShouldApplyColoring)
+		{
+			g_pTesselator->ResetDefaultColor();
+			m_bShouldApplyColoring = false;
+		}
+		
 }
 
 /*
@@ -191,6 +203,8 @@ XGUI_Font::XGUI_Font(dFontHdr_t * pHeader,size_t sz)
 		m_nMaps = pHeader->lumps[LUMP_FNT_MAPS].length / sizeof(byte);
 
 		m_pCodePages = (short*)&pBits[pHeader->lumps[LUMP_FNT_PAGES].start];
+
+		m_bShouldApplyColoring = false;
 }
 
 /*
@@ -226,6 +240,12 @@ void XGUI_Font::DrawTextWithCarret(vec_t px,vec_t py,TCHAR * ptr,size_t carretOf
 
 	size_t i = 0;
 	
+	if (m_bShouldApplyColoring)
+	{
+		m_bShouldApplyColoring = false;
+		g_pTesselator->DefaultColor(m_TextColor);
+	}
+
 	while(*ptr)
 	{
 		if (i == (carretOffset))
@@ -329,6 +349,12 @@ void XGUI_Font::DrawTextWithCarret(vec_t px,vec_t py,TCHAR * ptr,size_t carretOf
 		g_pTesselator->ResetDefaultColor();
 		//w+=4;
 	}
+
+	if (m_bShouldApplyColoring)
+	{
+		g_pTesselator->ResetDefaultColor();
+		m_bShouldApplyColoring = false;
+	}
 }
 
 void XGUI_Font::DrawMultilineTextInRect(xgRect_t & r,TCHAR * strBuffer)
@@ -353,9 +379,12 @@ void XGUI_Font::DrawMultilineTextInRect(xgRect_t & r,TCHAR * strBuffer)
 
 	GL_SetScissor(r.pos.x,r.pos.y,r.ext.x,r.ext.y);
 	GL_EnableScissorTest();
-
 	
-	
+	if (m_bShouldApplyColoring)
+	{
+		m_bShouldApplyColoring = false;
+		g_pTesselator->DefaultColor(m_TextColor);
+	}
 
 	while(*ptr)
 	{
@@ -446,7 +475,23 @@ void XGUI_Font::DrawMultilineTextInRect(xgRect_t & r,TCHAR * strBuffer)
 		charsInLine++;
 	}
 
+	if (m_bShouldApplyColoring)
+	{
+		g_pTesselator->ResetDefaultColor();
+		m_bShouldApplyColoring = false;
+	}
+
 	g_pTesselator->Flush();
 	GL_DisableScissorTest();
 
+}
+
+void XGUI_Font::SetTextColor(byte r,byte g,byte b,byte a)
+{
+	m_TextColor.r = r;
+	m_TextColor.g = g;
+	m_TextColor.b = b;
+	m_TextColor.a = a;
+
+	m_bShouldApplyColoring = true;
 }

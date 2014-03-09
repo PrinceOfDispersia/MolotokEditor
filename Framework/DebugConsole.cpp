@@ -14,8 +14,11 @@ extern XGUI_Tesselator * g_pTesselator;
 extern XGUI_Manager * g_pGUIManager;
 
 #pragma warning(disable:4267)
+#define CON_FONT_HEIGHT 10
 
 XGUI_Font * g_pConsoleFont;
+
+class Con_AutoCompleteHelper;
 
 /*
  *	Console data structure
@@ -32,10 +35,197 @@ typedef struct conState_s
 	TCHAR m_strInputBuffer[1024];
 	size_t m_InputCarretOffset;
 	
+	Con_AutoCompleteHelper* m_AutoCompleteHelper;
 
 }conState_t;
 
 conState_t g_Console;
+
+typedef struct acItem_s
+{
+	TCHAR * strPtr;
+	convar_t * var;
+
+	TCHAR repBuffer[256];
+
+	TCHAR * Representation()
+	{
+		if (var)
+		{
+			
+			Sys_SafeSprintf(repBuffer,ARRAY_SIZE(repBuffer),(var->isCommand ? _T("%s") : _T("%s = %s")),var->strName,var->strValue);
+			return repBuffer;
+		}
+
+		return strPtr;
+	}
+
+	TCHAR * Value()
+	{
+		if (var)
+		{
+			return var->strName;
+		}
+
+		return strPtr;
+	}
+}acItem_t;
+
+class Con_AutoCompleteHelper
+{
+	std::vector<acItem_t> m_vSuggestionsList;
+	TCHAR m_strToHighlight[1024];
+	int m_SelectedItem;
+
+	TCHAR m_strHistory[2][1024];
+	size_t m_HistoryDepth;
+
+public:
+
+	Con_AutoCompleteHelper()
+	{
+		m_vSuggestionsList.clear();
+		m_SelectedItem = 0;
+		m_HistoryDepth = 0;
+	}
+
+	~Con_AutoCompleteHelper()
+	{
+		m_vSuggestionsList.clear();
+		m_vSuggestionsList.shrink_to_fit();
+	}
+
+	void Draw()
+	{
+		if (m_vSuggestionsList.size() == 0)
+			return;
+
+		ME_Math::Vector2D ext = g_pPlatform->GetClientAreaExtents();
+
+		color32_t c = {0,0,0,192};
+
+		g_pTesselator->SetTranslation(ME_Math::Vector2D(0,0));
+		g_pTesselator->DefaultColor(c);
+
+		xgRect_t r;
+		r.pos = ME_Math::Vector2D(4,ext.y / 2);
+		
+		r.ext.Init();
+
+		for(int i = 0 ; i < m_vSuggestionsList.size() ; i++)
+		{
+			xgRect_t tr;
+			g_pConsoleFont->Calc_TextRect(ME_Framework::String(m_vSuggestionsList[i].Representation()),&tr);
+			
+			auto v = ME_Math::Vector2D(r.pos.x,r.pos.y + (i * CON_FONT_HEIGHT));
+
+			tr.pos += v;
+
+			if (r.ext.x < tr.Right()) r.ext.x = tr.Right() - r.pos.x;
+
+			r.ext.y += (CON_FONT_HEIGHT+1);
+		}
+
+		r.ext.x *= 1.5;
+
+		XGUI_DrawSheetGlyph(sprWhite,r);
+		g_pTesselator->ResetDefaultColor();
+
+		for(int i = 0 ; i < m_vSuggestionsList.size() ; i++)
+		{
+			if (i == m_SelectedItem)
+			{
+				g_pConsoleFont->SetTextColor(255,0,0,255);
+			}
+
+			g_pConsoleFont->Draw(ME_Math::Vector2D(r.pos.x,r.pos.y + (i * CON_FONT_HEIGHT)),m_vSuggestionsList[i].Representation());
+		}
+	}
+
+	void UpdateList(TCHAR * strInputBuffer)
+	{	
+		m_vSuggestionsList.clear();
+		if (*strInputBuffer)
+		{
+			
+			for(auto v : g_Console.m_vVarsAndProcs)
+			{
+				if (_tcsstr(v->strName,strInputBuffer))
+				{
+					acItem_t i;
+					i.var = v;
+					i.strPtr = 0;
+
+					m_vSuggestionsList.push_back(i);
+				}
+			}
+		}
+		else
+		{
+			for(int i = 0 ; i < m_HistoryDepth ; i++)
+			{
+				acItem_t item;
+				item.var = 0;
+				item.strPtr = m_strHistory[i];
+
+				m_vSuggestionsList.push_back(item);
+			}
+		}
+		
+	}
+
+	bool HandleEvent(ME_Framework::appEvent_t & ev)
+	{
+		if (ev.eventid == eventTypes::EV_KB_KEY_DOWN)
+		{
+			switch(ev.uParam1)
+			{
+			case KBD_DOWN:
+
+				m_SelectedItem++;
+				if (m_SelectedItem == m_vSuggestionsList.size())
+					m_SelectedItem--;
+
+				return true;
+			case KBD_UP:
+				m_SelectedItem--;
+				if (m_SelectedItem < 0)
+					m_SelectedItem = 0;
+				return true;
+			case KBD_ENTER:
+				if (m_vSuggestionsList.size() > 0 && _tcscmp(g_Console.m_strInputBuffer,m_vSuggestionsList[m_SelectedItem].Value()))
+				{
+					Sys_SafeStrCopy(g_Console.m_strInputBuffer,m_vSuggestionsList[m_SelectedItem].Value(),ARRAY_SIZE(g_Console.m_strInputBuffer));
+					g_Console.m_InputCarretOffset = _tcsclen(g_Console.m_strInputBuffer);
+					g_Console.m_strInputBuffer[g_Console.m_InputCarretOffset] = _T(' ');
+					g_Console.m_InputCarretOffset++;
+
+					assert(g_Console.m_InputCarretOffset < ARRAY_SIZE(g_Console.m_strInputBuffer));
+
+					m_SelectedItem = 0;
+					m_vSuggestionsList.clear();
+					return true;
+				}
+				return false;
+			}
+		}
+
+		return false;
+	}
+
+	void AddToHistory(TCHAR * strCmd)
+	{
+		if (m_HistoryDepth == ARRAY_SIZE(m_strHistory))
+		{
+			m_HistoryDepth--;
+			memmove(m_strHistory[0],m_strHistory[1],sizeof(m_strHistory[0]) * (ARRAY_SIZE(m_strHistory) - 1));
+		}
+
+		Sys_SafeStrCopy(m_strHistory[m_HistoryDepth],strCmd,ARRAY_SIZE(m_strHistory[0]));
+		m_HistoryDepth++;
+	}
+};
+
 
 /*
  *	Draws console
@@ -78,6 +268,7 @@ void ME_Console::Draw()
 	g_pTesselator->ResetDefaultColor();	
 	g_pConsoleFont->DrawTextWithCarret(2,ext.y / 2 - 20,&g_Console.m_strConPrompt,g_Console.m_InputCarretOffset+1);
 	
+	g_Console.m_AutoCompleteHelper->Draw();
 }
 
 /*
@@ -86,6 +277,9 @@ void ME_Console::Draw()
 bool ME_Console::HandleEvent(ME_Framework::appEvent_t & ev)
 {
 	if (ev.eventid != eventTypes::EV_KB_KEY_DOWN && ev.eventid != eventTypes::EV_KB_CHAR) return false;
+
+	if (g_Console.m_AutoCompleteHelper->HandleEvent(ev)) 
+		return true;
 
 	unsigned int key = ev.uParam1;
 
@@ -157,6 +351,8 @@ bool ME_Console::HandleEvent(ME_Framework::appEvent_t & ev)
 		g_Console.m_InputCarretOffset = _tcslen(g_Console.m_strInputBuffer);
 	}
 
+	g_Console.m_AutoCompleteHelper->UpdateList(g_Console.m_strInputBuffer);
+
 	if (ev.eventid == eventTypes::EV_KB_KEY_DOWN && ev.uParam1 == KBD_ENTER)
 		HandleEnter();
 
@@ -172,6 +368,8 @@ void ME_Console::HandleEnter()
 
 	TCHAR* args[16];
 	memset(&args,0,sizeof(args));
+
+	g_Console.m_AutoCompleteHelper->AddToHistory(g_Console.m_strInputBuffer);
 
 	size_t c = Sys_DisassembleStringToTokenArray(g_Console.m_strInputBuffer,_T(' '),args,16);
 
@@ -191,14 +389,18 @@ void ME_Console::HandleEnter()
 				{
 					Printf(_T("%s = %s\n"),v->strName,v->strValue);
 				}
-				else if (c >= 2)
+				else if (c >= 2 && *args[1])
 				{
 					Printf(_T("%s set to %s\n"),v->strName,args[1]);
-					
+
+					#pragma warning(disable:4244)
 					v->flValue = _ttof(args[1]);
 					v->intValue = _ttoi(args[1]);
+					
 					Sys_SafeStrCopy(v->strValue,args[1],ARRAY_SIZE(v->strValue));
+					
 				}
+				else Printf(_T("%s = %s\n"),v->strName,v->strValue);
 			}
 			bHandled = true;
 			break;
@@ -207,6 +409,8 @@ void ME_Console::HandleEnter()
 
 	if (!bHandled) 
 		Printf(_T("Unknown command: \"%s\" !\n"),g_Console.m_strInputBuffer);
+
+	
 
 	g_Console.m_InputCarretOffset = 0;
 	*g_Console.m_strInputBuffer = 0;
@@ -232,6 +436,8 @@ void ME_Console::Start()
 	g_Console.m_strConPrompt = _T('>');
 	memset(g_Console.m_strInputBuffer,0,sizeof(g_Console.m_strInputBuffer));
 		
+
+	g_Console.m_AutoCompleteHelper = new Con_AutoCompleteHelper;
 }
 
 
@@ -240,7 +446,7 @@ void ME_Console::Start()
  **/
 void ME_Console::LoadGraphics()
 {
-	g_pConsoleFont = g_pGUIManager->Get_GuiFont(TGuiFontTypes::gfSmall);
+	g_pConsoleFont = g_pGUIManager->Get_GuiFont(TGuiFontTypes::gfNormal);
 
 	RegisterConsoleObject(_T("help"),_T("displays this list"),Con_Help);
 
@@ -262,6 +468,8 @@ void ME_Console::Stop()
 
 	g_Console.m_vVarsAndProcs.clear();
 	g_Console.m_vVarsAndProcs.shrink_to_fit();
+
+	delete g_Console.m_AutoCompleteHelper;
 }
 
 /*
@@ -367,4 +575,24 @@ convar_t* ME_Console::RegisterConsoleObject(TCHAR * strName,TCHAR * strDescripti
 	g_Console.m_vVarsAndProcs.push_back(v);
 
 	return v;
+}
+
+
+//************************************
+// Method:    Cvar_GetFloat
+// FullName:  ME_Framework::ME_Console::Cvar_GetFloat
+// Access:    public 
+// Returns:   float
+// Qualifier:
+// Parameter: TCHAR * strName
+//************************************
+float ME_Console::Cvar_GetFloat(TCHAR * strName)
+{
+	for(auto v: g_Console.m_vVarsAndProcs)
+	{
+		if (!_tcscmp(v->strName,strName))
+			return v->flValue;
+	}
+
+	return 0;
 }

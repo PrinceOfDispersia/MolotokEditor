@@ -6,6 +6,8 @@
 
 #include <Platform/Common/ApplicationCommon.h>
 
+#pragma warning(disable:4244)
+
 namespace ME_Framework
 {
 	namespace ME_OpenGLBackend

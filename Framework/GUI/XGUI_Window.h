@@ -8,19 +8,16 @@ namespace ME_Framework
 {
 	namespace ME_XGUI
 	{
-		enum eWindowButtons
-		{
-			btnClose,
-			btnMaximize,
-			btnMinimize,
-			btnRestore
-		};
+
 
 		/* Basic window class */
 		class XGUI_Window: public XGUI_Widget
 		{
-			
+			eWindowDragKinds m_DragKind;
+						
 			void CheckBorders();
+		protected:
+			virtual void RecalcDrag();
 		public:
 			
 			XGUI_Window(xgRect_t & r);

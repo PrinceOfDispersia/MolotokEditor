@@ -120,10 +120,17 @@ size_t Sys_DisassembleStringToTokenArray(TCHAR * strPtr,TCHAR divisor,TCHAR ** d
 			curr_array_pos++;
 
 			if (curr_array_pos < destSize)
-				strPtr[currOfs] = 0;
-			else return destSize;
+			{
+				while(strPtr[currOfs] == divisor)
+				{
+					strPtr[currOfs] = 0;
+					currOfs++;					
+				}
+			}
+			else 
+				return destSize;
 			
-			currOfs++;
+			
 			startOfs = currOfs;
 			
 		}

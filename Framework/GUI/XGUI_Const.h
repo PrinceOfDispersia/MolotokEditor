@@ -52,7 +52,26 @@ namespace ME_Framework
 			gfNormal
 		};
 
+		enum eWindowButtons
+		{
+			btnClose,
+			btnMaximize,
+			btnMinimize,
+			btnRestore
+		};
+
+		enum class eWindowDragKinds
+		{
+			wdkNone =	(1<<0),
+			wdkPos =	(1<<1),
+			wdkXExt =	(1<<2),
+			wdkXPos =	(1<<3),
+			wdkYExt =	(1<<4),
+			wdkYPos =	(1<<5)
+		};
+
 		ENUM_FLAGS(TAnchor);
+		ENUM_FLAGS(eWindowDragKinds);
 	}
 
 	

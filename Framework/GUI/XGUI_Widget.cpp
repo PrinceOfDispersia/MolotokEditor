@@ -45,7 +45,10 @@ XGUI_Widget::XGUI_Widget(xgRect_t & rect)
 	m_nWidgetCounter = 0;
 	m_nWidgetNumber = 0;
 
-	
+	m_CurrentCursor = eMouseCursors::mcNormal;
+
+	m_pGuiFontNormal = g_pGUIManager->Get_GuiFont(TGuiFontTypes::gfNormal);
+	m_pGuiFontSmall = g_pGUIManager->Get_GuiFont(TGuiFontTypes::gfSmall);
 
 }
 
