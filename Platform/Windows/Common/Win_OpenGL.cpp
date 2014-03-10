@@ -27,6 +27,7 @@ using namespace ME_Framework::ME_OpenGLBackend;
  **/
 LRESULT _stdcall WinGL_WindowProc(HWND hwnd,UINT uMsg,WPARAM wParam,LPARAM lParam)
 {
+
 	CWinOpenGLContext * pCont = (CWinOpenGLContext*)GetWindowLongPtr(hwnd,GWLP_USERDATA);
 
 	if (pCont)
@@ -83,7 +84,9 @@ void CWinOpenGLContext::SetupOpenGLContext()
 	int iFormat = ChoosePixelFormat( m_hDC, &pfd );
 	SetPixelFormat( m_hDC, iFormat, &pfd );
 
+	g_pPlatform->SystemLog()->Log(_T("GL Context created\n"));
 	m_hGLRC = wglCreateContext(m_hDC);
+		
 
 	Activate();
 
@@ -133,8 +136,12 @@ CWinOpenGLContext::CWinOpenGLContext()
 	m_hDC = GetDC(m_hWnd);
 	
 	SetWindowLongPtr(m_hWnd,GWLP_USERDATA,(LONG_PTR)this);	
+	g_pPlatform->SystemLog()->Log(_T("GL Window created\n"));
+
 	SetupOpenGLContext();
-	
+
+
+	g_pPlatform->SystemLog()->Log(_T("Showing window...\n"));
 	ShowWindow(m_hWnd,SW_MAXIMIZE);
 }
 
@@ -168,6 +175,8 @@ void CWinOpenGLContext::Resize(ME_Math::Vector2D vNewPos,ME_Math::Vector2D vNewE
  **/
 LRESULT CWinOpenGLContext::WindowProc(UINT uMsg,WPARAM wParam,LPARAM lParam)
 {
+	
+
 	if (TranslateToEvent(uMsg,wParam,lParam))
 	{
 		ApplicationPumpEvent(m_tmpEvent);
@@ -180,11 +189,15 @@ LRESULT CWinOpenGLContext::WindowProc(UINT uMsg,WPARAM wParam,LPARAM lParam)
 		{
 			RECT r;
 			GetClientRect(m_hWnd,&r);
+
+			
 			Resize(ME_Math::Vector2D(r.left,r.top),ME_Math::Vector2D(r.right - r.left,r.bottom - r.top));
 
 			appEvent_t e;
 			e.eventid = eventTypes::EV_WINDOW_RESIZE;
-			ApplicationPumpEvent(e);
+			
+			if (m_bAppLaunched) 
+				ApplicationPumpEvent(e);
 
 			return TRUE;
 		}
@@ -215,8 +228,12 @@ void CWinOpenGLContext::MainLoop()
 	// Start application
 	ApplicationStart();
 
+	m_bAppLaunched = true;
+
 	float flPrevTime = Sys_TimeElapsed();
 	float flFrameTime = 0;
+
+	g_pPlatform->SystemLog()->Log(_T("App started\n"));
 
 	while (1)
 	{
@@ -238,6 +255,7 @@ void CWinOpenGLContext::MainLoop()
 			}
 		}
 
+		
 
 		flFrameTime = Sys_TimeElapsed() - flPrevTime;	
 		flPrevTime = Sys_TimeElapsed();

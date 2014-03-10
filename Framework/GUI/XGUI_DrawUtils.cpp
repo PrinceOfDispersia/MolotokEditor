@@ -105,8 +105,6 @@ void ME_Framework::ME_XGUI::XGUI_DrawScalableSheetGlyph(mSheetGlyph_t * pGlyphs[
 	Vectors[33].x =	Vectors[30].x + pGlyphs[8]->e[0];		Vectors[33].y = Vectors[23].y;
 	Vectors[34].x = Vectors[30].x + pGlyphs[8]->e[0];		Vectors[34].y = Vectors[23].y + pGlyphs[8]->e[1];
 	Vectors[35].x = Vectors[30].x;							Vectors[35].y = Vectors[23].y + pGlyphs[8]->e[1];
-
-	
 	
 
 	for(int i = 0 ; i < 36 ; i+=4)

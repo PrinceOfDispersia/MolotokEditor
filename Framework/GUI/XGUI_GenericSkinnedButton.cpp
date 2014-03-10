@@ -8,7 +8,7 @@
 
 using namespace ME_Framework::ME_XGUI;
 using namespace ME_Framework::ME_OpenGLBackend;
-
+extern XGUI_Tesselator * g_pTesselator;
 /*
  *	Constructor
  **/
@@ -58,11 +58,16 @@ void XGUI_GenericButton::DrawComponent()
 				fadeOut /= 0.3f;
 				if (fadeOut > 1.0f) fadeOut = 1.0f;
 
+				color32_t c;
+				c.r = c.g = c.b = 255;
+				c.a = (1-fadeOut) * 255;
 
-				glColor4f(1,1,1,1-fadeOut);
-
+				g_pTesselator->DefaultColor(c);
+				
 				if (fadeOut < 1)
 					XGUI_DrawSheetGlyph(m_pSkinsSet[2],m_Rect);
+
+				g_pTesselator->ResetDefaultColor();
 			}
 		}
 		break;

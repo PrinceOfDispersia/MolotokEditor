@@ -24,12 +24,18 @@ mSheetGlyph_t * ME_XGUI::sprDragHandleDotsHovered;
 mSheetGlyph_t * ME_XGUI::sprDialogActive[9];
 mSheetGlyph_t * ME_XGUI::sprDialogInActive[9];
 
+mSheetGlyph_t * ME_XGUI::sprMinimize[3];
+mSheetGlyph_t * ME_XGUI::sprMaximize[3];
+mSheetGlyph_t * ME_XGUI::sprClose[3];
+mSheetGlyph_t * ME_XGUI::sprRestore[3];
+
+
 mSheetGlyph_t * ME_XGUI::sprWhite;
 
 /*
  *	Function loads 3 by 3 set of glyphs for scalable widgets
  **/
-void LoadScalableSet(mSheetGlyph_t * sprites[9],char mask[])
+void LoadScalableSprite(mSheetGlyph_t * sprites[9],char mask[])
 {
 	char tmp[128];
 	
@@ -45,6 +51,25 @@ void LoadScalableSet(mSheetGlyph_t * sprites[9],char mask[])
 			sprintf(tmp,"%s.%s%s",mask,yPos[y],xPos[x]);
 			sprites[y * 3 + x] = g_pGUIManager->GetGUISheetGlyph(tmp);
 		}
+	}
+
+}
+
+/*
+ *	Function loads spriteset for buttons
+ **/
+void LoadButtonSpriteSet(mSheetGlyph_t * dst[3],char mask[])
+{
+	char tmp[128];
+
+	// TOOD: make this safe way
+
+	char tags[][16] = {"Normal","Pressed","Hovered"};
+	
+	for(int x = 0 ; x < 3 ; x++)
+	{
+		sprintf(tmp,"%s.%s",mask,tags[x]);
+		dst[x] = g_pGUIManager->GetGUISheetGlyph(tmp);
 	}
 
 }
@@ -106,16 +131,16 @@ XGUI_Manager::XGUI_Manager()
 	m_pGuiFontNormal = LoadFont(_T("gui/fonts/SegoeUI9.ft2"),m_GuiAtlas,ME_Math::Vector2D(0,690));
 	m_pGuiFontSmall = LoadFont(_T("gui/fonts/SegoeUI8.ft2"),m_GuiAtlas,ME_Math::Vector2D(256,690));
 
-	LoadScalableSet(sprButtonNormal,"UI.ButtonBig.Normal");
-	LoadScalableSet(sprButtonHovered,"UI.ButtonBig.Hovered");
-	LoadScalableSet(sprButtonPressed,"UI.ButtonBig.Pressed");
-	LoadScalableSet(sprFloatingPanel,"FloatingPanel");
+	LoadScalableSprite(sprButtonNormal,"UI.ButtonBig.Normal");
+	LoadScalableSprite(sprButtonHovered,"UI.ButtonBig.Hovered");
+	LoadScalableSprite(sprButtonPressed,"UI.ButtonBig.Pressed");
+	LoadScalableSprite(sprFloatingPanel,"FloatingPanel");
 
 	sprDragHandleDotsHovered = GetGUISheetGlyph("DragHandleDots.Hovered");
 	sprDragHandleDotsNormal = GetGUISheetGlyph("DragHandleDots.Normal");
 
-	LoadScalableSet(sprDialogActive,"dialogWnd.Active");
-	LoadScalableSet(sprDialogInActive,"dialogWnd.InActive");
+	LoadScalableSprite(sprDialogActive,"dialogWnd.Active");
+	LoadScalableSprite(sprDialogInActive,"dialogWnd.InActive");
 
 
 	sprWhite = GetGUISheetGlyph("White");
@@ -129,6 +154,10 @@ XGUI_Manager::XGUI_Manager()
 	m_pDesktop->SetAlign(TAlign::alClientArea);
 	m_pDesktop->RecalcRectWithAligment();
 
+	LoadButtonSpriteSet(sprMinimize,"UI.Minimize");
+	LoadButtonSpriteSet(sprMaximize,"UI.Maximize");
+	LoadButtonSpriteSet(sprClose,"UI.Close");
+	LoadButtonSpriteSet(sprRestore,"UI.Restore");
 
 	// Setup dock sites
 /*
@@ -169,16 +198,17 @@ XGUI_Manager::XGUI_Manager()
 		}
 
 		AddWidget(pTestWindow);
-	}
+	}yj 
 	*/
 
-	for(int i = 0 ; i < 1 ; i++)
+	for(int i = 0 ; i < 4 ; i++)
 	{
 		xgRect_t r;
 		r.pos = ME_Math::Vector2D(400,400);
 		r.ext = ME_Math::Vector2D(320,240);
 
 		XGUI_Window * w = new XGUI_Window(r);
+		w->SetCaption(String(_T("The quick brown fox jumped over a lazy dog")));
 		AddWidget(w);
 
 	}
@@ -192,6 +222,9 @@ XGUI_Manager::XGUI_Manager()
 	m_bCursorLocked = false;
 
 	ME_Console::LoadGraphics();
+
+	m_pFocusedWidget = 0;
+	m_pCursorWidget = 0;
 }
 
 /*
@@ -242,7 +275,7 @@ void XGUI_Manager::Draw()
  **/
 void XGUI_Manager::Think(float flDeltaTime)
 {
-	g_pPlatform->SetCursor(mcNormal);
+	
 
 	if (m_bCursorLocked)
 	{
@@ -264,9 +297,16 @@ void XGUI_Manager::Think(float flDeltaTime)
 
 	XGUI_Widget * w = m_pDesktop->WidgetUnderCursor(g_pPlatform->GetCursorPos());
 
+	m_pCursorWidget = w;
+
 	if (w)
 	{		
 		w->m_flHoveroutTimer = g_pPlatform->TimeElapsed();
+	}
+	
+	if (w)
+	{
+		g_pPlatform->SetCursor(w->m_CurrentCursor);
 	}
 }
 
@@ -306,6 +346,8 @@ void XGUI_Manager::HandleEvent(ME_Framework::appEvent_t & ev)
 			XGUI_Widget * w = m_pDesktop->WidgetUnderCursor(g_pPlatform->GetCursorPos());
 			if (w)
 			{
+				SetFocusedWidget(w);
+
 				if (m_bInEditorMode)
 				{
 					ME_Math::Vector2D v = g_pPlatform->GetCursorPos();
@@ -531,7 +573,7 @@ void XGUI_Manager::LockCursorInDesktop()
 }
 
 /*
- *	Renders strign with default font
+ *	Renders string with default font
  **/
 
 void XGUI_Manager::Gui_Printf(vec_t x,vec_t y,TCHAR * string)
@@ -581,6 +623,27 @@ void XGUI_Manager::Perform_WidgetRemoving()
  **/
 void XGUI_Manager::Safe_QueryWidgetRemove(TWidgetSharedPtr ptr,TWidgetVector & vec)
 {
+	assert("...");
 	//widgetReferenceRemoveQuery_s q(ptr,vec);
 	//m_vWidgetsToRemove.push_back(q);
+}
+
+void XGUI_Manager::SetFocusedWidget( XGUI_Widget * w )
+{
+	if (m_pFocusedWidget)
+	{
+		m_pFocusedWidget->m_bFocused = false;
+		m_pFocusedWidget->SetZOrder(m_pFocusedWidget->m_PreFocusedZOrder);
+	}
+
+	m_pFocusedWidget = w;
+	m_pFocusedWidget->m_bFocused = true;
+	m_pFocusedWidget->m_PreFocusedZOrder = m_pFocusedWidget->GetZOrder();
+	m_pFocusedWidget->SetZOrder(XGUI_Widget::zFocused);
+
+}
+
+XGUI_Widget * XGUI_Manager::CachedWidgetUnderCursor()
+{
+	return m_pCursorWidget;
 }

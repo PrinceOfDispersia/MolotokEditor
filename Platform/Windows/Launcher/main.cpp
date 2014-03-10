@@ -108,7 +108,7 @@ const int PlatformEnvironment::GetCmdLineArgumentsCount() const
  *	Returns client area extents
  **/
 ME_Math::Vector2D PlatformEnvironment::GetClientAreaExtents()
-{
+{	
 	return g_pPlatform->GetOpenGLContext()->m_vWindowExtents;
 }
 
@@ -182,6 +182,8 @@ void PlatformEnvironment::SetCursor(eMouseCursors cur)
 /************************************************************************/
 int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd )
 {
+	
+
 	// Copy instance to global variable - we'll need it in OpenGL context creation
 	g_hInstance = hInstance;
 
@@ -199,25 +201,37 @@ int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 		
 	g_pPlatform->SystemLog()->Log(_T("Platform environment initialized\n"));
 	//ME_Console::Printf(_T("[\n"));
-
+	
 	// Initialize file system
 	TCHAR workDir[4096];
 	GetCurrentDirectory(4096,workDir);
 	FileSystemProxy * pProxy = new FileSystemProxy(workDir);
 	g_pPlatform->SetFileSystemProxy(pProxy);
 
+	g_pPlatform->SystemLog()->Log(_T("Mounting FS\n"));
+	
 	// Initialize OpenGL
 	IOpenGLContext * pContext = new CWinOpenGLContext();
 	g_pPlatform->SetOpenGLContext(pContext);
+
+	g_pPlatform->SystemLog()->Log(_T("Entering main loop\n"));
+	
 	pContext->MainLoop();		
 	
+	g_pPlatform->SystemLog()->Log(_T("Exiting\n"));
 	
 	// Cleanup		
 	ApplicationShutdown();
+
+	g_pPlatform->SystemLog()->Log(_T("Appshutdown\n"));
+
 	FreeParsedCommandLine();
+
+	g_pPlatform->SystemLog()->Log(_T("Free cmd line\n"));
 
 	ME_Console::Stop();
 
-	delete ME_Framework::g_pPlatform;		
+	g_pPlatform->SystemLog()->Log(_T("Stopping console\n"));
 
+	delete ME_Framework::g_pPlatform;		
 }

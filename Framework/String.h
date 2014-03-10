@@ -57,6 +57,11 @@ namespace ME_Framework
 			return m_szLength;
 		}
 
+		void SetLength(size_t l)
+		{
+			m_szLength = l;
+		}
+
 		String & operator =(const String & a)
 		{
 
@@ -119,6 +124,11 @@ namespace ME_Framework
 
 			return m_strData[i];
 
+		}
+
+		TCHAR* operator *()
+		{
+			return m_strData;
 		}
 		
 		/*

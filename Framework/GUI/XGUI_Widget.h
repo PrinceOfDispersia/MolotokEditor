@@ -24,11 +24,18 @@ namespace ME_XGUI
 	class XGUI_Widget: public std::enable_shared_from_this<XGUI_Widget>
 	{
 		friend XGUI_Manager;
+
+		bool m_bFocused;
+
 	protected:
 		xgRect_t m_Rect;
 		color32_t m_Color;
 		mSheetGlyph_t * m_pImage[16];
+
+		static const int zFocused = 9999;
+
 		unsigned int m_ZOrder;
+		unsigned int m_PreFocusedZOrder;
 			
 		float m_flTimers[4];
 		TWidgetVector m_vChilds;
@@ -75,6 +82,7 @@ namespace ME_XGUI
 		ME_Math::Vector2D m_vMargins[2];
 			
 		eMouseCursors m_CurrentCursor;
+		
 
 	public:
 		void ScreenToClient(ME_Math::Vector2D & v);
@@ -117,6 +125,8 @@ namespace ME_XGUI
 		void DoThink();
 		virtual void Think();
 
+		void GrabFocus();
+		bool IsFocused();
 
 		XGUI_Widget* WidgetUnderCursor(ME_Math::Vector2D pt);
 			

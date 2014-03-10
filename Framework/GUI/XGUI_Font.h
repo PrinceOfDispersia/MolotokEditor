@@ -39,6 +39,7 @@ namespace ME_Framework
 
 			void SetAtlas(pgl_texture_t pAtlas,ME_Math::Vector2D offset);
 			void Calc_TextRect(String & str,xgRect_t * rect);
+			size_t Calc_FittedSymbols(String & str,vec_t w);
 			void Draw(ME_Math::Vector2D pos,String str);
 
 			void Draw(vec_t x,vec_t y,String str)
@@ -48,6 +49,8 @@ namespace ME_Framework
 
 			void DrawTextWithCarret(vec_t x,vec_t y,TCHAR * strBuffer,size_t carretOffset);
 			void DrawMultilineTextInRect(xgRect_t & r,TCHAR * strBuffer);
+			
+			void DrawTextFittedInRect(xgRect_t & targetRect,TCHAR * str);
 
 			XGUI_Font(dFontHdr_t * pHeader,size_t sz);
 			~XGUI_Font();

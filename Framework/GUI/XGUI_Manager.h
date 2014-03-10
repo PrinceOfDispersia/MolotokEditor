@@ -92,7 +92,11 @@ namespace ME_Framework
 
 			 TRemoveQueryVector m_vWidgetsToRemove;
 
+			 XGUI_Widget * m_pFocusedWidget;
+			 XGUI_Widget * m_pCursorWidget;
 		public:
+			void SetFocusedWidget(XGUI_Widget * w);
+
 			bool IsInEditorMode() { return m_bInEditorMode; }
 
 			inline XGUI_Tesselator * Tesselator();
@@ -119,6 +123,8 @@ namespace ME_Framework
 			XGUI_Font * Get_GuiFont(TGuiFontTypes fontType);
 
 			void Safe_QueryWidgetRemove(TWidgetSharedPtr ptr,TWidgetVector & vec);
+
+			XGUI_Widget * CachedWidgetUnderCursor();
 		};
 
 

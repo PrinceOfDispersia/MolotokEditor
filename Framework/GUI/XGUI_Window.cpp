@@ -8,6 +8,7 @@
 
 using namespace ME_Framework::ME_XGUI;
 extern XGUI_Tesselator * g_pTesselator;
+extern XGUI_Manager * g_pGUIManager;
 
 
 //************************************
@@ -46,27 +47,42 @@ void XGUI_Window::HandleEvent( ME_Framework::appEvent_t & pEvent )
 //************************************
 void XGUI_Window::DrawComponent()
 {
-	XGUI_DrawScalableSheetGlyph(sprDialogActive,m_Rect);
+	XGUI_DrawScalableSheetGlyph(ActiveSkin(),m_Rect);
 
 	color32_t c = {0,0,0,255};
 	g_pTesselator->DefaultColor(c);
 
-	xgRect_t sz;
-	ME_Framework::String str = _T("The quick brown fox jumped over a lazy dog");
-	m_pGuiFontNormal->Calc_TextRect(str,&sz);
+	size_t cSymbols = m_pGuiFontNormal->Calc_FittedSymbols(m_strCaption,m_Rect.ext.x - 4);
+
+	String strFitted = m_strCaption;
+
+	if (cSymbols < strFitted.Length())
+	{
+		((TCHAR*)strFitted.c_str())[cSymbols] = 0;
+		strFitted.SetLength(cSymbols);
 		
+		
+		size_t c = 0;
+
+		while(c < 3 && cSymbols > 0)
+		{
+			((TCHAR*)strFitted.c_str())[--cSymbols] = _T('.');
+			c++;
+		}
+
+
+	}
+
+	xgRect_t sz;	
+	m_pGuiFontNormal->Calc_TextRect(strFitted,&sz);
+	
+
 	ME_Math::Vector2D textPos;
-
-	int h = sprDialogActive[0]->e[1];
-
+		
 	textPos.x = m_Rect.pos.x + (m_Rect.ext.x / 2 - sz.ext.x / 2);
-
-	// some magic goes here
 	textPos.y = m_Rect.pos.y + (((sz.ext.y-sz.pos.x) / 2)) + 1.5;
 
-	m_pGuiFontNormal->Draw(textPos,str);
-	
-	XGUI_DrawRectOutline(sz + textPos);
+	m_pGuiFontNormal->Draw(textPos,strFitted);
 	g_pTesselator->ResetDefaultColor();
 	
 }
@@ -108,10 +124,25 @@ XGUI_Window::XGUI_Window( xgRect_t & r ): XGUI_Widget(r)
 	m_DragKind = eWindowDragKinds::wdkNone;	
 
 	ME_Math::Vector2D clientAreaStart;
-	clientAreaStart.x = sprDialogActive[0]->e[0];
-	clientAreaStart.y = sprDialogActive[0]->e[1];
+	clientAreaStart.x = ActiveSkin()[0]->e[0];
+	clientAreaStart.y = ActiveSkin()[0]->e[1];
 
 	
+	vec_t h = ActiveSkin()[1]->e[1];
+
+	r.pos = ME_Math::Vector2D(380,h / 2 - 9);
+	r.ext = ME_Math::Vector2D(18,18);
+
+	XGUI_GenericButton * pMaximize = new XGUI_GenericButton(r);
+	pMaximize->SetSkinSet(sprMaximize,3);
+	AddChildWidget(pMaximize);
+
+	r.pos = ME_Math::Vector2D(399,h / 2 - 9);
+	r.ext = ME_Math::Vector2D(18,18);
+
+	XGUI_GenericButton * pClose = new XGUI_GenericButton(r);
+	pClose->SetSkinSet(sprClose,3);
+	AddChildWidget(pClose);
 }
 
 //************************************
@@ -123,6 +154,8 @@ XGUI_Window::XGUI_Window( xgRect_t & r ): XGUI_Widget(r)
 //************************************
 void XGUI_Window::CheckBorders()
 {
+	if (g_pGUIManager->CachedWidgetUnderCursor() != this) return;
+
 	if (m_bDragged) 
 	{
 		g_pPlatform->SetCursor(m_CurrentCursor);
@@ -136,8 +169,10 @@ void XGUI_Window::CheckBorders()
 		
 
 	// Left middle border
-	vec_t  thickness = sprDialogActive[3]->e[0];
-		
+	vec_t  thickness = ActiveSkin()[3]->e[0];
+
+	m_CurrentCursor = eMouseCursors::mcNormal;
+	m_DragKind = eWindowDragKinds::wdkNone;
 
 	if (c.x < thickness && c.x > 0)
 	{
@@ -168,7 +203,7 @@ void XGUI_Window::CheckBorders()
 			g_pPlatform->SetCursor(m_CurrentCursor);
 			m_DragKind = eWindowDragKinds::wdkYPos;
 		}
-		else if (c.y > thickness && c.y < sprDialogActive[1]->e[1])
+		else if (c.y > thickness && c.y < ActiveSkin()[1]->e[1])
 		{
 			m_CurrentCursor = eMouseCursors::mcSizeCenter;
 			g_pPlatform->SetCursor(m_CurrentCursor);
@@ -221,7 +256,16 @@ void XGUI_Window::RecalcDrag()
 	if (!m_bDragged) return;
 	
 	ME_Math::Vector2D v = g_pPlatform->GetCursorPos();
+	ME_Math::Vector2D clip = g_pPlatform->GetClientAreaExtents();
+	
+	if (v.x < 0) v.x = 0;
+	if (v.y < 0) v.y = 0;
+	if (v.x > clip.x) v.x = clip.x;
+	if (v.y > clip.y) v.y = clip.y;
+	
 	ME_Math::Vector2D v2 = v - m_vDragOrigin;
+
+	
 
 	if (m_DragKind == eWindowDragKinds::wdkPos)
 	{
@@ -241,8 +285,7 @@ void XGUI_Window::RecalcDrag()
 			if (m_Rect.ext.x < 16) 
 			{
 				m_Rect.pos.x = oldPos;
-				m_Rect.ext.x = oldRight - m_Rect.pos.x;
-				
+				m_Rect.ext.x = oldRight - m_Rect.pos.x;				
 			}
 
 		}
@@ -254,13 +297,12 @@ void XGUI_Window::RecalcDrag()
 			m_Rect.pos.y = v2.y;
 			m_Rect.ext.y = oldBottom - m_Rect.pos.y;
 
-			vec_t minHeight = sprDialogActive[1]->e[1] + sprDialogActive[6]->e[1];
+			vec_t minHeight = ActiveSkin()[1]->e[1] + ActiveSkin()[6]->e[1];
 
 			if (m_Rect.ext.y < minHeight) 
 			{
 				m_Rect.pos.y = oldPos;
-				m_Rect.ext.y = oldBottom - m_Rect.pos.y;
-				
+				m_Rect.ext.y = oldBottom - m_Rect.pos.y;				
 			}
 
 		}
@@ -280,7 +322,7 @@ void XGUI_Window::RecalcDrag()
 			ScreenToClient(v);			
 			m_Rect.ext.y = v.y;
 
-			vec_t minHeight = sprDialogActive[1]->e[1] + sprDialogActive[6]->e[1];
+			vec_t minHeight = ActiveSkin()[1]->e[1] + ActiveSkin()[6]->e[1];
 
 			if (m_Rect.ext.y < minHeight)
 				m_Rect.ext.y = minHeight;
@@ -289,4 +331,16 @@ void XGUI_Window::RecalcDrag()
 		SetRect(m_Rect);
 	}
 		
+}
+
+//************************************
+// Method:    ActiveSkin
+// FullName:  ME_Framework::ME_XGUI::XGUI_Window::ActiveSkin
+// Access:    private 
+// Returns:   mSheetGlyph_t **
+// Qualifier:
+//************************************
+mSheetGlyph_t ** XGUI_Window::ActiveSkin()
+{
+	return IsFocused() ? sprDialogActive : sprDialogInActive;
 }

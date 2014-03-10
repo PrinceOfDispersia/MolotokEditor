@@ -19,7 +19,7 @@ LogFile::~LogFile()
 
 void LogFile::Log(TCHAR * format,...)
 {
-
+	
 	va_list args;
 	//	size_t len;
 

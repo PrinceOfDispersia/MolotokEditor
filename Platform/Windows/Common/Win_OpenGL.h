@@ -19,7 +19,7 @@ class CWinOpenGLContext: public IOpenGLContext
 
 	bool TranslateToEvent(UINT uMsg,WPARAM wParam,LPARAM lParam);
 	ME_Framework::appEvent_t m_tmpEvent;
-
+	bool m_bAppLaunched;
 public:
 	CWinOpenGLContext();
 	virtual ~CWinOpenGLContext();

@@ -72,9 +72,12 @@ void XGUI_Font::Calc_TextRect(String & str,xgRect_t * rect)
 
 
 	}
-
+	/*
 	rect->pos = ME_Math::Vector2D(0,o);
-	rect->ext = ME_Math::Vector2D(w,h-o);
+	rect->ext = ME_Math::Vector2D(w,h-o);*/
+
+	rect->pos = ME_Math::Vector2D(0,0);
+	rect->ext = ME_Math::Vector2D(w,11);
 }
 
 /*
@@ -221,7 +224,7 @@ void XGUI_Font::SetAtlas(pgl_texture_t pAtlas,ME_Math::Vector2D offset)
 {
 	m_pFontImage = pAtlas;
 
-	for(int i = 0 ; i < m_nGlyphs ; i++)
+	for(size_t i = 0 ; i < m_nGlyphs ; i++)
 	{
 		m_pGlyphs[i].xpos += (short)(-m_vAtlasOffset.x + offset.x);
 		m_pGlyphs[i].ypos += (short)(-m_vAtlasOffset.y + offset.y);
@@ -494,4 +497,147 @@ void XGUI_Font::SetTextColor(byte r,byte g,byte b,byte a)
 	m_TextColor.a = a;
 
 	m_bShouldApplyColoring = true;
+}
+
+void XGUI_Font::DrawTextFittedInRect( xgRect_t & r,TCHAR * ptr )
+{
+	vec_t w = 0;
+	vec_t h = 0;
+
+	size_t i = 0;
+
+	vec_t px = r.pos.x;
+	vec_t py = r.pos.y;
+
+	if (m_bShouldApplyColoring)
+	{
+		m_bShouldApplyColoring = false;
+		g_pTesselator->DefaultColor(m_TextColor);
+	}
+
+	while(*ptr)
+	{
+		TCHAR sym = *ptr;
+
+		int idx = -1;
+		byte page = sym >> 8;
+
+		for(int j = 0 ; j < m_nMaps ; j++)
+		{
+			if (m_pSymbolMaps[j] == page)
+			{
+				idx = j;
+				break;
+			}
+		}
+
+		if (idx == -1) continue;
+
+		byte b = sym & 0x00FF;
+		idx = m_pCodePages[(idx * 256) + b];
+
+
+
+		dGlyphInfo_t * inf = &m_pGlyphs[idx];
+
+
+		float c[4];
+
+		float x,y;
+
+		x =  (float)inf->xpos;
+		y =  (float)inf->ypos;
+
+		c[0] = x / m_pFontImage->width;
+		c[1] = 1 - (y / m_pFontImage->height);
+
+		c[2] = (x + inf->width) / m_pFontImage->width;
+		c[3] = 1 - ( (y + inf->height) / m_pFontImage->height);
+
+		vec_t xofs = inf->xoffs;
+		vec_t yofs = inf->yoffs; 
+
+		vec_t x1 = w + xofs + px;
+		vec_t x2 = x1 + (inf->width);
+
+		vec_t y1 = yofs + py;
+		vec_t y2 = y1 + (inf->height);
+
+		g_pTesselator->Coord2(c[0],c[1]);
+		g_pTesselator->Vertex2(x1,y1);
+		g_pTesselator->Coord2(c[2],c[1]);
+		g_pTesselator->Vertex2(x2,y1);
+		g_pTesselator->Coord2(c[2],c[3]);
+		g_pTesselator->Vertex2(x2,y2);
+		g_pTesselator->Coord2(c[0],c[3]);
+		g_pTesselator->Vertex2(x1,y2);
+
+
+		if (sym == _T('\t'))
+		{
+			w+=30;
+		}
+		else 
+			w+=(inf->orig_w);
+		ptr++;
+		i++;
+	}
+
+
+	if (m_bShouldApplyColoring)
+	{
+		g_pTesselator->ResetDefaultColor();
+		m_bShouldApplyColoring = false;
+	}	
+}
+
+/*
+ *	Calculates count of symbols fitted to that string
+ **/
+size_t XGUI_Font::Calc_FittedSymbols( String & str,vec_t _w)
+{
+	vec_t w = 0;
+	size_t ret = 0;
+
+	const TCHAR * ptr = str.c_str();
+	size_t sz = str.Length();
+
+	for(size_t i = 0 ; i < sz ; i++)
+	{
+		TCHAR sym = ptr[i];
+
+		if (sym == _T('\t'))
+		{
+			w+=30;
+			continue;
+		}
+
+		int idx = -1;
+		byte page = sym >> 8;
+
+		for(int j = 0 ; j < m_nMaps ; j++)
+		{
+			if (m_pSymbolMaps[j] == page)
+			{
+				idx = j;
+				break;
+			}
+		}
+
+		if (idx == -1) 
+			continue;
+
+		byte b = sym & 0x00FF;
+		idx = m_pCodePages[(idx * 256) + b];
+				
+		dGlyphInfo_t * inf = &m_pGlyphs[idx];
+
+		w+=(inf->orig_w);
+		
+		if (w > _w)
+			return i;
+	}
+
+	return sz;
+
 }

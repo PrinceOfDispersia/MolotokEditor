@@ -96,7 +96,7 @@ public:
 	}
 
 	void Draw()
-	{
+	{		
 		if (m_vSuggestionsList.size() == 0)
 			return;
 
@@ -112,7 +112,7 @@ public:
 		
 		r.ext.Init();
 
-		for(int i = 0 ; i < m_vSuggestionsList.size() ; i++)
+		for(size_t i = 0 ; i < m_vSuggestionsList.size() ; i++)
 		{
 			xgRect_t tr;
 			g_pConsoleFont->Calc_TextRect(ME_Framework::String(m_vSuggestionsList[i].Representation()),&tr);
@@ -131,7 +131,7 @@ public:
 		XGUI_DrawSheetGlyph(sprWhite,r);
 		g_pTesselator->ResetDefaultColor();
 
-		for(int i = 0 ; i < m_vSuggestionsList.size() ; i++)
+		for(size_t i = 0 ; i < m_vSuggestionsList.size() ; i++)
 		{
 			if (i == m_SelectedItem)
 			{
@@ -162,7 +162,7 @@ public:
 		}
 		else
 		{
-			for(int i = 0 ; i < m_HistoryDepth ; i++)
+			for(size_t i = 0 ; i < m_HistoryDepth ; i++)
 			{
 				acItem_t item;
 				item.var = 0;
@@ -247,9 +247,13 @@ void ME_Console::Draw()
 	r.ext = ext;
 	r.ext.y /= 2;
 	
+	
+
 	XGUI_DrawSheetGlyph(sprWhite,r);
 
 	g_pTesselator->ResetDefaultColor();
+
+	
 
 	xgRect_t r2 = r;
 	r2.pos.x = 2;
@@ -276,11 +280,13 @@ void ME_Console::Draw()
  **/
 bool ME_Console::HandleEvent(ME_Framework::appEvent_t & ev)
 {
+	
+
 	if (ev.eventid != eventTypes::EV_KB_KEY_DOWN && ev.eventid != eventTypes::EV_KB_CHAR) return false;
 
 	if (g_Console.m_AutoCompleteHelper->HandleEvent(ev)) 
 		return true;
-
+	
 	unsigned int key = ev.uParam1;
 
 	if (key == KBD_CONSOLE)
@@ -293,11 +299,13 @@ bool ME_Console::HandleEvent(ME_Framework::appEvent_t & ev)
 
 	if (ev.eventid == eventTypes::EV_KB_CHAR)
 	{
+		
+
 		if (g_Console.m_InputCarretOffset < (ARRAY_SIZE(g_Console.m_strInputBuffer)-1) && ev.uParam1 >= 32 && ev.uParam1 != '`')
 		{
 			size_t endOfs = _tcslen(g_Console.m_strInputBuffer);
 
-			for(int i = endOfs+1; i >= g_Console.m_InputCarretOffset && i>=0 ; i--)
+			for(int i = endOfs+1; i >= g_Console.m_InputCarretOffset && i>=0; i--)
 			{
 				g_Console.m_strInputBuffer[i+1] = g_Console.m_strInputBuffer[i];
 			}
@@ -492,6 +500,10 @@ void ME_Console::Printf(TCHAR* format,...)
 		s[destSize-1] = 0;
 	}
 	
+	FILE * fp = fopen("system.log","a+t");
+	_ftprintf(fp,_T("%s\n"),s);
+	fclose(fp);
+
 	size_t takenSpace = (written == -1 ? destSize : written);
 	size_t writeOffset = g_Console.m_conBufferOffset;
 

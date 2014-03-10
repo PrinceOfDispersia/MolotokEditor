@@ -19,5 +19,12 @@ namespace ME_Framework
 
 		extern mSheetGlyph_t * sprDialogActive[9];
 		extern mSheetGlyph_t * sprDialogInActive[9];
+
+		extern mSheetGlyph_t * sprMinimize[3];
+		extern mSheetGlyph_t * sprMaximize[3];
+		extern mSheetGlyph_t * sprClose[3];
+		extern mSheetGlyph_t * sprRestore[3];
+
+
 	}
 }

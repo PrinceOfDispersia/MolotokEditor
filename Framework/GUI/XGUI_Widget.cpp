@@ -21,7 +21,7 @@ XGUI_Widget::XGUI_Widget(xgRect_t & rect)
 	m_Rect.ext = rect.ext;
 
 	m_Color = g_pGUIManager->GuiSettings()->m_cDesktopBG;
-	m_ZOrder = 0;
+	m_ZOrder = 1;
 	m_Anchors = TAnchor::akNone;
 
 	m_pParent = 0;
@@ -49,6 +49,8 @@ XGUI_Widget::XGUI_Widget(xgRect_t & rect)
 
 	m_pGuiFontNormal = g_pGUIManager->Get_GuiFont(TGuiFontTypes::gfNormal);
 	m_pGuiFontSmall = g_pGUIManager->Get_GuiFont(TGuiFontTypes::gfSmall);
+
+	m_bFocused = false;
 
 }
 
@@ -775,4 +777,14 @@ void XGUI_Widget::SetDragged(bool val)
 	else g_pGUIManager->UnlockCursor();
 
 	m_bDragged = val; 
+}
+
+void XGUI_Widget::GrabFocus()
+{
+	g_pGUIManager->SetFocusedWidget(this);
+}
+
+bool XGUI_Widget::IsFocused()
+{
+	return m_bFocused;
 }

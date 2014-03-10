@@ -16,6 +16,9 @@ namespace ME_Framework
 			eWindowDragKinds m_DragKind;
 						
 			void CheckBorders();
+
+			mSheetGlyph_t ** ActiveSkin();
+
 		protected:
 			virtual void RecalcDrag();
 		public:
