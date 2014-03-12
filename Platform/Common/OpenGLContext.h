@@ -23,6 +23,9 @@ namespace ME_Framework
 		virtual void Resize(ME_Math::Vector2D vNewPos,ME_Math::Vector2D vNewExtents) {};
 
 		virtual void MainLoop() {};
+
+		virtual void FlagApplicationStart() {};
+		virtual void FlagApplicationShutdown() {};
 	};
 }
 

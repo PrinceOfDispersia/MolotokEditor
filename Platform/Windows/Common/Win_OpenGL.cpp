@@ -100,6 +100,8 @@ void CWinOpenGLContext::SetupOpenGLContext()
  **/
 CWinOpenGLContext::CWinOpenGLContext()
 {
+	m_bAppLaunched = false;
+
 	if (!g_bWinGLClassRegistered)
 				RegisterWindowClass();	
 
@@ -143,6 +145,8 @@ CWinOpenGLContext::CWinOpenGLContext()
 
 	g_pPlatform->SystemLog()->Log(_T("Showing window...\n"));
 	ShowWindow(m_hWnd,SW_MAXIMIZE);
+
+	
 }
 
 /*
@@ -226,10 +230,9 @@ void CWinOpenGLContext::MainLoop()
 
 
 	// Start application
+	FlagApplicationStart();
 	ApplicationStart();
-
-	m_bAppLaunched = true;
-
+	
 	float flPrevTime = Sys_TimeElapsed();
 	float flFrameTime = 0;
 
@@ -356,4 +359,14 @@ bool CWinOpenGLContext::TranslateToEvent(UINT uMsg,WPARAM wParam,LPARAM lParam)
 	}
 
 	return false;
+}
+
+void CWinOpenGLContext::FlagApplicationStart()
+{
+	m_bAppLaunched = true;
+}
+
+void CWinOpenGLContext::FlagApplicationShutdown()
+{
+	m_bAppLaunched = false;
 }

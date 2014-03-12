@@ -19,6 +19,8 @@ namespace ME_Framework
 
 			mSheetGlyph_t ** ActiveSkin();
 
+			void ExpandRectByContents();
+
 		protected:
 			virtual void RecalcDrag();
 		public:

@@ -221,6 +221,8 @@ int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 	g_pPlatform->SystemLog()->Log(_T("Exiting\n"));
 	
 	// Cleanup		
+	
+	pContext->FlagApplicationShutdown();
 	ApplicationShutdown();
 
 	g_pPlatform->SystemLog()->Log(_T("Appshutdown\n"));

@@ -29,4 +29,8 @@ public:
 	virtual void MainLoop();
 
 	LRESULT WindowProc(UINT uMsg,WPARAM wParam,LPARAM lParam);
+
+	virtual void FlagApplicationStart();
+	virtual void FlagApplicationShutdown();
+
 };

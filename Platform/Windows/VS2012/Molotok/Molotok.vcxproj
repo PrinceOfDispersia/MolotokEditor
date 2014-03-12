@@ -71,26 +71,26 @@
     <OutDir>$(SolutionDir)\bin\</OutDir>
     <IntDir>$(SolutionDir)\Build\$(ProjectName)\</IntDir>
     <LibraryPath>C:\Program Files (x86)\Visual Leak Detector\lib\Win64;$(LibraryPath)</LibraryPath>
-    <TargetName>$(ProjectName)-x64</TargetName>
+    <TargetName>$(ProjectName)-$(PlatformTarget)-$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(SolutionDir);$(IncludePath);$(SolutionDir)\Libs\libpng;$(SolutionDir)\libs\zlib</IncludePath>
     <OutDir>$(SolutionDir)\bin\</OutDir>
     <IntDir>$(SolutionDir)\Build\$(ProjectName)\</IntDir>
-    <TargetName>$(ProjectName)-x64</TargetName>
+    <TargetName>$(ProjectName)-$(PlatformTarget)-$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(SolutionDir);$(IncludePath);$(SolutionDir)\Libs\libpng;$(SolutionDir)\libs\zlib</IncludePath>
     <OutDir>$(SolutionDir)\bin\</OutDir>
     <IntDir>$(SolutionDir)\Build\$(ProjectName)\</IntDir>
     <LibraryPath>C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;$(LibraryPath)</LibraryPath>
-    <TargetName>$(ProjectName)-x86</TargetName>
+    <TargetName>$(ProjectName)-$(PlatformTarget)-$(Configuration)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(SolutionDir);$(IncludePath);$(SolutionDir)\Libs\libpng;$(SolutionDir)\libs\zlib</IncludePath>
     <OutDir>$(SolutionDir)\bin\</OutDir>
     <IntDir>$(SolutionDir)\Build\$(ProjectName)\</IntDir>
-    <TargetName>$(ProjectName)-x86</TargetName>
+    <TargetName>$(ProjectName)-$(PlatformTarget)-$(Configuration)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

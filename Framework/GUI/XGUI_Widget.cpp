@@ -59,12 +59,80 @@ XGUI_Widget::XGUI_Widget(xgRect_t & rect)
 **/
 void XGUI_Widget::RecalcRectWithAligment()
 {
+	xgRect_t pr = GetParentRect();
+
+	if (m_pParent)
+	{
+		/*if (flags(m_Anchors & TAnchor::akTop))
+		{
+			vec_t newY = m_AnchorsCoefs[ackTop] * pr.ext.y;
+			m_Rect.pos.y = newY;
+		}
+
+		if (flags(m_Anchors & TAnchor::akLeft))
+		{
+			vec_t newX = m_AnchorsCoefs[ackLeft] * pr.ext.x;
+			m_Rect.pos.x = newX;
+		}*/
+
+		if (flags(m_Anchors & TAnchor::akRight))
+		{
+			vec_t newRight = pr.ext.x - m_AnchorsCoefs[ackRight];
+			vec_t newX = newRight - m_Rect.ext.x;
+			
+			if (!flags(m_Anchors & TAnchor::akLeft))
+			{
+				m_Rect.pos.x = newX;
+			}
+			else 
+			{
+				m_Rect.ext.x = newRight - m_Rect.pos.x;
+			}
+
+			if (m_Rect.pos.x < m_pParent->m_vMargins[0].x) 
+				m_Rect.pos.x = m_pParent->m_vMargins[0].x;
+
+			// Move left if overlaps with edge of parent
+
+			/*if (m_Rect.ext.x < 0)
+			{				
+				m_Rect.pos.x -= m_Rect.ext.x * -2;				
+				m_Rect.ext.x = -m_Rect.ext.x;				
+			}*/
+		}
+
+		if (flags(m_Anchors & TAnchor::akBottom))
+		{
+			vec_t newBottom = pr.ext.y - m_AnchorsCoefs[ackBottom];
+			vec_t newY = newBottom - m_Rect.ext.y;
+
+			if (!flags(m_Anchors & TAnchor::akTop))
+			{
+				m_Rect.pos.y = newY;
+			}
+			else 
+			{
+				m_Rect.ext.y = newBottom - m_Rect.pos.y;
+			}
+
+			if (m_Rect.pos.y < m_pParent->m_vMargins[0].y) 
+					m_Rect.pos.y = m_pParent->m_vMargins[0].y;
+
+			/*if (m_Rect.ext.y < 0)
+			{				
+				m_Rect.pos.y -= m_Rect.ext.y * -2;				
+				m_Rect.ext.y = -m_Rect.ext.y;				
+			}*/
+		}
+	}
+
+
 	switch(m_Align)
 	{
 	case TAlign::alClientArea:
 		{
 			// alClientArea has lowest priority
-			xgRect_t pr = GetParentRect();
+			
 			if (!m_pParent)
 				m_Rect = pr;
 			else
@@ -112,7 +180,7 @@ void XGUI_Widget::RecalcRectWithAligment()
 		break;
 	case TAlign::alTop:
 		{
-			xgRect_t pr = GetParentRect();
+			
 
 			if (!m_pParent)
 			{
@@ -168,7 +236,7 @@ void XGUI_Widget::RecalcRectWithAligment()
 		break;
 	case TAlign::alBottom:
 		{
-			xgRect_t pr = GetParentRect();
+			
 			if (!m_pParent)
 			{
 				m_Rect.pos = ME_Math::Vector2D(0,pr.ext.y - m_Rect.ext.y);
@@ -220,7 +288,7 @@ void XGUI_Widget::RecalcRectWithAligment()
 		break;
 	case TAlign::alLeft:
 		{
-			xgRect_t pr = GetParentRect();
+			
 			if (!m_pParent)
 			{
 				m_Rect.pos = ME_Math::Vector2D(0,0);
@@ -272,7 +340,7 @@ void XGUI_Widget::RecalcRectWithAligment()
 		break;
 	case TAlign::alRight:
 		{
-			xgRect_t pr = GetParentRect();
+			
 			if (!m_pParent)
 			{
 				m_Rect.pos = ME_Math::Vector2D(pr.ext.x - m_Rect.ext.x,0);
@@ -341,7 +409,7 @@ void XGUI_Widget::SetRect(xgRect_t & rect)
 }
 
 /*
-*	Recalculates items rects according to aligment
+*	Recalculates items rects according to aligment and anchors
 **/
 void XGUI_Widget::RecalcItemsRects()
 {
@@ -539,11 +607,15 @@ void XGUI_Widget::AddChildWidget(XGUI_Widget * pWidget)
 	m_vChilds.push_back(TWidgetSharedPtr(pWidget));
 	pWidget->m_pParent = this;
 
+	pWidget->OnAddToParent(this);
+
 	// Update rect with aligment
 	pWidget->SetRect(pWidget->m_Rect);	
 	pWidget->m_nWidgetNumber = m_nWidgetCounter++;	
 
+
 	SortChildsByAlignOrder();
+	
 }
 
 /*
@@ -787,4 +859,36 @@ void XGUI_Widget::GrabFocus()
 bool XGUI_Widget::IsFocused()
 {
 	return m_bFocused;
+}
+
+
+void XGUI_Widget::OnAddToParent(XGUI_Widget * pParent)
+{
+	ME_Math::Vector2D  p_ext = pParent->m_Rect.ext;
+
+	if (flags(m_Anchors & TAnchor::akTop))
+	{
+		m_AnchorsCoefs[ackTop] =  m_Rect.Top();
+	}
+	if (flags(m_Anchors & TAnchor::akLeft))
+	{
+		m_AnchorsCoefs[ackLeft] =  m_Rect.Left();
+	}
+	if (flags(m_Anchors & TAnchor::akRight))
+	{
+		m_AnchorsCoefs[ackRight] =  pParent->m_Rect.ext.x - m_Rect.Right();
+	}
+	if (flags(m_Anchors & TAnchor::akBottom))
+	{
+		m_AnchorsCoefs[ackBottom] =  pParent->m_Rect.ext.y - m_Rect.Bottom();
+	}	
+}
+
+void XGUI_Widget::SetMarginsFromSkinset( mSheetGlyph_t * spr[9] )
+{
+	m_vMargins[0].x = spr[0]->e[0];
+	m_vMargins[0].y = spr[1]->e[1];
+
+	m_vMargins[1].x = spr[8]->e[0];
+	m_vMargins[1].y = spr[8]->e[1];
 }

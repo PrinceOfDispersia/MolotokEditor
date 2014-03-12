@@ -28,6 +28,14 @@ namespace ME_Framework
 			akBottom = (1<<3),
 		};
 
+		enum AnchorsCoefs
+		{
+			ackTop = 0,
+			ackBottom,
+			ackLeft,
+			ackRight
+		};
+
 		enum class TOrientation
 		{
 			orHorizontal = 1,

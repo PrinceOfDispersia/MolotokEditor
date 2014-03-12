@@ -50,6 +50,8 @@ namespace ME_XGUI
 		TAlign m_Align;
 		TAnchor m_Anchors; 
 
+		vec_t m_AnchorsCoefs[4];
+
 		bool m_bVisible;
 		bool m_bEnabled;
 
@@ -83,11 +85,15 @@ namespace ME_XGUI
 			
 		eMouseCursors m_CurrentCursor;
 		
+		void OnAddToParent(XGUI_Widget * pParent);
+
+		void SetMarginsFromSkinset(mSheetGlyph_t * spr[9]);
 
 	public:
 		void ScreenToClient(ME_Math::Vector2D & v);
 		void ClientToScreen(ME_Math::Vector2D & v);
 		void AddChildWidget(XGUI_Widget * pWidget);
+		
 
 		// Setters
 		void SetParent(XGUI_Widget * pParent);

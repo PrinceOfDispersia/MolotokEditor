@@ -52,7 +52,7 @@ void XGUI_Window::DrawComponent()
 	color32_t c = {0,0,0,255};
 	g_pTesselator->DefaultColor(c);
 
-	size_t cSymbols = m_pGuiFontNormal->Calc_FittedSymbols(m_strCaption,m_Rect.ext.x - 4);
+	size_t cSymbols = m_pGuiFontNormal->Calc_FittedSymbols(m_strCaption,m_Rect.ext.x - 54);
 
 	String strFitted = m_strCaption;
 
@@ -68,9 +68,7 @@ void XGUI_Window::DrawComponent()
 		{
 			((TCHAR*)strFitted.c_str())[--cSymbols] = _T('.');
 			c++;
-		}
-
-
+		}		
 	}
 
 	xgRect_t sz;	
@@ -79,7 +77,7 @@ void XGUI_Window::DrawComponent()
 
 	ME_Math::Vector2D textPos;
 		
-	textPos.x = m_Rect.pos.x + (m_Rect.ext.x / 2 - sz.ext.x / 2);
+	textPos.x = m_Rect.pos.x + ((m_Rect.ext.x-54) / 2 - sz.ext.x / 2);
 	textPos.y = m_Rect.pos.y + (((sz.ext.y-sz.pos.x) / 2)) + 1.5;
 
 	m_pGuiFontNormal->Draw(textPos,strFitted);
@@ -121,6 +119,7 @@ XGUI_Window::~XGUI_Window()
 //************************************
 XGUI_Window::XGUI_Window( xgRect_t & r ): XGUI_Widget(r)
 {
+	SetMarginsFromSkinset(ActiveSkin());
 	m_DragKind = eWindowDragKinds::wdkNone;	
 
 	ME_Math::Vector2D clientAreaStart;
@@ -130,19 +129,39 @@ XGUI_Window::XGUI_Window( xgRect_t & r ): XGUI_Widget(r)
 	
 	vec_t h = ActiveSkin()[1]->e[1];
 
-	r.pos = ME_Math::Vector2D(380,h / 2 - 9);
+	r.pos = ME_Math::Vector2D(m_Rect.ext.x - 50,h / 2 - 9);
 	r.ext = ME_Math::Vector2D(18,18);
 
 	XGUI_GenericButton * pMaximize = new XGUI_GenericButton(r);
 	pMaximize->SetSkinSet(sprMaximize,3);
+	pMaximize->SetAnchors(TAnchor::akTop | TAnchor::akRight);
 	AddChildWidget(pMaximize);
 
-	r.pos = ME_Math::Vector2D(399,h / 2 - 9);
+	r.pos = ME_Math::Vector2D(m_Rect.ext.x - 30,h / 2 - 9);
 	r.ext = ME_Math::Vector2D(18,18);
 
 	XGUI_GenericButton * pClose = new XGUI_GenericButton(r);
 	pClose->SetSkinSet(sprClose,3);
+	pClose->SetAnchors(TAnchor::akTop | TAnchor::akRight);
 	AddChildWidget(pClose);
+
+
+	r.pos = m_vMargins[0];
+	r.ext = ME_Math::Vector2D(150,27);
+
+	XGUI_Button * pButton = new XGUI_Button(r);
+	pButton->SetCaption(String(_T("akLeft | akTop")));
+	pButton->SetAnchors(TAnchor::akTop | TAnchor::akLeft);
+	AddChildWidget(pButton);
+
+	r.pos = ME_Math::Vector2D(100,100);
+	pButton = new XGUI_Button(r);
+	pButton->SetCaption(String(_T("akBottom | akRight")));
+	pButton->SetAnchors(TAnchor::akBottom | TAnchor::akRight);
+	AddChildWidget(pButton);
+
+	
+	
 }
 
 //************************************
@@ -265,7 +284,7 @@ void XGUI_Window::RecalcDrag()
 	
 	ME_Math::Vector2D v2 = v - m_vDragOrigin;
 
-	
+	xgRect_t old = m_Rect;
 
 	if (m_DragKind == eWindowDragKinds::wdkPos)
 	{
@@ -313,7 +332,7 @@ void XGUI_Window::RecalcDrag()
 			ScreenToClient(v);			
 			m_Rect.ext.x = v.x;
 
-			if (m_Rect.ext.x < 16) m_Rect.ext.x = 16;
+			if (m_Rect.ext.x < 60) m_Rect.ext.x = 60;
 		}
 
 		if (flags(m_DragKind & eWindowDragKinds::wdkYExt))
@@ -328,8 +347,11 @@ void XGUI_Window::RecalcDrag()
 				m_Rect.ext.y = minHeight;
 		}
 
+		ExpandRectByContents();
 		SetRect(m_Rect);
 	}
+
+
 		
 }
 
@@ -343,4 +365,19 @@ void XGUI_Window::RecalcDrag()
 mSheetGlyph_t ** XGUI_Window::ActiveSkin()
 {
 	return IsFocused() ? sprDialogActive : sprDialogInActive;
+}
+
+void XGUI_Window::ExpandRectByContents()
+{
+	for(TWidgetSharedPtr w : m_vChilds)
+	{
+		if (auto widget = w.get())
+		{
+			if (widget->GetRect().Right()  > (GetRect().ext.x - m_vMargins[1].x))
+				GetRect().ext.x = widget->GetRect().Right() + m_vMargins[1].x;
+			if (widget->GetRect().Bottom()  > (GetRect().ext.y - m_vMargins[1].y))
+				GetRect().ext.y = widget->GetRect().Bottom() + m_vMargins[1].y;
+		}
+
+	}
 }

@@ -68,21 +68,11 @@ void XGUI_Button::DrawTextLabel()
 	// TODO: calc this once when resize\moved\label change?
 	xgRect_t strRect;
 	m_pGuiFontNormal->Calc_TextRect(m_strCaption,&strRect);
-
-	xgRect_t cl = m_Rect;
-	CalcClientRect(cl);
-
+	
 	vec_t xt,yt;
 
-	vec_t yofs = strRect.pos.y;
-
-	vec_t w = strRect.ext.x;
-	vec_t h = strRect.ext.y - yofs;
-
-	strRect.pos += cl.pos + ME_Math::Vector2D((cl.ext.x / 2 - w / 2),(cl.ext.y / 2 - h / 2) - h / 4);
-
-	xt = strRect.pos.x; yt = strRect.pos.y - yofs;
-
+	xt = m_Rect.pos.x +  m_Rect.ext.x / 2 - strRect.ext.x / 2;
+	yt = m_Rect.pos.y + m_Rect.ext.y / 2 - strRect.ext.y + 1.5;
 	
 	color32_t c;
 	c.r = 0; c.g = 0; c.b = 0; c.a = 255;
