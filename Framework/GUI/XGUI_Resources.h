@@ -25,6 +25,11 @@ namespace ME_Framework
 		extern mSheetGlyph_t * sprClose[3];
 		extern mSheetGlyph_t * sprRestore[3];
 
+		extern mSheetGlyph_t * sprMenuSelection;
+		extern mSheetGlyph_t * sprMenuChecked;
+
+		extern mSheetGlyph_t * sprMenuItemBg;
+		extern mSheetGlyph_t * sprMenuItemHover;
 
 	}
 }

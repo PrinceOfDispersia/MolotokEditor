@@ -172,6 +172,7 @@
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Font.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_GenericSkinnedButton.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Manager.cpp" />
+    <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Menu.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Sheet.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Widget.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Window.cpp" />
@@ -233,6 +234,7 @@
     <ClInclude Include="..\..\..\..\Framework\GUI\GUISheet.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_GenericSkinnedButton.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Manager.h" />
+    <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Menu.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Resources.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Sheet.h" />
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Widget.h" />

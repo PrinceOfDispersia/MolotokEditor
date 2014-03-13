@@ -32,8 +32,8 @@ GLuint g_loaderAnisotropy;
  **/
 void SetupDefaultLoaderParams()
 {
-	g_loaderWrap_s=GL_REPEAT;
-	g_loaderWrap_t=GL_REPEAT;
+	g_loaderWrap_s=GL_CLAMP;
+	g_loaderWrap_t=GL_CLAMP;
 
 	//g_loaderFilterMin=GL_LINEAR_MIPMAP_LINEAR;
 	//g_loaderFilterMag=GL_LINEAR;

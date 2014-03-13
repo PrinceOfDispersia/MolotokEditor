@@ -1,6 +1,6 @@
 /*
  *	Molotok Editor, 2013 (C) PrinceOfDispersia
- *	XGUI_Button.cpp - generic button class
+ *	XGUI_Menu.cpp - generic button class
  *
  **/
 
@@ -15,7 +15,7 @@ extern XGUI_Tesselator * g_pTesselator;
 /*
  *	Button constructor
  **/
-XGUI_Button::XGUI_Button(xgRect_t & r): XGUI_Widget(r)
+XGUI_MenuItem::XGUI_MenuItem(xgRect_t & r): XGUI_Widget(r)
 {
 	m_Align = TAlign::alNone;
 
@@ -23,21 +23,21 @@ XGUI_Button::XGUI_Button(xgRect_t & r): XGUI_Widget(r)
 
 	if (r.ext.Length() == 0)
 	{
-		r.ext.x = 70;
-		r.ext.y = 24;
+		r.ext.x = 170;
+		r.ext.y = 20;
 	}
 
 	m_Rect.pos = r.pos;
 	m_Rect.ext = r.ext;
 
-	//m_strCaption = _T("");
+	m_strCaption = _T("Сохранить...");
 	m_bPressed = false;
 }
 
 /*
  *	Destructor
  **/
-XGUI_Button::~XGUI_Button()
+XGUI_MenuItem::~XGUI_MenuItem()
 {
 
 }
@@ -45,7 +45,7 @@ XGUI_Button::~XGUI_Button()
 /*
  * Render button hover overlay
  **/
-void XGUI_Button::DrawHoverOverlay()
+void XGUI_MenuItem::DrawHoverOverlay()
 {
 	float fadeOut = g_pPlatform->TimeElapsed() - m_flHoveroutTimer;
 	fadeOut /= 0.3f;
@@ -57,49 +57,55 @@ void XGUI_Button::DrawHoverOverlay()
 	g_pTesselator->DefaultColor(c);
 
 	if (fadeOut < 1)
-		XGUI_DrawScalableSheetGlyph(sprButtonHovered,m_Rect);
+		XGUI_DrawSheetGlyph(sprMenuItemHover,m_Rect);
 }
 
 /*
  *	Renders button text label
  **/
-void XGUI_Button::DrawTextLabel()
+void XGUI_MenuItem::DrawTextLabel()
 {
 	// TODO: calc this once when resize\moved\label change?
 	
-	m_pGuiFontNormal->SetTextColor(0,0,0,255);
-	m_pGuiFontNormal->DrawAlignedText(m_strCaption,m_Rect,TTextHorizontalAligment::alhCenter,TTextVerticalAligment::alvCenter);
+	xgRect_t f = m_Rect;
+	f.Implode(xAxis,16);
 	
+	m_pGuiFontNormal->SetTextColor(0,0,0,255);
+	m_pGuiFontNormal->DrawAlignedText(m_strCaption,f,TTextHorizontalAligment::alhLeft,TTextVerticalAligment::alvCenter);
+	
+	xgRect_t r;
+	r.pos = m_Rect.pos + m_vMargins[0].x;
+	r.ext = m_Rect.ext;
+
+	
+
+	r.ext.x = sprMenuChecked->e[0];
+	r.ext.y = sprMenuChecked->e[1];
+
+	r.pos.y = m_Rect.pos.y  +  (m_Rect.ext.y / 2 - r.ext.y / 2);
+
+	XGUI_DrawSheetGlyph(sprMenuChecked,r);
+
+
+
 }
 
 /*
  *	Renders whole button
  **/
-void XGUI_Button::DrawComponent()
+void XGUI_MenuItem::DrawComponent()
 {
-	g_pTesselator->ResetDefaultColor();
+	
 
-	if (!m_bPressed)
-	{
-		
-		XGUI_DrawScalableSheetGlyph(sprButtonNormal,m_Rect);
-		DrawHoverOverlay();
-	}
-	else
-	{
-		XGUI_DrawScalableSheetGlyph(sprButtonPressed,m_Rect);
-	}
-	
-	g_pTesselator->ResetDefaultColor();
-	
+	XGUI_DrawSheetGlyph(sprMenuItemBg,m_Rect);
+	DrawHoverOverlay();	
 	DrawTextLabel();
-
 }
 
 /*
  *	Event handler
  **/
-void XGUI_Button::HandleEvent(ME_Framework::appEvent_t & ev)
+void XGUI_MenuItem::HandleEvent(ME_Framework::appEvent_t & ev)
 {
 	switch(ev.eventid)
 	{

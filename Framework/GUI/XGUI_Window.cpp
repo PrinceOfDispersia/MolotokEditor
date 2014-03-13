@@ -48,10 +48,7 @@ void XGUI_Window::HandleEvent( ME_Framework::appEvent_t & pEvent )
 void XGUI_Window::DrawComponent()
 {
 	XGUI_DrawScalableSheetGlyph(ActiveSkin(),m_Rect);
-
-	color32_t c = {0,0,0,255};
-	g_pTesselator->DefaultColor(c);
-
+	
 	size_t cSymbols = m_pGuiFontNormal->Calc_FittedSymbols(m_strCaption,m_Rect.ext.x - 54);
 
 	String strFitted = m_strCaption;
@@ -71,17 +68,17 @@ void XGUI_Window::DrawComponent()
 		}		
 	}
 
-	xgRect_t sz;	
-	m_pGuiFontNormal->Calc_TextRect(strFitted,&sz);
+	xgRect_t fitRect;
+	fitRect.pos = m_Rect.pos;
+	fitRect.ext = m_Rect.ext;
+
+	fitRect.Implode(xAxis,ActiveSkin()[0]->e[0]);
 	
+	
+	fitRect.ext.y = ActiveSkin()[0]->e[1];
 
-	ME_Math::Vector2D textPos;
-		
-	textPos.x = m_Rect.pos.x + ((m_Rect.ext.x-54) / 2 - sz.ext.x / 2);
-	textPos.y = m_Rect.pos.y + (((sz.ext.y-sz.pos.x) / 2)) + 1.5;
-
-	m_pGuiFontNormal->Draw(textPos,strFitted);
-	g_pTesselator->ResetDefaultColor();
+	m_pGuiFontNormal->SetTextColor(0,0,0,255);
+	m_pGuiFontNormal->DrawAlignedText(strFitted,fitRect,TTextHorizontalAligment::alhCenter,TTextVerticalAligment::alvCenter);
 	
 }
 
@@ -294,6 +291,9 @@ void XGUI_Window::RecalcDrag()
 	}
 	else
 	{
+		ME_Math::Vector2D vOldPos = m_Rect.pos;
+		ME_Math::Vector2D vOldExt = m_Rect.ext;
+
 		if (flags(m_DragKind & eWindowDragKinds::wdkXPos))
 		{
 			vec_t oldRight = m_Rect.Right();
@@ -347,8 +347,23 @@ void XGUI_Window::RecalcDrag()
 				m_Rect.ext.y = minHeight;
 		}
 
-		ExpandRectByContents();
 		SetRect(m_Rect);
+ 		
+		int rf = ExpandRectByContents();
+ 		if (rf & rfLockXPos)
+ 		{
+ 			m_Rect.pos.x = vOldPos.x;
+ 			m_Rect.ext.x = vOldExt.x;
+ 			
+ 		}
+ 		if (rf & rfLockYPos)
+ 		{
+ 			m_Rect.pos.y = vOldPos.y;
+ 			m_Rect.ext.y = vOldExt.y;
+ 		}
+		
+		SetRect(m_Rect);
+		
 	}
 
 
@@ -367,17 +382,43 @@ mSheetGlyph_t ** XGUI_Window::ActiveSkin()
 	return IsFocused() ? sprDialogActive : sprDialogInActive;
 }
 
-void XGUI_Window::ExpandRectByContents()
+int XGUI_Window::ExpandRectByContents()
 {
+	int ret_flags = 0;
+	vec_t max_cont_w = 0;
+	vec_t max_cont_h = 0;
+
 	for(TWidgetSharedPtr w : m_vChilds)
 	{
 		if (auto widget = w.get())
 		{
-			if (widget->GetRect().Right()  > (GetRect().ext.x - m_vMargins[1].x))
-				GetRect().ext.x = widget->GetRect().Right() + m_vMargins[1].x;
-			if (widget->GetRect().Bottom()  > (GetRect().ext.y - m_vMargins[1].y))
-				GetRect().ext.y = widget->GetRect().Bottom() + m_vMargins[1].y;
+			if (!flags(widget->GetAnchors() & TAnchor::akLeft) && !flags(widget->GetAnchors() & TAnchor::akTop))
+				continue;
+
+			if (widget->GetRect().Right()  > max_cont_w)
+			{
+				max_cont_w = widget->GetRect().Right();
+			}
+			if (widget->GetRect().Bottom()  > max_cont_h)
+			{
+				max_cont_h = widget->GetRect().Bottom();				
+			}
 		}
 
 	}
+
+	if (max_cont_w > (GetRect().ext.x - m_vMargins[1].x))
+	{
+		GetRect().ext.x = max_cont_w + m_vMargins[1].x;
+		if (flags(m_DragKind & eWindowDragKinds::wdkXPos))
+			ret_flags |= rfLockXPos;
+	}
+	if (max_cont_h > (GetRect().ext.y - m_vMargins[1].y))
+	{
+		GetRect().ext.y = max_cont_h + m_vMargins[1].y;
+		if (flags(m_DragKind & eWindowDragKinds::wdkYPos))
+			ret_flags |= rfLockYPos;
+	}
+
+	return ret_flags;
 }

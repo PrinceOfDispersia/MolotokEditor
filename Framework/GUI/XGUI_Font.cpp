@@ -64,9 +64,9 @@ void XGUI_Font::Calc_TextRect(String & str,xgRect_t * rect)
 		
 		w+=(inf->orig_w);
 
-		if (h < (inf->height))
+		if (h < (inf->orig_h))
 		{
-			h = inf->height; 
+			h = inf->orig_h; 
 			o = inf->yoffs;
 		}
 
@@ -76,8 +76,8 @@ void XGUI_Font::Calc_TextRect(String & str,xgRect_t * rect)
 	rect->pos = ME_Math::Vector2D(0,o);
 	rect->ext = ME_Math::Vector2D(w,h-o);*/
 
-	rect->pos = ME_Math::Vector2D(0,0);
-	rect->ext = ME_Math::Vector2D(w,11);
+	rect->pos = ME_Math::Vector2D(0,o);
+	rect->ext = ME_Math::Vector2D(w,h);
 }
 
 /*
@@ -640,4 +640,62 @@ size_t XGUI_Font::Calc_FittedSymbols( String & str,vec_t _w)
 
 	return sz;
 
+}
+
+void XGUI_Font::DrawAlignedText(String & str, xgRect_t fitRect,TTextHorizontalAligment horAligment,TTextVerticalAligment vertAligment )
+{
+	xgRect_t textRect;
+	Calc_TextRect(str,&textRect);
+
+	// fixme
+	vec_t pad = 0.1;
+
+	vec_t xt,yt;
+
+	switch(horAligment)
+	{
+	case TTextHorizontalAligment::alhLeft:
+			xt = fitRect.pos.x +  pad;
+		break;
+	case TTextHorizontalAligment::alhCenter:
+			xt = fitRect.pos.x +  fitRect.ext.x / 2 - textRect.ext.x / 2;
+		break;
+	case TTextHorizontalAligment::alhRight:
+			xt = fitRect.Right() - textRect.ext.x - pad;
+		break;
+	}
+	
+	vec_t th = textRect.ext.y + pad;
+
+	switch(vertAligment)
+	{
+	case TTextVerticalAligment::alvTop:
+		yt = fitRect.pos.y +  pad;
+		break;
+	case TTextVerticalAligment::alvCenter:
+		yt = fitRect.pos.y + (fitRect.ext.y - th) / 2;
+		break;
+	case TTextVerticalAligment::alvBottom:
+		yt = fitRect.Bottom() - th - pad;
+		break;
+	}
+
+	if (0) // debug
+	{
+		xgRect_t rrr;
+		rrr.pos.x = xt;
+		rrr.pos.y = yt;
+		rrr.ext = textRect.ext;
+
+		color32_t c;
+		c.r = 255; c.g = 0; c.b = 0;
+		c.a = 255;
+		g_pTesselator->DefaultColor(c);
+		XGUI_DrawSheetGlyph(sprWhite,rrr);
+	}
+	
+
+	Draw(xt,yt,str);
+	
+	
 }

@@ -13,6 +13,8 @@ namespace ME_Framework
 {
 	namespace ME_XGUI
 	{
+		
+
 		class XGUI_Font
 		{
 			dFontHdr_t * m_pHeader;
@@ -51,6 +53,9 @@ namespace ME_Framework
 			void DrawMultilineTextInRect(xgRect_t & r,TCHAR * strBuffer);
 			
 			void DrawTextFittedInRect(xgRect_t & targetRect,TCHAR * str);
+
+			void DrawAlignedText(String & str,xgRect_t fitRect,TTextHorizontalAligment horAligment,TTextVerticalAligment vertAligment);
+			
 
 			XGUI_Font(dFontHdr_t * pHeader,size_t sz);
 			~XGUI_Font();

@@ -56,6 +56,24 @@ namespace ME_Framework
 				c.ext = this->ext;
 				return c; 
 			}
+
+			inline void Implode(int axis,vec_t val)
+			{
+				assert(axis >= 0 && axis <= 1);
+
+				pos[axis]+=val;
+				ext[axis]-=val * 2;
+			
+			}
+
+			inline void Explode(int axis,vec_t val)
+			{
+				assert(axis >= 0 && axis <= 1);
+
+				pos[axis]-=val;
+				ext[axis]-=val * 2;
+
+			}
 			
 		}xgRect_t;
 

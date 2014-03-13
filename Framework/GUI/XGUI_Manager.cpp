@@ -32,6 +32,13 @@ mSheetGlyph_t * ME_XGUI::sprRestore[3];
 
 mSheetGlyph_t * ME_XGUI::sprWhite;
 
+mSheetGlyph_t * ME_XGUI::sprMenuSelection;
+mSheetGlyph_t * ME_XGUI::sprMenuChecked;
+
+mSheetGlyph_t * ME_XGUI::sprMenuItemBg;
+mSheetGlyph_t * ME_XGUI::sprMenuItemHover;
+
+
 /*
  *	Function loads 3 by 3 set of glyphs for scalable widgets
  **/
@@ -139,6 +146,12 @@ XGUI_Manager::XGUI_Manager()
 	sprDragHandleDotsHovered = GetGUISheetGlyph("DragHandleDots.Hovered");
 	sprDragHandleDotsNormal = GetGUISheetGlyph("DragHandleDots.Normal");
 
+	sprMenuSelection = GetGUISheetGlyph("MenuCurrentSelection");
+	sprMenuChecked = GetGUISheetGlyph("MenuCheckedItem");
+
+	sprMenuItemBg = GetGUISheetGlyph("MenuItemBg");
+	sprMenuItemHover = GetGUISheetGlyph("MenuItemHover");
+
 	LoadScalableSprite(sprDialogActive,"dialogWnd.Active");
 	LoadScalableSprite(sprDialogInActive,"dialogWnd.InActive");
 
@@ -212,6 +225,12 @@ XGUI_Manager::XGUI_Manager()
 		AddWidget(w);
 
 	}
+
+	r.pos = ME_Math::Vector2D(40,40);
+	r.ext.Init();
+
+	XGUI_MenuItem * p = new XGUI_MenuItem(r);
+	m_pDesktop->AddChildWidget(p);
 
 	// Recalculate rects
 	m_pDesktop->RecalcItemsRects();

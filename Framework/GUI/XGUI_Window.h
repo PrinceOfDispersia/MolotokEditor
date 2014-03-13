@@ -19,7 +19,13 @@ namespace ME_Framework
 
 			mSheetGlyph_t ** ActiveSkin();
 
-			void ExpandRectByContents();
+			enum resizeFlags
+			{
+				rfLockXPos = (1<<0),
+				rfLockYPos = (1<<1)
+			};
+
+			int ExpandRectByContents();
 
 		protected:
 			virtual void RecalcDrag();

@@ -18,6 +18,20 @@ namespace ME_Framework
 			alNone
 		};
 
+		enum class TTextHorizontalAligment
+		{
+			alhLeft,			
+			alhCenter,
+			alhRight
+		};
+
+		enum class TTextVerticalAligment
+		{
+			alvTop,			
+			alvCenter,
+			alvBottom
+		};
+
 	
 		enum class TAnchor
 		{
@@ -80,6 +94,9 @@ namespace ME_Framework
 
 		ENUM_FLAGS(TAnchor);
 		ENUM_FLAGS(eWindowDragKinds);
+
+		const int xAxis = 0;
+		const int yAxis = 1;
 	}
 
 	

@@ -16,4 +16,5 @@
 #include "XGUI_Button.h"
 #include "XGUI_Window.h"
 #include "XGUI_Dock.h"
+#include "XGUI_Menu.h"
 
