@@ -18,14 +18,14 @@ namespace ME_Framework
 			alNone
 		};
 
-		enum class TTextHorizontalAligment
+		enum class THorizontalAligment
 		{
 			alhLeft,			
 			alhCenter,
 			alhRight
 		};
 
-		enum class TTextVerticalAligment
+		enum class TVerticalAligment
 		{
 			alvTop,			
 			alvCenter,
@@ -97,7 +97,16 @@ namespace ME_Framework
 
 		const int xAxis = 0;
 		const int yAxis = 1;
+
+		enum eMenuItemKinds
+		{
+			mikGeneric = 0,
+			mikToggle,
+			mikSelection
+		};
 	}
+
+	
 
 	
 

@@ -78,7 +78,7 @@ void XGUI_Window::DrawComponent()
 	fitRect.ext.y = ActiveSkin()[0]->e[1];
 
 	m_pGuiFontNormal->SetTextColor(0,0,0,255);
-	m_pGuiFontNormal->DrawAlignedText(strFitted,fitRect,TTextHorizontalAligment::alhCenter,TTextVerticalAligment::alvCenter);
+	m_pGuiFontNormal->DrawAlignedText(strFitted,fitRect,THorizontalAligment::alhCenter,TVerticalAligment::alvCenter);
 	
 }
 

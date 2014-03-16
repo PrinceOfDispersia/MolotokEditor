@@ -4,6 +4,13 @@
  *
  **/
 
+/*
+	15.03.2014: Roadmap
+
+	1) Do pop-up menus completly - submenus and scroll buttons
+	2) Message window and component actions - button handlers for example
+*/
+
 #include <windows.h>
 #include <io.h>
 #include <fcntl.h>

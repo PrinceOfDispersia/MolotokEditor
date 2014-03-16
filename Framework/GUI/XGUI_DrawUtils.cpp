@@ -152,3 +152,51 @@ void ME_Framework::ME_XGUI::XGUI_DrawRectOutline(xgRect_t & r)
 	GL_EnableState(GLS_TEXTURE_2D);
 }
 
+void ME_XGUI::XGUI_DrawSheetGlyphAligned( mSheetGlyph_t * pGlyph,xgRect_t & fitRect,THorizontalAligment horAligment,TVerticalAligment verAligment )
+{
+	xgRect_t glyphRect;
+	glyphRect.pos.x=0;
+	glyphRect.pos.y=0;
+	glyphRect.ext.x = pGlyph->e[0];
+	glyphRect.ext.y = pGlyph->e[1];
+
+	// fixme
+	vec_t pad = 0.1;
+
+	vec_t xt,yt;
+
+	switch(horAligment)
+	{
+	case THorizontalAligment::alhLeft:
+		xt = fitRect.pos.x +  pad;
+		break;
+	case THorizontalAligment::alhCenter:
+		xt = fitRect.pos.x +  fitRect.ext.x / 2 - glyphRect.ext.x / 2;
+		break;
+	case THorizontalAligment::alhRight:
+		xt = fitRect.Right() - glyphRect.ext.x - pad;
+		break;
+	}
+
+	vec_t th = glyphRect.ext.y + pad;
+
+	switch(verAligment)
+	{
+	case TVerticalAligment::alvTop:
+		yt = fitRect.pos.y +  pad;
+		break;
+	case TVerticalAligment::alvCenter:
+		yt = fitRect.pos.y + (fitRect.ext.y - th) / 2;
+		break;
+	case TVerticalAligment::alvBottom:
+		yt = fitRect.Bottom() - th - pad;
+		break;
+	}
+
+	
+	glyphRect.pos.x+=xt;
+	glyphRect.pos.y+=yt;
+	
+	XGUI_DrawSheetGlyph(pGlyph,glyphRect);
+
+}

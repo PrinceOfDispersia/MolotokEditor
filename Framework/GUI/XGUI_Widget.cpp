@@ -11,6 +11,7 @@ using namespace ME_Framework::ME_OpenGLBackend;
 
 extern XGUI_Manager * g_pGUIManager;
 extern XGUI_Tesselator * g_pTesselator;
+extern XGUI_Menu * g_pTestMenu;
 
 XGUI_Widget::XGUI_Widget(xgRect_t & rect)
 {
@@ -52,6 +53,48 @@ XGUI_Widget::XGUI_Widget(xgRect_t & rect)
 
 	m_bFocused = false;
 
+}
+
+XGUI_Widget::XGUI_Widget()
+{
+	m_vChilds.clear();
+	m_vAlignOrderedChilds.clear();
+
+	m_Rect.pos.Init();
+	m_Rect.ext.Init();
+
+	m_Color = g_pGUIManager->GuiSettings()->m_cDesktopBG;
+	m_ZOrder = 1;
+	m_Anchors = TAnchor::akNone;
+
+	m_pParent = 0;
+
+	for(int i = 0 ; i < ARRAY_SIZE(m_flTimers); i++)
+	{
+		m_flTimers[i] = 0;
+	}
+
+	m_Align = TAlign::alNone;
+	SetRect(m_Rect);
+
+	m_bVisible = true;
+	m_bEnabled = true;
+
+	m_strCaption = _T("");
+	m_bDragged = false;
+
+	m_vParentStart = ME_Math::Vector2D(0,0);
+
+	m_nWidgetCounter = 0;
+	m_nWidgetNumber = 0;
+
+	m_CurrentCursor = eMouseCursors::mcNormal;
+
+	m_pGuiFontNormal = g_pGUIManager->Get_GuiFont(TGuiFontTypes::gfNormal);
+	m_pGuiFontSmall = g_pGUIManager->Get_GuiFont(TGuiFontTypes::gfSmall);
+
+	m_bFocused = false;
+	m_pContextMenu = g_pTestMenu;
 }
 
 /*
@@ -551,6 +594,7 @@ void XGUI_Widget::SetAnchors(TAnchor anchors)
 void XGUI_Widget::SetVisibilty(bool bVisible)
 {
 	m_bVisible = bVisible;
+	OnVisibilityChange(bVisible);
 }
 
 void XGUI_Widget::SetEnableState(bool bEnabled)
@@ -891,4 +935,15 @@ void XGUI_Widget::SetMarginsFromSkinset( mSheetGlyph_t * spr[9] )
 
 	m_vMargins[1].x = spr[8]->e[0];
 	m_vMargins[1].y = spr[8]->e[1];
+}
+
+bool XGUI_Widget::IsBelongsHeirarchy( XGUI_Widget * w )
+{
+	if (m_pParent == w)
+		return true;
+
+	if (!m_pParent)
+		return false;
+
+	return m_pParent->IsBelongsHeirarchy(w);
 }

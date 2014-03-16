@@ -21,12 +21,14 @@ namespace ME_XGUI
 		return a.lock().get() == b.lock().get();
 	}
 
+	class XGUI_Menu;
+
 	class XGUI_Widget: public std::enable_shared_from_this<XGUI_Widget>
 	{
 		friend XGUI_Manager;
 
 		bool m_bFocused;
-
+		bool m_bVisible;
 	protected:
 		xgRect_t m_Rect;
 		color32_t m_Color;
@@ -52,7 +54,7 @@ namespace ME_XGUI
 
 		vec_t m_AnchorsCoefs[4];
 
-		bool m_bVisible;
+		
 		bool m_bEnabled;
 
 		String m_strCaption;
@@ -89,11 +91,13 @@ namespace ME_XGUI
 
 		void SetMarginsFromSkinset(mSheetGlyph_t * spr[9]);
 
+		XGUI_Menu * m_pContextMenu;
 	public:
 		void ScreenToClient(ME_Math::Vector2D & v);
 		void ClientToScreen(ME_Math::Vector2D & v);
 		void AddChildWidget(XGUI_Widget * pWidget);
 		
+		virtual bool IsBelongsHeirarchy(XGUI_Widget * w);
 
 		// Setters
 		void SetParent(XGUI_Widget * pParent);
@@ -134,10 +138,12 @@ namespace ME_XGUI
 		void GrabFocus();
 		bool IsFocused();
 
+
 		XGUI_Widget* WidgetUnderCursor(ME_Math::Vector2D pt);
 			
 
 		XGUI_Widget(xgRect_t & rect);
+		XGUI_Widget();
 		virtual ~XGUI_Widget();
 
 		const TWidgetVector & GetChilds();
@@ -147,6 +153,8 @@ namespace ME_XGUI
 
 		inline const bool IsDragged() { return m_bDragged; }
 		
+
+		virtual void OnVisibilityChange(bool bNewState) {};
 	};
 }
 

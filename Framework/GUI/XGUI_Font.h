@@ -54,7 +54,7 @@ namespace ME_Framework
 			
 			void DrawTextFittedInRect(xgRect_t & targetRect,TCHAR * str);
 
-			void DrawAlignedText(String & str,xgRect_t fitRect,TTextHorizontalAligment horAligment,TTextVerticalAligment vertAligment);
+			void DrawAlignedText(String & str,xgRect_t fitRect,THorizontalAligment horAligment,TVerticalAligment vertAligment);
 			
 
 			XGUI_Font(dFontHdr_t * pHeader,size_t sz);

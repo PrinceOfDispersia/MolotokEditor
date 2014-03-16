@@ -12,6 +12,8 @@ using namespace ME_Framework::ME_OpenGLBackend;
 extern XGUI_Manager * g_pGUIManager;
 extern XGUI_Tesselator * g_pTesselator;
 
+extern XGUI_Menu * g_pTestMenu;
+
 /*
  *	Button constructor
  **/
@@ -32,6 +34,8 @@ XGUI_Button::XGUI_Button(xgRect_t & r): XGUI_Widget(r)
 
 	//m_strCaption = _T("");
 	m_bPressed = false;
+
+	m_pContextMenu = g_pTestMenu;
 }
 
 /*
@@ -68,7 +72,7 @@ void XGUI_Button::DrawTextLabel()
 	// TODO: calc this once when resize\moved\label change?
 	
 	m_pGuiFontNormal->SetTextColor(0,0,0,255);
-	m_pGuiFontNormal->DrawAlignedText(m_strCaption,m_Rect,TTextHorizontalAligment::alhCenter,TTextVerticalAligment::alvCenter);
+	m_pGuiFontNormal->DrawAlignedText(m_strCaption,m_Rect,THorizontalAligment::alhCenter,TVerticalAligment::alvCenter);
 	
 }
 

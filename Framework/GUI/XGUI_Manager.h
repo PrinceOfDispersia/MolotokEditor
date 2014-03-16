@@ -14,6 +14,7 @@ namespace ME_Framework
 		typedef struct guiSettings_s
 		{
 			color32_t m_cDesktopBG;
+			color32_t m_cMenuDivider;
 		}guiSettings_t;
 
 		
@@ -65,6 +66,8 @@ namespace ME_Framework
 			void Flush();
 		};
 
+		class XGUI_Menu;
+
 		class XGUI_Manager
 		{
 			XGUI_Widget * m_pDesktop;
@@ -94,6 +97,8 @@ namespace ME_Framework
 
 			 XGUI_Widget * m_pFocusedWidget;
 			 XGUI_Widget * m_pCursorWidget;
+
+			 XGUI_Menu * m_pCurrentPopup;
 		public:
 			void SetFocusedWidget(XGUI_Widget * w);
 
@@ -119,16 +124,21 @@ namespace ME_Framework
 
 			void AddWidget(XGUI_Widget * pWidget);
 			void Gui_Printf(vec_t x,vec_t y,TCHAR * string);
-
+			
 			XGUI_Font * Get_GuiFont(TGuiFontTypes fontType);
 
 			void Safe_QueryWidgetRemove(TWidgetSharedPtr ptr,TWidgetVector & vec);
 
 			XGUI_Widget * CachedWidgetUnderCursor();
+
+			void RegisterMenu(XGUI_Menu * pMenu);
+			void RemoveMenu(XGUI_Menu * pMenu);
 		};
 
 
 		void XGUI_DrawSheetGlyph(mSheetGlyph_t * pGlyph,xgRect_t & r);
+		void XGUI_DrawSheetGlyphAligned( mSheetGlyph_t * pGlyph,xgRect_t & fitRect,THorizontalAligment horAligment,TVerticalAligment verAligment );
+
 		void XGUI_DrawScalableSheetGlyph(mSheetGlyph_t * pGlyphs[9],xgRect_t & r);
 		void XGUI_DrawRect(xgRect_t & r);
 		void XGUI_DrawRectOutline(xgRect_t & r);

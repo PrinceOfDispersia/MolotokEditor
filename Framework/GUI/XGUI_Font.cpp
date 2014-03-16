@@ -642,7 +642,7 @@ size_t XGUI_Font::Calc_FittedSymbols( String & str,vec_t _w)
 
 }
 
-void XGUI_Font::DrawAlignedText(String & str, xgRect_t fitRect,TTextHorizontalAligment horAligment,TTextVerticalAligment vertAligment )
+void XGUI_Font::DrawAlignedText(String & str, xgRect_t fitRect,THorizontalAligment horAligment,TVerticalAligment vertAligment )
 {
 	xgRect_t textRect;
 	Calc_TextRect(str,&textRect);
@@ -654,13 +654,13 @@ void XGUI_Font::DrawAlignedText(String & str, xgRect_t fitRect,TTextHorizontalAl
 
 	switch(horAligment)
 	{
-	case TTextHorizontalAligment::alhLeft:
+	case THorizontalAligment::alhLeft:
 			xt = fitRect.pos.x +  pad;
 		break;
-	case TTextHorizontalAligment::alhCenter:
+	case THorizontalAligment::alhCenter:
 			xt = fitRect.pos.x +  fitRect.ext.x / 2 - textRect.ext.x / 2;
 		break;
-	case TTextHorizontalAligment::alhRight:
+	case THorizontalAligment::alhRight:
 			xt = fitRect.Right() - textRect.ext.x - pad;
 		break;
 	}
@@ -669,13 +669,13 @@ void XGUI_Font::DrawAlignedText(String & str, xgRect_t fitRect,TTextHorizontalAl
 
 	switch(vertAligment)
 	{
-	case TTextVerticalAligment::alvTop:
+	case TVerticalAligment::alvTop:
 		yt = fitRect.pos.y +  pad;
 		break;
-	case TTextVerticalAligment::alvCenter:
+	case TVerticalAligment::alvCenter:
 		yt = fitRect.pos.y + (fitRect.ext.y - th) / 2;
 		break;
-	case TTextVerticalAligment::alvBottom:
+	case TVerticalAligment::alvBottom:
 		yt = fitRect.Bottom() - th - pad;
 		break;
 	}

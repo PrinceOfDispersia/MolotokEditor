@@ -102,6 +102,24 @@ XGUI_Font * LoadFont(TCHAR * path,pgl_texture_t atlasTexture,ME_Math::Vector2D a
 	return pRet;
 }
 
+XGUI_Menu * g_pTestMenu;
+
+XGUI_Menu* TestMenu(int call)
+{
+	if (call > 2) 
+		return 0;
+
+	XGUI_Menu * pMenu = new XGUI_Menu;
+
+	for(int i = 0 ; i < 4 ; i++)
+	{
+		pMenu->AddItem(VA(_T("# %d Item # %d"),call,i),mikGeneric,0)->AssingSubmenu(TestMenu(call + 1));
+	}
+
+	return pMenu;
+	
+}
+
 /*
  *	Constructor
  **/
@@ -167,52 +185,15 @@ XGUI_Manager::XGUI_Manager()
 	m_pDesktop->SetAlign(TAlign::alClientArea);
 	m_pDesktop->RecalcRectWithAligment();
 
+	g_pTestMenu = TestMenu(0);
+	RegisterMenu(g_pTestMenu);
+	//t->Popup(ME_Math::Vector2D(320,240));
+
+
 	LoadButtonSpriteSet(sprMinimize,"UI.Minimize");
 	LoadButtonSpriteSet(sprMaximize,"UI.Maximize");
 	LoadButtonSpriteSet(sprClose,"UI.Close");
 	LoadButtonSpriteSet(sprRestore,"UI.Restore");
-
-	// Setup dock sites
-/*
-	TAlign a[] = {TAlign::alTop,TAlign::alBottom,TAlign::alLeft,TAlign::alRight};
-	int priority[] = {9998,9998,9997,9997};
-
-	r.ext = ME_Math::Vector2D(32,32);
-	r.pos = ME_Math::Vector2D(0,0);
-
-	for(int i = 0 ; i < 4 ; i++)
-	{
-		XGUI_Dock * pDock = new XGUI_Dock(r);
-
-		pDock->SetAlign(a[i]);
-		pDock->SetAlignPriority(priority[i]);
-		
-		AddWidget(pDock);
-	}
-
-	for(int i = 0 ; i < 4 ; i++)
-	{
-		r.pos = ME_Math::Vector2D(320 + i * 15,240);
-		r.ext = ME_Math::Vector2D(150,80);
-		XGUI_DockWindow * pTestWindow = new XGUI_DockWindow(r);
-		pTestWindow->SetZOrder(1);
-
-		pTestWindow->SetCaption(String(VA(_T("Window #%d"),i+1)));
-
-		for(int i = 0 ; i < 40 ; i++)
-		{
-			const int sz = 24;
-
-			xgRect_t r;
-			r.pos = ME_Math::Vector2D(5+i*sz,16);
-			r.ext = ME_Math::Vector2D(sz,sz);
-			XGUI_Button * pButton = new XGUI_Button(r);
-			pTestWindow->AddChildWidget(pButton);
-		}
-
-		AddWidget(pTestWindow);
-	}yj 
-	*/
 
 	for(int i = 0 ; i < 4 ; i++)
 	{
@@ -225,13 +206,7 @@ XGUI_Manager::XGUI_Manager()
 		AddWidget(w);
 
 	}
-
-	r.pos = ME_Math::Vector2D(40,40);
-	r.ext.Init();
-
-	XGUI_MenuItem * p = new XGUI_MenuItem(r);
-	m_pDesktop->AddChildWidget(p);
-
+	
 	// Recalculate rects
 	m_pDesktop->RecalcItemsRects();
 
@@ -244,6 +219,8 @@ XGUI_Manager::XGUI_Manager()
 
 	m_pFocusedWidget = 0;
 	m_pCursorWidget = 0;
+
+	m_pCurrentPopup = 0;
 }
 
 /*
@@ -252,6 +229,7 @@ XGUI_Manager::XGUI_Manager()
 void XGUI_Manager::LoadVars()
 {
 	m_GuiSettings.m_cDesktopBG = m_pGuiVars->GetColorValue(m_pGuiVars->QueryVariable("gui_desktop_bg_col","[45 45 48 255]"));	
+	m_GuiSettings.m_cMenuDivider = m_pGuiVars->GetColorValue(m_pGuiVars->QueryVariable("menu_divider_color","[0 0 0 255]"));	
 }
 
 
@@ -316,6 +294,20 @@ void XGUI_Manager::Think(float flDeltaTime)
 
 	XGUI_Widget * w = m_pDesktop->WidgetUnderCursor(g_pPlatform->GetCursorPos());
 
+	if (m_pCursorWidget && m_pCursorWidget != w)
+	{
+		ME_Framework::appEvent_t e;
+		e.eventid = eventTypes::EV_CURSOR_LEAVED;
+		m_pCursorWidget->HandleEvent(e);
+	}
+
+	if (w && m_pCursorWidget != w)
+	{
+		ME_Framework::appEvent_t e;
+		e.eventid = eventTypes::EV_CURSOR_ENTERED;
+		w->HandleEvent(e);
+	}
+
 	m_pCursorWidget = w;
 
 	if (w)
@@ -362,21 +354,72 @@ void XGUI_Manager::HandleEvent(ME_Framework::appEvent_t & ev)
 	{
 		case eventTypes::EV_MOUSE_KEY_DOWN:
 		{
-			XGUI_Widget * w = m_pDesktop->WidgetUnderCursor(g_pPlatform->GetCursorPos());
-			if (w)
+			switch(ev.uParam1)
 			{
-				SetFocusedWidget(w);
-
-				if (m_bInEditorMode)
+			case MKEY_LEFT:
 				{
-					ME_Math::Vector2D v = g_pPlatform->GetCursorPos();
-					w->ScreenToClient(v);
-					w->m_vDragOrigin = v;
-					w->SetDragged(true);
+					
+					XGUI_Widget * w = m_pDesktop->WidgetUnderCursor(g_pPlatform->GetCursorPos());
+
+					if (m_pCurrentPopup!=w)
+					{
+						if (m_pCurrentPopup)
+						{
+							if (w)
+							{
+								XGUI_MenuItem *menuItem = dynamic_cast<XGUI_MenuItem *>(w);
+								if (NULL != menuItem)
+								{
+									if (!w->IsBelongsHeirarchy(m_pCurrentPopup))
+										m_pCurrentPopup->SetVisibilty(false);
+
+									if (!menuItem->SubMenu())
+										m_pCurrentPopup->SetVisibilty(false);
+								}
+								else m_pCurrentPopup->SetVisibilty(false);
+							}
+							else 
+								m_pCurrentPopup->SetVisibilty(false);
+						}
+					}
+
+					if (w)
+					{
+						SetFocusedWidget(w);
+
+						if (m_bInEditorMode)
+						{
+							ME_Math::Vector2D v = g_pPlatform->GetCursorPos();
+							w->ScreenToClient(v);
+							w->m_vDragOrigin = v;
+							w->SetDragged(true);
+						}
+						else 
+							w->HandleEvent(ev);
+					}
 				}
-				else 
-					w->HandleEvent(ev);
+				break;
+			case MKEY_RIGHT:
+				{
+					XGUI_Widget * w = m_pDesktop->WidgetUnderCursor(g_pPlatform->GetCursorPos());
+
+					if (m_pCurrentPopup!=w)
+					{
+						if (m_pCurrentPopup)
+							m_pCurrentPopup->SetVisibilty(false);
+					}
+
+					if (w && w->m_pContextMenu)
+					{
+						w->m_pContextMenu->Popup(g_pPlatform->GetCursorPos());
+						m_pCurrentPopup = w->m_pContextMenu;
+					}
+
+				}
+
+				break;
 			}
+
 		}
 		break;
 		case eventTypes::EV_MOUSE_KEY_UP:
@@ -665,4 +708,28 @@ void XGUI_Manager::SetFocusedWidget( XGUI_Widget * w )
 XGUI_Widget * XGUI_Manager::CachedWidgetUnderCursor()
 {
 	return m_pCursorWidget;
+}
+
+
+void XGUI_Manager::RegisterMenu( XGUI_Menu * pMenu )
+{
+	AddWidget(pMenu);
+
+	for(auto r: pMenu->m_vChilds)
+	{
+		if (XGUI_Widget * w = r.get())
+		{
+			XGUI_MenuItem *item = dynamic_cast<XGUI_MenuItem *>(w);
+			if (NULL != item)
+			{
+				if (item->SubMenu())
+					RegisterMenu(item->SubMenu());
+			}
+		}
+	}
+}
+
+void XGUI_Manager::RemoveMenu( XGUI_Menu * pMenu )
+{
+
 }
