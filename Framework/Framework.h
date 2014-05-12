@@ -39,5 +39,10 @@
 //
 #include "ConfigVars.h"
 
+// Serializer
+//
+
+#include <Framework/Serializer.h>
+
 
 #endif

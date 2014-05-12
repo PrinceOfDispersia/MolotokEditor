@@ -388,8 +388,7 @@ void ME_Console::HandleEnter()
 		{
 			if (v->isCommand)
 			{
-				v->ExecutionHandler(c,args);
-				
+				v->ExecutionHandler(c,args);				
 			}
 			else
 			{

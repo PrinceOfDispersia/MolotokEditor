@@ -84,7 +84,7 @@ void LoadButtonSpriteSet(mSheetGlyph_t * dst[3],char mask[])
 /*
  *	Font loading routine
  **/
-XGUI_Font * LoadFont(TCHAR * path,pgl_texture_t atlasTexture,ME_Math::Vector2D atlasOffset)
+XGUI_Font * LoadFont(TCHAR * path,pgl_texture_t atlasTexture,ME_Math::Vector2D atlasOffset,vec_t ScaleFactor)
 {
 	size_t sz;
 	byte * pBuffer = g_pPlatform->FileSystem()->LoadFile(path,&sz);
@@ -94,7 +94,7 @@ XGUI_Font * LoadFont(TCHAR * path,pgl_texture_t atlasTexture,ME_Math::Vector2D a
 
 	XGUI_Font * pRet;
 
-	pRet = new XGUI_Font((dFontHdr_t*)pBuffer,sz);
+	pRet = new XGUI_Font((dFontHdr_t*)pBuffer,sz,ScaleFactor);
 	pRet->SetAtlas(atlasTexture,atlasOffset);
 
 	g_pPlatform->FileSystem()->CloseFile(pBuffer);
@@ -153,8 +153,8 @@ XGUI_Manager::XGUI_Manager()
 	
 	g_pGUIManager = this;
 
-	m_pGuiFontNormal = LoadFont(_T("gui/fonts/SegoeUI9.ft2"),m_GuiAtlas,ME_Math::Vector2D(0,690));
-	m_pGuiFontSmall = LoadFont(_T("gui/fonts/SegoeUI8.ft2"),m_GuiAtlas,ME_Math::Vector2D(256,690));
+	m_pGuiFontNormal = LoadFont(_T("gui/fonts/Arial37.ft2"),m_GuiAtlas,ME_Math::Vector2D(0,680),0.25);
+	m_pGuiFontSmall = LoadFont(_T("gui/fonts/Arial37.ft2"),m_GuiAtlas,ME_Math::Vector2D(0,680),0.1);
 
 	LoadScalableSprite(sprButtonNormal,"UI.ButtonBig.Normal");
 	LoadScalableSprite(sprButtonHovered,"UI.ButtonBig.Hovered");
@@ -319,6 +319,7 @@ void XGUI_Manager::Think(float flDeltaTime)
 	{
 		g_pPlatform->SetCursor(w->m_CurrentCursor);
 	}
+
 }
 
 /*
@@ -464,6 +465,8 @@ XGUI_Tesselator::XGUI_Tesselator(int elementsCount)
 	m_cDefault.g = 255;
 	m_cDefault.b = 255;
 	m_cDefault.a = 255;
+
+	m_vScaling.x = m_vScaling.y = 1;
 }
 
 /*
@@ -504,7 +507,7 @@ void XGUI_Tesselator::Color32(color32_t & c)
  **/
 void XGUI_Tesselator::Vertex2v(ME_Math::Vector2D & vec)
 {
-	m_pVertexes[m_nUsedElements] = vec + m_vTranslation;
+	m_pVertexes[m_nUsedElements] = (vec + m_vTranslation) * m_vScaling;
 	m_nUsedElements++;
 
 	if (m_nUsedElements == (m_nElements)) 
@@ -559,6 +562,8 @@ void XGUI_Tesselator::Vertex2(vec_t x,vec_t y)
 	m_pVertexes[m_nUsedElements].x = x + m_vTranslation.x;
 	m_pVertexes[m_nUsedElements].y = y + m_vTranslation.y;
 	
+	m_pVertexes[m_nUsedElements] *= m_vScaling;
+
 	m_nUsedElements++;
 
 	if (m_nUsedElements == m_nElements) 
@@ -732,4 +737,15 @@ void XGUI_Manager::RegisterMenu( XGUI_Menu * pMenu )
 void XGUI_Manager::RemoveMenu( XGUI_Menu * pMenu )
 {
 
+}
+
+void XGUI_Tesselator::SetScaling( vec_t x,vec_t y )
+{
+	m_vScaling.x = x;
+	m_vScaling.y = y;
+}
+
+void XGUI_Tesselator::ResetScaling()
+{
+	m_vScaling.x = m_vScaling.y = 1;
 }

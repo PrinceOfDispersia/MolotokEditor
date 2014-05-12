@@ -133,6 +133,13 @@ namespace ME_Framework
 				y = _y;
 			}
 
+			void Normalize()
+			{
+				vec_t inv_length = 1.0f / sqrt(x*x + y*y);
+				x*=inv_length;
+				y*=inv_length;				
+			}
+
 		};
 
 		// 3D Vector
@@ -271,6 +278,14 @@ namespace ME_Framework
 				x = _x;
 				y = _y;
 				z = _z;
+			}
+
+			void Normalize()
+			{
+				vec_t inv_length = 1.0f / sqrt(x*x + y*y + z*z);
+				x*=inv_length;
+				y*=inv_length;
+				z*=inv_length;
 			}
 		};
 	}

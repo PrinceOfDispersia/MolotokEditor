@@ -53,6 +53,9 @@ namespace ME_Framework
 		#define Alloc(n) Alloc(n,_T(__FILE__),__LINE__)
 		#define Free(ptr) Free(ptr,_T(__FILE__),__LINE__)
 
+		#define Mem_Alloc(n) g_pPlatform->MemoryPools()->Alloc(n)
+		#define Mem_Free(ptr) g_pPlatform->MemoryPools()->Free(ptr)
+
 	};
 }
 

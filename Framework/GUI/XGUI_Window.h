@@ -13,7 +13,7 @@ namespace ME_Framework
 		/* Basic window class */
 		class XGUI_Window: public XGUI_Widget
 		{
-			eWindowDragKinds m_DragKind;
+			TWindowDragKinds m_DragKind;
 						
 			void CheckBorders();
 
@@ -26,6 +26,8 @@ namespace ME_Framework
 			};
 
 			int ExpandRectByContents();
+
+
 
 		protected:
 			virtual void RecalcDrag();

@@ -122,7 +122,7 @@ void XGUI_MenuItem::DrawTextLabel()
  **/
 void XGUI_MenuItem::DrawComponent()
 {
-	XGUI_DrawSheetGlyph(sprMenuItemBg,m_Rect);
+	//XGUI_DrawSheetGlyph(sprMenuItemBg,m_Rect);
 
 	if (m_strCaption.c_str()[0] != _T('-'))
 	{		
@@ -131,7 +131,7 @@ void XGUI_MenuItem::DrawComponent()
 	}
 	else
 	{
-		XGUI_DrawSheetGlyph(sprMenuItemBg,m_Rect);
+		//XGUI_DrawSheetGlyph(sprMenuItemBg,m_Rect);
 		xgRect_t r = m_Rect;
 		r.Implode(xAxis,20);
 		r.ext.x += 18;
@@ -258,7 +258,7 @@ XGUI_Menu::~XGUI_Menu()
 
 }
 
-XGUI_MenuItem * XGUI_Menu::AddItem( String strName,eMenuItemKinds kind,int group, bool bChecked)
+XGUI_MenuItem * XGUI_Menu::AddItem( String strName,TMenuItemKinds kind,int group, bool bChecked)
 {
 	xgRect_t r;
 	r.pos.x = 0;
@@ -292,7 +292,7 @@ void XGUI_Menu::Popup( ME_Math::Vector2D pos )
 	SetZOrder(zFocused+1);
 }
 
-void XGUI_MenuItem::SetKind( eMenuItemKinds kind )
+void XGUI_MenuItem::SetKind( TMenuItemKinds kind )
 {
 	m_MenuKind = kind;
 }
@@ -348,4 +348,9 @@ bool XGUI_MenuItem::IsBelongsHeirarchy( XGUI_Widget * w )
 	}
 	else 
 		return false;
+}
+
+void XGUI_Menu::DrawComponent()
+{
+	XGUI_DrawSheetGlyph(sprMenuItemBg,m_Rect);
 }

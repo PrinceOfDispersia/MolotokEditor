@@ -17,7 +17,7 @@ namespace ME_Framework
 			void DrawHoverOverlay();
 			void DrawTextLabel();
 
-			eMenuItemKinds m_MenuKind;
+			TMenuItemKinds m_MenuKind;
 			int m_SelectionGroup;
 			
 			friend XGUI_Menu;
@@ -28,7 +28,7 @@ namespace ME_Framework
 			int GetSelectionGroup() const { return m_SelectionGroup; }
 			void SetSelectionGroup(int val) { m_SelectionGroup = val; }
 
-			void SetKind(eMenuItemKinds kind);
+			void SetKind(TMenuItemKinds kind);
 
 			XGUI_MenuItem(xgRect_t & rect);
 			~XGUI_MenuItem();
@@ -64,10 +64,14 @@ namespace ME_Framework
 			XGUI_Menu();
 			~XGUI_Menu();
 
-			XGUI_MenuItem* AddItem( String strName,eMenuItemKinds kind,int group,bool bChecked = false );
+			XGUI_MenuItem* AddItem( String strName,TMenuItemKinds kind,int group,bool bChecked = false );
+
+
 
 			void Popup(ME_Math::Vector2D pos);
 			virtual void OnVisibilityChange(bool bNewState);
+
+			virtual void DrawComponent();
 
 		};
 

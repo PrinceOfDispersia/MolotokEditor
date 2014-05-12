@@ -283,6 +283,85 @@ void CWinOpenGLContext::MainLoop()
 
 		// <============= 2D Viewport setup
 
+
+		if (0)
+		{
+			static ME_Math::Vector2D target(0,0);
+
+			float d = (g_pPlatform->GetCursorPos() - target).Length();
+
+			char t[128];
+				sprintf(t,"%f %f %f",d,target.x,target.y);
+				SetWindowTextA(m_hWnd,t);
+
+			if (d < 32.f)
+			{
+				srand(g_pPlatform->TimeElapsed() * 1000);
+				// event generator
+
+				rand();
+				int x = (int)(((float)rand() / 32767) * g_pPlatform->GetClientAreaExtents().x);			
+				int y = (int)(((float)rand() / 32767) * g_pPlatform->GetClientAreaExtents().y);
+
+				POINT pt;
+				pt.x = x; pt.y = y;
+				target.Init(pt.x,pt.y);
+				CWinOpenGLContext * pContext = (CWinOpenGLContext*)g_pPlatform->GetOpenGLContext();
+				ClientToScreen(pContext->m_hWnd,&pt);				
+			}
+			else
+			{
+				ME_Math::Vector2D dir = target - g_pPlatform->GetCursorPos();
+				dir.Normalize();
+
+				dir*=100;
+				dir += g_pPlatform->GetCursorPos();
+
+				POINT pt;
+				pt.x = dir.x;
+				pt.y = dir.y;
+				ClientToScreen(m_hWnd,&pt);
+
+				SetCursorPos(pt.x,pt.y);
+			}
+
+
+
+					
+
+			static float tmr = 0;
+			if (g_pPlatform->TimeElapsed() > tmr)
+			{
+				int ev = (int)(((float)rand() / 32767) * 1);	
+				switch(ev)
+				{
+				case 0:
+					{
+						appEvent_t e;
+						e.eventid = eventTypes::EV_MOUSE_KEY_DOWN;
+						int k = (int)(((float)rand() / 32767) * 2);			
+						e.uParam1 = k;
+						ApplicationPumpEvent(e);
+					}				
+					break;
+				case 1:
+					{
+						appEvent_t e;
+						e.eventid = eventTypes::EV_MOUSE_KEY_UP;
+						int k = (int)(((float)rand() / 32767) * 2);			
+						e.uParam1 = k;
+						ApplicationPumpEvent(e);
+					}				
+					break;
+
+				}
+
+				//tmr = g_pPlatform->TimeElapsed() + 5;
+			}
+
+
+		}
+
 		ApplicationRun(flFrameTime);						
 
 		SwapBuffers(m_hDC);

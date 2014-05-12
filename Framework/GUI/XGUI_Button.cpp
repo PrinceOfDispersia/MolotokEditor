@@ -36,6 +36,9 @@ XGUI_Button::XGUI_Button(xgRect_t & r): XGUI_Widget(r)
 	m_bPressed = false;
 
 	m_pContextMenu = g_pTestMenu;
+
+
+	
 }
 
 /*
@@ -116,3 +119,4 @@ void XGUI_Button::HandleEvent(ME_Framework::appEvent_t & ev)
 		break;
 	}
 }
+

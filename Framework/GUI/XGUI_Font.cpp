@@ -25,8 +25,7 @@ void XGUI_Font::Calc_TextRect(String & str,xgRect_t * rect)
 	w = 0;
 	h = 0;
 	o = 0;
-
-
+	
 	const TCHAR * ptr = str.c_str();
 	size_t sz = str.Length();
 
@@ -60,7 +59,7 @@ void XGUI_Font::Calc_TextRect(String & str,xgRect_t * rect)
 
 
 
-		dGlyphInfo_t * inf = &m_pGlyphs[idx];
+		auto * inf = &m_pGlyphs[idx];
 		
 		w+=(inf->orig_w);
 
@@ -72,9 +71,6 @@ void XGUI_Font::Calc_TextRect(String & str,xgRect_t * rect)
 
 
 	}
-	/*
-	rect->pos = ME_Math::Vector2D(0,o);
-	rect->ext = ME_Math::Vector2D(w,h-o);*/
 
 	rect->pos = ME_Math::Vector2D(0,o);
 	rect->ext = ME_Math::Vector2D(w,h);
@@ -126,41 +122,8 @@ void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 			byte b = sym & 0x00FF;
 			idx = m_pCodePages[(idx * 256) + b];
 			
-			
-
-			dGlyphInfo_t * inf = &m_pGlyphs[idx];
-				
-		
-			float c[4];
-
-			float x,y;
-
-			x =  (float)inf->xpos;
-			y =  (float)inf->ypos;
-
-			c[0] = x / m_pFontImage->width;
-			c[1] = 1 - (y / m_pFontImage->height);
-
-			c[2] = (x + inf->width) / m_pFontImage->width;
-			c[3] = 1 - ( (y + inf->height) / m_pFontImage->height);
-
-			vec_t xofs = inf->xoffs;
-			vec_t yofs = inf->yoffs; 
-			
-			vec_t x1 = w + xofs + pos.x;
-			vec_t x2 = x1 + (inf->width);
-
-			vec_t y1 = yofs + pos.y;
-			vec_t y2 = y1 + (inf->height);
-			
- 			g_pTesselator->Coord2(c[0],c[1]);
- 			g_pTesselator->Vertex2(x1,y1);
- 			g_pTesselator->Coord2(c[2],c[1]);
- 			g_pTesselator->Vertex2(x2,y1);
- 			g_pTesselator->Coord2(c[2],c[3]);
- 			g_pTesselator->Vertex2(x2,y2);
- 			g_pTesselator->Coord2(c[0],c[3]);
- 			g_pTesselator->Vertex2(x1,y2);
+			auto * inf = &m_pGlyphs[idx];
+			CommitGlyph(inf,pos.x,pos.y,w);
 			
 			w+=(inf->orig_w);
 						
@@ -178,7 +141,7 @@ void XGUI_Font::Draw(ME_Math::Vector2D pos,String str)
 /*
  *	Constructor
  **/
-XGUI_Font::XGUI_Font(dFontHdr_t * pHeader,size_t sz)
+XGUI_Font::XGUI_Font(dFontHdr_t * pHeader,size_t sz,vec_t ScaleFactor)
 {
 		m_pHeader = (dFontHdr_t*)g_pPlatform->MemoryPools()->Alloc(sz);
 
@@ -194,8 +157,10 @@ XGUI_Font::XGUI_Font(dFontHdr_t * pHeader,size_t sz)
 		m_pKerningPairs = (dKerningPairs_t *)&pBits[pHeader->lumps[LUMP_FNT_KERNING_PAIRS].start];
 		m_nKerningPairs = pHeader->lumps[LUMP_FNT_KERNING_PAIRS].length / sizeof(dKerningPairs_t);
 
-		m_pGlyphs = (dGlyphInfo_t *)&pBits[pHeader->lumps[LUMP_FNT_GLYPHS].start];
+		dGlyphInfo_t * d_pGlyphs = (dGlyphInfo_t *)&pBits[pHeader->lumps[LUMP_FNT_GLYPHS].start];
 		m_nGlyphs = pHeader->lumps[LUMP_FNT_GLYPHS].length / sizeof(dGlyphInfo_t);
+
+		m_pGlyphs = (mGlyphInfo_t*)Mem_Alloc(sizeof(mGlyphInfo_t) * m_nGlyphs);
 
 		byte * pFontImage = &pBits[pHeader->lumps[LUMP_FNT_IMAGE].start];
 		size_t imgSize = pHeader->lumps[LUMP_FNT_IMAGE].length;
@@ -208,6 +173,10 @@ XGUI_Font::XGUI_Font(dFontHdr_t * pHeader,size_t sz)
 		m_pCodePages = (short*)&pBits[pHeader->lumps[LUMP_FNT_PAGES].start];
 
 		m_bShouldApplyColoring = false;
+		 
+		m_flScaleFactor = ScaleFactor;
+
+
 }
 
 /*
@@ -217,6 +186,7 @@ XGUI_Font::~XGUI_Font()
 {
 	g_pPlatform->MemoryPools()->Free(m_pHeader);
 	
+	Mem_Free(m_pGlyphs);
 	m_pFontImage.reset();
 }
 
@@ -224,13 +194,53 @@ void XGUI_Font::SetAtlas(pgl_texture_t pAtlas,ME_Math::Vector2D offset)
 {
 	m_pFontImage = pAtlas;
 
+	dGlyphInfo_t * d_pGlyphs = (dGlyphInfo_t *)&((byte*)m_pHeader)[m_pHeader->lumps[LUMP_FNT_GLYPHS].start];
+
+	for(size_t i = 0 ; i < m_nGlyphs ; i++)
+	{
+		m_pGlyphs[i].xpos = d_pGlyphs[i].xpos;
+		m_pGlyphs[i].ypos = d_pGlyphs[i].ypos;
+		m_pGlyphs[i].width = d_pGlyphs[i].width;
+		m_pGlyphs[i].height = d_pGlyphs[i].height;
+		m_pGlyphs[i].xoffs = d_pGlyphs[i].xoffs;
+		m_pGlyphs[i].yoffs = d_pGlyphs[i].yoffs;
+		m_pGlyphs[i].orig_w = d_pGlyphs[i].orig_w;
+		m_pGlyphs[i].orig_h = d_pGlyphs[i].orig_h;
+
+
+	}
+
 	for(size_t i = 0 ; i < m_nGlyphs ; i++)
 	{
 		m_pGlyphs[i].xpos += (short)(-m_vAtlasOffset.x + offset.x);
 		m_pGlyphs[i].ypos += (short)(-m_vAtlasOffset.y + offset.y);
+
+		float 	x =  (float)(m_pGlyphs[i].xpos);
+		float	y =  (float)(m_pGlyphs[i].ypos);
+
+		float * c = m_pGlyphs[i].c;
+
+		c[0] = x / m_pFontImage->width;
+		c[1] = 1 - (y / m_pFontImage->height);
+
+		c[2] = (x + m_pGlyphs[i].width) / m_pFontImage->width;
+		c[3] = 1 - ( (y + m_pGlyphs[i].height) / m_pFontImage->height);
+
+		m_pGlyphs[i].width *= m_flScaleFactor;
+		m_pGlyphs[i].height *= m_flScaleFactor;
+		m_pGlyphs[i].orig_w *= m_flScaleFactor;
+		m_pGlyphs[i].orig_h *= m_flScaleFactor;
+		m_pGlyphs[i].xoffs *= m_flScaleFactor;
+		m_pGlyphs[i].yoffs *= m_flScaleFactor;
+
 	}
 
 	m_vAtlasOffset = offset;
+
+
+
+
+
 }
 
 /*
@@ -288,43 +298,9 @@ void XGUI_Font::DrawTextWithCarret(vec_t px,vec_t py,TCHAR * ptr,size_t carretOf
 		byte b = sym & 0x00FF;
 		idx = m_pCodePages[(idx * 256) + b];
 
-
-
-		dGlyphInfo_t * inf = &m_pGlyphs[idx];
-
-
-		float c[4];
-
-		float x,y;
-
-		x =  (float)inf->xpos;
-		y =  (float)inf->ypos;
-
-		c[0] = x / m_pFontImage->width;
-		c[1] = 1 - (y / m_pFontImage->height);
-
-		c[2] = (x + inf->width) / m_pFontImage->width;
-		c[3] = 1 - ( (y + inf->height) / m_pFontImage->height);
-
-		vec_t xofs = inf->xoffs;
-		vec_t yofs = inf->yoffs; 
-
-		vec_t x1 = w + xofs + px;
-		vec_t x2 = x1 + (inf->width);
-
-		vec_t y1 = yofs + py;
-		vec_t y2 = y1 + (inf->height);
-
-		g_pTesselator->Coord2(c[0],c[1]);
-		g_pTesselator->Vertex2(x1,y1);
-		g_pTesselator->Coord2(c[2],c[1]);
-		g_pTesselator->Vertex2(x2,y1);
-		g_pTesselator->Coord2(c[2],c[3]);
-		g_pTesselator->Vertex2(x2,y2);
-		g_pTesselator->Coord2(c[0],c[3]);
-		g_pTesselator->Vertex2(x1,y2);
-
-
+		auto * inf = &m_pGlyphs[idx];
+		CommitGlyph(&m_pGlyphs[idx],px,py,w);
+		
 		if (sym == _T('\t'))
 		{
 			w+=30;
@@ -421,51 +397,9 @@ void XGUI_Font::DrawMultilineTextInRect(xgRect_t & r,TCHAR * strBuffer)
 		byte b = sym & 0x00FF;
 		idx = m_pCodePages[(idx * 256) + b];
 		
-		dGlyphInfo_t * inf = &m_pGlyphs[idx];
-		
-		float c[4];
+		auto * inf = &m_pGlyphs[idx];
 
-		float x,y;
-
-		x =  (float)inf->xpos;
-		y =  (float)inf->ypos;
-
-		c[0] = x / m_pFontImage->width;
-		c[1] = 1 - (y / m_pFontImage->height);
-
-		c[2] = (x + inf->width) / m_pFontImage->width;
-		c[3] = 1 - ( (y + inf->height) / m_pFontImage->height);
-
-		vec_t xofs = charsInLine > 0 ? inf->xoffs : 0;
-		vec_t yofs = inf->yoffs; 
-
-		vec_t x1 = w + xofs + px;
-		vec_t x2 = x1 + (inf->width);
-
-		vec_t y1 = yofs + py + h;
-		vec_t y2 = y1 + (inf->height);
-
-		if (inf->height > dh)
-		{
-			dh = inf->height;
-		}
-
-		if (x2 > px2)
-		{
-			w = 0;
-			h += dh + 1;
-			charsInLine = 0;			
-			continue;;
-		}
-
-		g_pTesselator->Coord2(c[0],c[1]);
-		g_pTesselator->Vertex2(x1,y1);
-		g_pTesselator->Coord2(c[2],c[1]);
-		g_pTesselator->Vertex2(x2,y1);
-		g_pTesselator->Coord2(c[2],c[3]);
-		g_pTesselator->Vertex2(x2,y2);
-		g_pTesselator->Coord2(c[0],c[3]);
-		g_pTesselator->Vertex2(x1,y2);
+		CommitGlyph(inf,px,py,w);
 		
 		if (sym == _T('\t'))
 		{
@@ -537,41 +471,9 @@ void XGUI_Font::DrawTextFittedInRect( xgRect_t & r,TCHAR * ptr )
 		idx = m_pCodePages[(idx * 256) + b];
 
 
+		auto * inf = &m_pGlyphs[idx];
 
-		dGlyphInfo_t * inf = &m_pGlyphs[idx];
-
-
-		float c[4];
-
-		float x,y;
-
-		x =  (float)inf->xpos;
-		y =  (float)inf->ypos;
-
-		c[0] = x / m_pFontImage->width;
-		c[1] = 1 - (y / m_pFontImage->height);
-
-		c[2] = (x + inf->width) / m_pFontImage->width;
-		c[3] = 1 - ( (y + inf->height) / m_pFontImage->height);
-
-		vec_t xofs = inf->xoffs;
-		vec_t yofs = inf->yoffs; 
-
-		vec_t x1 = w + xofs + px;
-		vec_t x2 = x1 + (inf->width);
-
-		vec_t y1 = yofs + py;
-		vec_t y2 = y1 + (inf->height);
-
-		g_pTesselator->Coord2(c[0],c[1]);
-		g_pTesselator->Vertex2(x1,y1);
-		g_pTesselator->Coord2(c[2],c[1]);
-		g_pTesselator->Vertex2(x2,y1);
-		g_pTesselator->Coord2(c[2],c[3]);
-		g_pTesselator->Vertex2(x2,y2);
-		g_pTesselator->Coord2(c[0],c[3]);
-		g_pTesselator->Vertex2(x1,y2);
-
+		CommitGlyph(&m_pGlyphs[idx],px,py,w);
 
 		if (sym == _T('\t'))
 		{
@@ -630,7 +532,7 @@ size_t XGUI_Font::Calc_FittedSymbols( String & str,vec_t _w)
 		byte b = sym & 0x00FF;
 		idx = m_pCodePages[(idx * 256) + b];
 				
-		dGlyphInfo_t * inf = &m_pGlyphs[idx];
+		auto * inf = &m_pGlyphs[idx];
 
 		w+=(inf->orig_w);
 		
@@ -698,4 +600,33 @@ void XGUI_Font::DrawAlignedText(String & str, xgRect_t fitRect,THorizontalAligme
 	Draw(xt,yt,str);
 	
 	
+}
+
+void XGUI_Font::CommitGlyph( mGlyphInfo_s * inf,vec_t px,vec_t py,vec_t w )
+{
+	float* c = inf->c;
+	float x,y;
+
+	x =  (float)(inf->xpos);
+	y =  (float)(inf->ypos);
+
+	
+
+	vec_t xofs = inf->xoffs;
+	vec_t yofs = inf->yoffs; 
+
+	vec_t x1 = w + xofs + px;
+	vec_t x2 = x1 + (inf->width);
+
+	vec_t y1 = yofs + py;
+	vec_t y2 = y1 + (inf->height);
+
+	g_pTesselator->Coord2(c[0],c[1]);
+	g_pTesselator->Vertex2(x1,y1);
+	g_pTesselator->Coord2(c[2],c[1]);
+	g_pTesselator->Vertex2(x2,y1);
+	g_pTesselator->Coord2(c[2],c[3]);
+	g_pTesselator->Vertex2(x2,y2);
+	g_pTesselator->Coord2(c[0],c[3]);
+	g_pTesselator->Vertex2(x1,y2);
 }

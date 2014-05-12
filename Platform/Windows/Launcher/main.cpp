@@ -194,6 +194,8 @@ int __stdcall WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 	// Copy instance to global variable - we'll need it in OpenGL context creation
 	g_hInstance = hInstance;
 
+	
+
 	// Start timer
 	Sys_TimerStart();
 

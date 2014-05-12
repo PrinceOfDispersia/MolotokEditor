@@ -15,7 +15,8 @@ namespace ME_Framework
 
 
 			void DrawHoverOverlay();
-			void DrawTextLabel();
+			void DrawTextLabel();				
+			
 		public:
 			XGUI_Button(xgRect_t & rect);
 			~XGUI_Button();
@@ -23,7 +24,6 @@ namespace ME_Framework
 			virtual void HandleEvent(ME_Framework::appEvent_t & ev);
 			virtual void DrawComponent();
 		};
-
 	}
 
 }

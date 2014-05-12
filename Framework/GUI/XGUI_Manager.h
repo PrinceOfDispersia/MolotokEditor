@@ -39,6 +39,8 @@ namespace ME_Framework
 			color32_t m_cDefault;
 
 			ME_Math::Vector2D m_vTranslation;
+
+			ME_Math::Vector2D m_vScaling;
 			
 		public:
 			XGUI_Tesselator(int elementsCount);
@@ -53,6 +55,9 @@ namespace ME_Framework
 			void Coord2a(ME_Math::Vector2D * pUV,int count);
 			void Color32a(color32_t  * c,int count);
 			void Vertex2a(ME_Math::Vector2D * pVecs,int count);
+
+			void SetScaling(vec_t x,vec_t y);
+			void ResetScaling();
 
 			void DefaultColor(color32_t c);
 			inline void ResetDefaultColor() 

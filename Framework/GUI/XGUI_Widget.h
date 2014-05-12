@@ -29,69 +29,55 @@ namespace ME_XGUI
 
 		bool m_bFocused;
 		bool m_bVisible;
-	protected:
-		xgRect_t m_Rect;
-		color32_t m_Color;
-		mSheetGlyph_t * m_pImage[16];
-
+	protected:		
 		static const int zFocused = 9999;
-
+				
 		unsigned int m_ZOrder;
 		unsigned int m_PreFocusedZOrder;
-			
 		float m_flTimers[4];
-		TWidgetVector m_vChilds;
-		std::vector<XGUI_Widget*> m_vAlignOrderedChilds;
-		
-		XGUI_Widget * m_pParent;
-
 		int m_nWidgetNumber;
 		int m_nWidgetCounter;
-
 		int m_AlignPriority;
-		TAlign m_Align;
-		TAnchor m_Anchors; 
+		bool m_bEnabled;
+		float m_flHoveroutTimer;		
+		bool m_bDragged;
 
+		ME_Math::Vector2D m_vDragOrigin;		
+		ME_Math::Vector2D m_vParentStart;		
+		ME_Math::Vector2D m_vMargins[2];
+
+		xgRect_t m_Rect;
+		color32_t m_Color;
+		
 		vec_t m_AnchorsCoefs[4];
 
-		
-		bool m_bEnabled;
+		TAlign m_Align;
+		TAnchor m_Anchors; 
+		eMouseCursors m_CurrentCursor;
+
+		XGUI_Widget * m_pParent;
+		mSheetGlyph_t * m_pImage[16];
+		XGUI_Font * m_pGuiFontNormal;
+		XGUI_Font * m_pGuiFontSmall;		
+		XGUI_Menu * m_pContextMenu;
 
 		String m_strCaption;
 		String m_strHint;
+		
+		TWidgetVector m_vChilds;
+		std::vector<XGUI_Widget*> m_vAlignOrderedChilds;
+		
+		
 
+		xgRect_t GetParentRect();
+		virtual void RecalcDrag();
 		void SortChilds();
 		void SortChildsByAlignOrder();
-
 		void CalcClientRect(xgRect_t & r);
-		
-		float m_flHoveroutTimer;
-		
-		XGUI_Font * m_pGuiFontNormal;
-		XGUI_Font * m_pGuiFontSmall;
-		
-		
-		ME_Math::Vector2D m_vDragOrigin;
-		bool m_bDragged;
-
-		ME_Math::Vector2D m_vParentStart;
-
-		void RecalcRectWithAligment();
-		xgRect_t GetParentRect();
-
-		virtual void RecalcDrag();
-		void RecursiveNotifyEveryone(ME_Framework::appEvent_t & ev);
-
-		// Left Top Right Bottom
-		ME_Math::Vector2D m_vMargins[2];
-			
-		eMouseCursors m_CurrentCursor;
-		
+		void RecalcRectWithAligment();				
+		void RecursiveNotifyEveryone(ME_Framework::appEvent_t & ev);	
 		void OnAddToParent(XGUI_Widget * pParent);
-
-		void SetMarginsFromSkinset(mSheetGlyph_t * spr[9]);
-
-		XGUI_Menu * m_pContextMenu;
+		void SetMarginsFromSkinset(mSheetGlyph_t * spr[9]);	
 	public:
 		void ScreenToClient(ME_Math::Vector2D & v);
 		void ClientToScreen(ME_Math::Vector2D & v);
@@ -108,7 +94,6 @@ namespace ME_XGUI
 		void SetEnableState(bool bEnabled);
 		void SetCaption(String & str);
 		void SetZOrder(int order);
-
 		void SetDragged(bool val);
 				
 		// Getters
@@ -120,9 +105,7 @@ namespace ME_XGUI
 		String &		GetCaption();
 		int				GetAlignPriority() const;
 		int				GetZOrder() const;
-
 		bool			IsDragged() const;
-
 
 		virtual void HandleEvent(ME_Framework::appEvent_t & pEvent);
 		virtual void DrawComponent();
@@ -153,8 +136,9 @@ namespace ME_XGUI
 
 		inline const bool IsDragged() { return m_bDragged; }
 		
-
 		virtual void OnVisibilityChange(bool bNewState) {};
+
+		//virtual void InitializeMetada();
 	};
 }
 

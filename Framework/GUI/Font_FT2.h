@@ -20,6 +20,20 @@ typedef struct dGlyphInfo_s
 	short orig_h;
 }dGlyphInfo_t;
 
+typedef struct mGlyphInfo_s 
+{
+	float xpos;
+	float ypos;
+	float width;
+	float height;
+	float xoffs;
+	float yoffs;
+	float orig_w;
+	float orig_h;
+	
+	float c[4];
+}mGlyphInfo_t;
+
 typedef struct dKerningPairs_s
 {
 	unsigned short s1;

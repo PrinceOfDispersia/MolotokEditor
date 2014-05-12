@@ -18,5 +18,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <typeinfo>
 
 #include "Win_Keys.h"
+

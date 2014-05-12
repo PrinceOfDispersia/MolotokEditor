@@ -52,7 +52,7 @@ XGUI_Widget::XGUI_Widget(xgRect_t & rect)
 	m_pGuiFontSmall = g_pGUIManager->Get_GuiFont(TGuiFontTypes::gfSmall);
 
 	m_bFocused = false;
-
+		
 }
 
 XGUI_Widget::XGUI_Widget()
@@ -95,6 +95,9 @@ XGUI_Widget::XGUI_Widget()
 
 	m_bFocused = false;
 	m_pContextMenu = g_pTestMenu;
+
+
+	
 }
 
 /*
@@ -947,3 +950,4 @@ bool XGUI_Widget::IsBelongsHeirarchy( XGUI_Widget * w )
 
 	return m_pParent->IsBelongsHeirarchy(w);
 }
+

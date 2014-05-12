@@ -147,3 +147,30 @@ size_t Sys_DisassembleStringToTokenArray(TCHAR * strPtr,TCHAR divisor,TCHAR ** d
 	}
 
 }
+
+/************************************************************************/
+/*			Converts one byte characters to corresponding project settings
+ *			character width, allocates new buffer
+ /************************************************************************/
+TCHAR* Sys_CharToTChar(const char * src)
+{
+	if (sizeof(TCHAR) == sizeof(char))
+		return Sys_StrDup((TCHAR*)src);
+
+	size_t len = strlen(src);
+
+	TCHAR * ptr = (TCHAR*)Mem_Alloc(len * 2 + sizeof(TCHAR));
+
+	unsigned char * p = (unsigned char*)src;
+	TCHAR * dest = ptr;
+	while(*p)
+	{
+		if (*p > 127)
+			*dest++=' ',p++;
+		else *dest++ = *p++;
+	}
+
+	*dest = 0;
+
+	return ptr;
+}

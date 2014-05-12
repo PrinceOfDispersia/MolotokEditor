@@ -174,11 +174,14 @@
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Manager.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Menu.cpp" />
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Sheet.cpp" />
-    <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Widget.cpp" />
+    <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Widget.cpp">
+      <PreprocessToFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</PreprocessToFile>
+    </ClCompile>
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Window.cpp" />
     <ClCompile Include="..\..\..\..\Framework\ImageLib\ImageLib.cpp" />
     <ClCompile Include="..\..\..\..\Framework\ImageLib\Image_Png.cpp" />
     <ClCompile Include="..\..\..\..\Framework\OpenGLBackend.cpp" />
+    <ClCompile Include="..\..\..\..\Framework\Serializer.cpp" />
     <ClCompile Include="..\..\..\..\Libs\libpng\png.c" />
     <ClCompile Include="..\..\..\..\Libs\libpng\pngerror.c" />
     <ClCompile Include="..\..\..\..\Libs\libpng\pngget.c" />
@@ -245,6 +248,8 @@
     <ClInclude Include="..\..\..\..\Framework\Framework.h" />
     <ClInclude Include="..\..\..\..\Framework\MathLib\Vector.h" />
     <ClInclude Include="..\..\..\..\Framework\OpenGLBackend.h" />
+    <ClInclude Include="..\..\..\..\Framework\RTTI.h" />
+    <ClInclude Include="..\..\..\..\Framework\Serializer.h" />
     <ClInclude Include="..\..\..\..\Framework\String.h" />
     <ClInclude Include="..\..\..\..\Libs\libpng\png.h" />
     <ClInclude Include="..\..\..\..\Libs\libpng\pngconf.h" />

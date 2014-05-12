@@ -21,6 +21,8 @@ TCHAR * Sys_StrDup(TCHAR * source);
 
 size_t Sys_DisassembleStringToTokenArray(TCHAR * strPtr,TCHAR divisor,TCHAR ** destArray,size_t destSize);
 
+TCHAR* Sys_CharToTChar(const char * src);
+
 /*
  *	Log file class, implementation up to platform code
  **/
@@ -42,5 +44,7 @@ namespace ME_Framework
 		void Log(TCHAR * format,...);
 	};
 }
+
+
 
 #endif

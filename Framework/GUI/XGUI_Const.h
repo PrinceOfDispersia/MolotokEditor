@@ -10,20 +10,22 @@ namespace ME_Framework
 	{
 		enum class TAlign
 		{
-			alTop = 0,
+			alTop,
 			alLeft,
 			alRight,
 			alBottom,
 			alClientArea,
 			alNone
 		};
+		
 
 		enum class THorizontalAligment
 		{
-			alhLeft,			
+			alhLeft,
 			alhCenter,
 			alhRight
 		};
+		
 
 		enum class TVerticalAligment
 		{
@@ -74,7 +76,7 @@ namespace ME_Framework
 			gfNormal
 		};
 
-		enum eWindowButtons
+		enum TWindowButtons
 		{
 			btnClose,
 			btnMaximize,
@@ -82,7 +84,7 @@ namespace ME_Framework
 			btnRestore
 		};
 
-		enum class eWindowDragKinds
+		enum class TWindowDragKinds
 		{
 			wdkNone =	(1<<0),
 			wdkPos =	(1<<1),
@@ -93,12 +95,12 @@ namespace ME_Framework
 		};
 
 		ENUM_FLAGS(TAnchor);
-		ENUM_FLAGS(eWindowDragKinds);
+		ENUM_FLAGS(TWindowDragKinds);
 
 		const int xAxis = 0;
 		const int yAxis = 1;
 
-		enum eMenuItemKinds
+		enum TMenuItemKinds
 		{
 			mikGeneric = 0,
 			mikToggle,

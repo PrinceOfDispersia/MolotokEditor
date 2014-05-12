@@ -60,7 +60,7 @@ void XGUI_GenericButton::DrawComponent()
 
 				color32_t c;
 				c.r = c.g = c.b = 255;
-				c.a = (1-fadeOut) * 255;
+				c.a = (byte)(1-fadeOut) * 255;
 
 				g_pTesselator->DefaultColor(c);
 				

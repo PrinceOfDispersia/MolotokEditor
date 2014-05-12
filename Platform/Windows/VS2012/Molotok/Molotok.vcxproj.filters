@@ -234,6 +234,9 @@
     <ClCompile Include="..\..\..\..\Framework\GUI\XGUI_Menu.cpp">
       <Filter>Файлы исходного кода\Framework\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\Framework\Serializer.cpp">
+      <Filter>Файлы исходного кода\Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Common\ApplicationCommon.h">
@@ -418,6 +421,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\Framework\GUI\XGUI_Menu.h">
       <Filter>Заголовочные файлы\Framework\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\Serializer.h">
+      <Filter>Заголовочные файлы\Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\Framework\RTTI.h">
+      <Filter>Заголовочные файлы\Framework</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
