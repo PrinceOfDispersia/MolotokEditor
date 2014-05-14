@@ -47,9 +47,9 @@ void XGUI_Window::HandleEvent( ME_Framework::appEvent_t & pEvent )
 //************************************
 void XGUI_Window::DrawComponent()
 {
-	XGUI_DrawScalableSheetGlyph(ActiveSkin(),m_Rect);
+	XGUI_DrawScalableSheetGlyph(ActiveSkin(),m_WorkRect);
 	
-	size_t cSymbols = m_pGuiFontNormal->Calc_FittedSymbols(m_strCaption,m_Rect.ext.x - 54);
+	size_t cSymbols = m_pGuiFontNormal->Calc_FittedSymbols(m_strCaption,m_WorkRect.ext.x - 54);
 
 	String strFitted = m_strCaption;
 
@@ -69,8 +69,8 @@ void XGUI_Window::DrawComponent()
 	}
 
 	xgRect_t fitRect;
-	fitRect.pos = m_Rect.pos;
-	fitRect.ext = m_Rect.ext;
+	fitRect.pos = m_WorkRect.pos;
+	fitRect.ext = m_WorkRect.ext;
 
 	fitRect.Implode(xAxis,ActiveSkin()[0]->e[0]);
 	
@@ -126,7 +126,7 @@ XGUI_Window::XGUI_Window( xgRect_t & r ): XGUI_Widget(r)
 	
 	vec_t h = ActiveSkin()[1]->e[1];
 
-	r.pos = ME_Math::Vector2D(m_Rect.ext.x - 50,h / 2 - 9);
+	r.pos = ME_Math::Vector2D(m_WorkRect.ext.x - 50,h / 2 - 9);
 	r.ext = ME_Math::Vector2D(18,18);
 
 	XGUI_GenericButton * pMaximize = new XGUI_GenericButton(r);
@@ -134,7 +134,7 @@ XGUI_Window::XGUI_Window( xgRect_t & r ): XGUI_Widget(r)
 	pMaximize->SetAnchors(TAnchor::akTop | TAnchor::akRight);
 	AddChildWidget(pMaximize);
 
-	r.pos = ME_Math::Vector2D(m_Rect.ext.x - 30,h / 2 - 9);
+	r.pos = ME_Math::Vector2D(m_WorkRect.ext.x - 30,h / 2 - 9);
 	r.ext = ME_Math::Vector2D(18,18);
 
 	XGUI_GenericButton * pClose = new XGUI_GenericButton(r);
@@ -143,19 +143,15 @@ XGUI_Window::XGUI_Window( xgRect_t & r ): XGUI_Widget(r)
 	AddChildWidget(pClose);
 
 
-	r.pos = m_vMargins[0];
-	r.ext = ME_Math::Vector2D(150,27);
+	r.pos.Init();r.ext.Init();
+	XGUI_MenuBar * pBar = new XGUI_MenuBar(r);
 
-	XGUI_Button * pButton = new XGUI_Button(r);
-	pButton->SetCaption(String(_T("akLeft | akTop")));
-	pButton->SetAnchors(TAnchor::akTop | TAnchor::akLeft);
-	AddChildWidget(pButton);
+	pBar->AddItem(String(_T("Ololo")),0);
+	pBar->AddItem(String(_T("Ololo")),0);
+	pBar->AddItem(String(_T("Ololo")),0);
 
-	r.pos = ME_Math::Vector2D(100,100);
-	pButton = new XGUI_Button(r);
-	pButton->SetCaption(String(_T("akBottom | akRight")));
-	pButton->SetAnchors(TAnchor::akBottom | TAnchor::akRight);
-	AddChildWidget(pButton);
+	AddChildWidget(pBar);
+
 
 	
 //	MessageBoxA(0,info().members()[0].name,"",MB_ICONERROR);
@@ -199,20 +195,20 @@ void XGUI_Window::CheckBorders()
 			g_pPlatform->SetCursor(m_CurrentCursor);
 			m_DragKind = TWindowDragKinds::wdkXPos | TWindowDragKinds::wdkYPos;
 		}
-		else if (c.y > thickness && c.y < (m_Rect.ext.y - thickness))
+		else if (c.y > thickness && c.y < (m_WorkRect.ext.y - thickness))
 		{
 			m_CurrentCursor = eMouseCursors::mcSizeHorizontal;
 			g_pPlatform->SetCursor(m_CurrentCursor);
 			m_DragKind = TWindowDragKinds::wdkXPos;
 		}
-		else if (c.y > (m_Rect.ext.y - thickness) && c.y < m_Rect.ext.y)
+		else if (c.y > (m_WorkRect.ext.y - thickness) && c.y < m_WorkRect.ext.y)
 		{
 			m_CurrentCursor = eMouseCursors::mcSizeSWNE;
 			g_pPlatform->SetCursor(m_CurrentCursor);
 			m_DragKind = TWindowDragKinds::wdkXPos | TWindowDragKinds::wdkYExt;
 		}
 	}
-	else if (c.x > thickness && c.x < (m_Rect.ext.x - thickness))
+	else if (c.x > thickness && c.x < (m_WorkRect.ext.x - thickness))
 	{
 		if (c.y < thickness && c.y > 0)
 		{
@@ -226,7 +222,7 @@ void XGUI_Window::CheckBorders()
 			g_pPlatform->SetCursor(m_CurrentCursor);
 			m_DragKind = TWindowDragKinds::wdkPos;
 		}
-		else if (c.y > (m_Rect.ext.y - thickness) && c.y < m_Rect.ext.y)
+		else if (c.y > (m_WorkRect.ext.y - thickness) && c.y < m_WorkRect.ext.y)
 		{
 			m_CurrentCursor = eMouseCursors::mcSizeVertical;
 			g_pPlatform->SetCursor(m_CurrentCursor);
@@ -234,7 +230,7 @@ void XGUI_Window::CheckBorders()
 			m_DragKind = TWindowDragKinds::wdkYExt;
 		}
 	}
-	else if (c.x > (m_Rect.ext.x - thickness) && c.x < m_Rect.ext.x)
+	else if (c.x > (m_WorkRect.ext.x - thickness) && c.x < m_WorkRect.ext.x)
 	{
 		if (c.y < thickness && c.y > 0)
 		{
@@ -243,14 +239,14 @@ void XGUI_Window::CheckBorders()
 
 			m_DragKind = TWindowDragKinds::wdkXExt | TWindowDragKinds::wdkYPos;
 		}
-		else if (c.y > thickness && c.y < (m_Rect.ext.y - thickness))
+		else if (c.y > thickness && c.y < (m_WorkRect.ext.y - thickness))
 		{
 			m_CurrentCursor = eMouseCursors::mcSizeHorizontal;
 			g_pPlatform->SetCursor(m_CurrentCursor);
 
 			m_DragKind = TWindowDragKinds::wdkXExt;
 		}
-		else if (c.y > (m_Rect.ext.y - thickness) && c.y < m_Rect.ext.y)
+		else if (c.y > (m_WorkRect.ext.y - thickness) && c.y < m_WorkRect.ext.y)
 		{
 			m_CurrentCursor = eMouseCursors::mcSizeNWSE;
 			g_pPlatform->SetCursor(m_CurrentCursor);
@@ -282,47 +278,47 @@ void XGUI_Window::RecalcDrag()
 	
 	ME_Math::Vector2D v2 = v - m_vDragOrigin;
 
-	xgRect_t old = m_Rect;
+	xgRect_t old = m_WorkRect;
 
 	if (m_DragKind == TWindowDragKinds::wdkPos)
 	{
 		ScreenToClient(v2);			
-		m_Rect.pos += v2;		
-		SetRect(m_Rect);
+		m_WorkRect.pos += v2;		
+		SetRect(m_WorkRect);
 	}
 	else
 	{
-		ME_Math::Vector2D vOldPos = m_Rect.pos;
-		ME_Math::Vector2D vOldExt = m_Rect.ext;
+		ME_Math::Vector2D vOldPos = m_WorkRect.pos;
+		ME_Math::Vector2D vOldExt = m_WorkRect.ext;
 
 		if (flags(m_DragKind & TWindowDragKinds::wdkXPos))
 		{
-			vec_t oldRight = m_Rect.Right();
-			vec_t oldPos = m_Rect.pos.x;
-			m_Rect.pos.x = v2.x;
-			m_Rect.ext.x = oldRight - m_Rect.pos.x;
+			vec_t oldRight = m_WorkRect.Right();
+			vec_t oldPos = m_WorkRect.pos.x;
+			m_WorkRect.pos.x = v2.x;
+			m_WorkRect.ext.x = oldRight - m_WorkRect.pos.x;
 
-			if (m_Rect.ext.x < 16) 
+			if (m_WorkRect.ext.x < 16) 
 			{
-				m_Rect.pos.x = oldPos;
-				m_Rect.ext.x = oldRight - m_Rect.pos.x;				
+				m_WorkRect.pos.x = oldPos;
+				m_WorkRect.ext.x = oldRight - m_WorkRect.pos.x;				
 			}
 
 		}
 
 		if (flags(m_DragKind & TWindowDragKinds::wdkYPos))
 		{
-			vec_t oldBottom = m_Rect.Bottom();
-			vec_t oldPos = m_Rect.pos.y;
-			m_Rect.pos.y = v2.y;
-			m_Rect.ext.y = oldBottom - m_Rect.pos.y;
+			vec_t oldBottom = m_WorkRect.Bottom();
+			vec_t oldPos = m_WorkRect.pos.y;
+			m_WorkRect.pos.y = v2.y;
+			m_WorkRect.ext.y = oldBottom - m_WorkRect.pos.y;
 
 			vec_t minHeight = ActiveSkin()[1]->e[1] + ActiveSkin()[6]->e[1];
 
-			if (m_Rect.ext.y < minHeight) 
+			if (m_WorkRect.ext.y < minHeight) 
 			{
-				m_Rect.pos.y = oldPos;
-				m_Rect.ext.y = oldBottom - m_Rect.pos.y;				
+				m_WorkRect.pos.y = oldPos;
+				m_WorkRect.ext.y = oldBottom - m_WorkRect.pos.y;				
 			}
 
 		}
@@ -331,39 +327,39 @@ void XGUI_Window::RecalcDrag()
 		{
 			ME_Math::Vector2D v = g_pPlatform->GetCursorPos();
 			ScreenToClient(v);			
-			m_Rect.ext.x = v.x;
+			m_WorkRect.ext.x = v.x;
 
-			if (m_Rect.ext.x < 60) m_Rect.ext.x = 60;
+			if (m_WorkRect.ext.x < 60) m_WorkRect.ext.x = 60;
 		}
 
 		if (flags(m_DragKind & TWindowDragKinds::wdkYExt))
 		{
 			ME_Math::Vector2D v = g_pPlatform->GetCursorPos();
 			ScreenToClient(v);			
-			m_Rect.ext.y = v.y;
+			m_WorkRect.ext.y = v.y;
 
 			vec_t minHeight = ActiveSkin()[1]->e[1] + ActiveSkin()[6]->e[1];
 
-			if (m_Rect.ext.y < minHeight)
-				m_Rect.ext.y = minHeight;
+			if (m_WorkRect.ext.y < minHeight)
+				m_WorkRect.ext.y = minHeight;
 		}
 
-		SetRect(m_Rect);
+		SetRect(m_WorkRect);
  		
 		int rf = ExpandRectByContents();
  		if (rf & rfLockXPos)
  		{
- 			m_Rect.pos.x = vOldPos.x;
- 			m_Rect.ext.x = vOldExt.x;
+ 			m_WorkRect.pos.x = vOldPos.x;
+ 			m_WorkRect.ext.x = vOldExt.x;
  			
  		}
  		if (rf & rfLockYPos)
  		{
- 			m_Rect.pos.y = vOldPos.y;
- 			m_Rect.ext.y = vOldExt.y;
+ 			m_WorkRect.pos.y = vOldPos.y;
+ 			m_WorkRect.ext.y = vOldExt.y;
  		}
 		
-		SetRect(m_Rect);
+		SetRect(m_WorkRect);
 		
 	}
 

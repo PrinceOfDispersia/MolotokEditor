@@ -9,6 +9,9 @@
 using namespace ME_Framework::ME_XGUI;
 using namespace ME_Framework::ME_OpenGLBackend;
 extern XGUI_Tesselator * g_pTesselator;
+
+extern XGUI_Menu * g_pTestMenu;
+
 /*
  *	Constructor
  **/
@@ -18,6 +21,8 @@ XGUI_GenericButton::XGUI_GenericButton(xgRect_t & r) : XGUI_Widget(r)
 		m_pSkinsSet[0] = 0;
 
 	m_bPressed = false;
+
+	m_pContextMenu = g_pTestMenu;
 }
 
 /*
@@ -29,18 +34,18 @@ void XGUI_GenericButton::DrawComponent()
 	{
 	case 1:
 		{
-			XGUI_DrawSheetGlyph(m_pSkinsSet[0],m_Rect);
+			XGUI_DrawSheetGlyph(m_pSkinsSet[0],m_WorkRect);
 		}
 		break;
 	case 2:
 		{
 			if (m_bPressed)
 			{
-				XGUI_DrawSheetGlyph(m_pSkinsSet[1],m_Rect);
+				XGUI_DrawSheetGlyph(m_pSkinsSet[1],m_WorkRect);
 			}
 			else
 			{
-				XGUI_DrawSheetGlyph(m_pSkinsSet[0],m_Rect);
+				XGUI_DrawSheetGlyph(m_pSkinsSet[0],m_WorkRect);
 			}
 		}
 		break;
@@ -48,11 +53,11 @@ void XGUI_GenericButton::DrawComponent()
 		{
 			if (m_bPressed)
 			{
-				XGUI_DrawSheetGlyph(m_pSkinsSet[1],m_Rect);
+				XGUI_DrawSheetGlyph(m_pSkinsSet[1],m_WorkRect);
 			}
 			else
 			{
-				XGUI_DrawSheetGlyph(m_pSkinsSet[0],m_Rect);
+				XGUI_DrawSheetGlyph(m_pSkinsSet[0],m_WorkRect);
 				
 				float fadeOut = g_pPlatform->TimeElapsed() - m_flHoveroutTimer;
 				fadeOut /= 0.3f;
@@ -60,12 +65,14 @@ void XGUI_GenericButton::DrawComponent()
 
 				color32_t c;
 				c.r = c.g = c.b = 255;
-				c.a = (byte)(1-fadeOut) * 255;
+				c.a = (byte)((1-fadeOut) * 255);
 
 				g_pTesselator->DefaultColor(c);
 				
 				if (fadeOut < 1)
-					XGUI_DrawSheetGlyph(m_pSkinsSet[2],m_Rect);
+				{
+					XGUI_DrawSheetGlyph(m_pSkinsSet[2],m_WorkRect);			
+				}
 
 				g_pTesselator->ResetDefaultColor();
 			}
@@ -74,6 +81,9 @@ void XGUI_GenericButton::DrawComponent()
 	default:
 		break;
 	}
+
+	m_pGuiFontNormal->SetTextColor(0,0,0,255);
+	m_pGuiFontNormal->DrawAlignedText(m_strCaption,m_WorkRect,THorizontalAligment::alhCenter,TVerticalAligment::alvCenter);
 }
 
 

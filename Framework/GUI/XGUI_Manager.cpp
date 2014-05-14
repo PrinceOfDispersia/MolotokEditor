@@ -31,6 +31,7 @@ mSheetGlyph_t * ME_XGUI::sprRestore[3];
 
 
 mSheetGlyph_t * ME_XGUI::sprWhite;
+mSheetGlyph_t * ME_XGUI::sprBlank;
 
 mSheetGlyph_t * ME_XGUI::sprMenuSelection;
 mSheetGlyph_t * ME_XGUI::sprMenuChecked;
@@ -175,6 +176,7 @@ XGUI_Manager::XGUI_Manager()
 
 
 	sprWhite = GetGUISheetGlyph("White");
+	sprBlank = GetGUISheetGlyph("Blank");
 
 	m_pGuiVars = new CConfigVarsManager(_T("configs/gui_default_scheme.xml"));
 	
@@ -259,6 +261,8 @@ void XGUI_Manager::Draw()
 
 	m_pDesktop->Render();
 	
+	GL_DisableScissorTest();
+
 	// 
 	ME_Console::Draw();
 	//
@@ -343,7 +347,7 @@ void XGUI_Manager::AddWidget(XGUI_Widget * pWidget)
 	m_pDesktop->AddChildWidget(pWidget);
 	
 	// Recalc aligments
-	m_pDesktop->SetRect(m_pDesktop->m_Rect);
+	m_pDesktop->SetRect(m_pDesktop->m_WorkRect);
 }
 
 /*

@@ -29,8 +29,8 @@ XGUI_Button::XGUI_Button(xgRect_t & r): XGUI_Widget(r)
 		r.ext.y = 24;
 	}
 
-	m_Rect.pos = r.pos;
-	m_Rect.ext = r.ext;
+	m_WorkRect.pos = r.pos;
+	m_WorkRect.ext = r.ext;
 
 	//m_strCaption = _T("");
 	m_bPressed = false;
@@ -64,7 +64,7 @@ void XGUI_Button::DrawHoverOverlay()
 	g_pTesselator->DefaultColor(c);
 
 	if (fadeOut < 1)
-		XGUI_DrawScalableSheetGlyph(sprButtonHovered,m_Rect);
+		XGUI_DrawScalableSheetGlyph(sprButtonHovered,m_WorkRect);
 }
 
 /*
@@ -75,7 +75,7 @@ void XGUI_Button::DrawTextLabel()
 	// TODO: calc this once when resize\moved\label change?
 	
 	m_pGuiFontNormal->SetTextColor(0,0,0,255);
-	m_pGuiFontNormal->DrawAlignedText(m_strCaption,m_Rect,THorizontalAligment::alhCenter,TVerticalAligment::alvCenter);
+	m_pGuiFontNormal->DrawAlignedText(m_strCaption,m_WorkRect,THorizontalAligment::alhCenter,TVerticalAligment::alvCenter);
 	
 }
 
@@ -89,12 +89,12 @@ void XGUI_Button::DrawComponent()
 	if (!m_bPressed)
 	{
 		
-		XGUI_DrawScalableSheetGlyph(sprButtonNormal,m_Rect);
+		XGUI_DrawScalableSheetGlyph(sprButtonNormal,m_WorkRect);
 		DrawHoverOverlay();
 	}
 	else
 	{
-		XGUI_DrawScalableSheetGlyph(sprButtonPressed,m_Rect);
+		XGUI_DrawScalableSheetGlyph(sprButtonPressed,m_WorkRect);
 	}
 	
 	g_pTesselator->ResetDefaultColor();

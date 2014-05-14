@@ -352,7 +352,7 @@ void XGUI_Font::DrawMultilineTextInRect(xgRect_t & r,TCHAR * strBuffer)
 
 	size_t charsInLine = 0;
 
-	vec_t dh = 0;
+	vec_t dh = 45 * m_flScaleFactor;
 	
 	g_pTesselator->Flush();
 
@@ -399,7 +399,7 @@ void XGUI_Font::DrawMultilineTextInRect(xgRect_t & r,TCHAR * strBuffer)
 		
 		auto * inf = &m_pGlyphs[idx];
 
-		CommitGlyph(inf,px,py,w);
+		CommitGlyph(inf,px,py + h,w);
 		
 		if (sym == _T('\t'))
 		{

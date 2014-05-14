@@ -18,8 +18,8 @@ XGUI_Widget::XGUI_Widget(xgRect_t & rect)
 	m_vChilds.clear();
 	m_vAlignOrderedChilds.clear();
 
-	m_Rect.pos = rect.pos;
-	m_Rect.ext = rect.ext;
+	m_WorkRect.pos = rect.pos;
+	m_WorkRect.ext = rect.ext;
 
 	m_Color = g_pGUIManager->GuiSettings()->m_cDesktopBG;
 	m_ZOrder = 1;
@@ -33,7 +33,7 @@ XGUI_Widget::XGUI_Widget(xgRect_t & rect)
 	}
 
 	m_Align = TAlign::alNone;
-	SetRect(m_Rect);
+	SetRect(m_WorkRect);
 
 	m_bVisible = true;
 	m_bEnabled = true;
@@ -52,6 +52,8 @@ XGUI_Widget::XGUI_Widget(xgRect_t & rect)
 	m_pGuiFontSmall = g_pGUIManager->Get_GuiFont(TGuiFontTypes::gfSmall);
 
 	m_bFocused = false;
+
+	m_pParent = 0;
 		
 }
 
@@ -60,8 +62,8 @@ XGUI_Widget::XGUI_Widget()
 	m_vChilds.clear();
 	m_vAlignOrderedChilds.clear();
 
-	m_Rect.pos.Init();
-	m_Rect.ext.Init();
+	m_WorkRect.pos.Init();
+	m_WorkRect.ext.Init();
 
 	m_Color = g_pGUIManager->GuiSettings()->m_cDesktopBG;
 	m_ZOrder = 1;
@@ -75,7 +77,7 @@ XGUI_Widget::XGUI_Widget()
 	}
 
 	m_Align = TAlign::alNone;
-	SetRect(m_Rect);
+	SetRect(m_WorkRect);
 
 	m_bVisible = true;
 	m_bEnabled = true;
@@ -124,19 +126,19 @@ void XGUI_Widget::RecalcRectWithAligment()
 		if (flags(m_Anchors & TAnchor::akRight))
 		{
 			vec_t newRight = pr.ext.x - m_AnchorsCoefs[ackRight];
-			vec_t newX = newRight - m_Rect.ext.x;
+			vec_t newX = newRight - m_WorkRect.ext.x;
 			
 			if (!flags(m_Anchors & TAnchor::akLeft))
 			{
-				m_Rect.pos.x = newX;
+				m_WorkRect.pos.x = newX;
 			}
 			else 
 			{
-				m_Rect.ext.x = newRight - m_Rect.pos.x;
+				m_WorkRect.ext.x = newRight - m_WorkRect.pos.x;
 			}
 
-			if (m_Rect.pos.x < m_pParent->m_vMargins[0].x) 
-				m_Rect.pos.x = m_pParent->m_vMargins[0].x;
+			if (m_WorkRect.pos.x < m_pParent->m_vMargins[0].x) 
+				m_WorkRect.pos.x = m_pParent->m_vMargins[0].x;
 
 			// Move left if overlaps with edge of parent
 
@@ -150,19 +152,19 @@ void XGUI_Widget::RecalcRectWithAligment()
 		if (flags(m_Anchors & TAnchor::akBottom))
 		{
 			vec_t newBottom = pr.ext.y - m_AnchorsCoefs[ackBottom];
-			vec_t newY = newBottom - m_Rect.ext.y;
+			vec_t newY = newBottom - m_WorkRect.ext.y;
 
 			if (!flags(m_Anchors & TAnchor::akTop))
 			{
-				m_Rect.pos.y = newY;
+				m_WorkRect.pos.y = newY;
 			}
 			else 
 			{
-				m_Rect.ext.y = newBottom - m_Rect.pos.y;
+				m_WorkRect.ext.y = newBottom - m_WorkRect.pos.y;
 			}
 
-			if (m_Rect.pos.y < m_pParent->m_vMargins[0].y) 
-					m_Rect.pos.y = m_pParent->m_vMargins[0].y;
+			if (m_WorkRect.pos.y < m_pParent->m_vMargins[0].y) 
+					m_WorkRect.pos.y = m_pParent->m_vMargins[0].y;
 
 			/*if (m_Rect.ext.y < 0)
 			{				
@@ -180,7 +182,7 @@ void XGUI_Widget::RecalcRectWithAligment()
 			// alClientArea has lowest priority
 			
 			if (!m_pParent)
-				m_Rect = pr;
+				m_WorkRect = pr;
 			else
 			{
 				vec_t x1,x2,y1,y2;
@@ -195,8 +197,8 @@ void XGUI_Widget::RecalcRectWithAligment()
 
 					vec_t wx1,wx2,wy1,wy2;
 
-					wx1 = w->m_Rect.pos.x; wx2 = w->m_Rect.pos.x + w->m_Rect.ext.x;
-					wy1 = w->m_Rect.pos.y; wy2 = w->m_Rect.pos.y + w->m_Rect.ext.y;
+					wx1 = w->m_WorkRect.pos.x; wx2 = w->m_WorkRect.pos.x + w->m_WorkRect.ext.x;
+					wy1 = w->m_WorkRect.pos.y; wy2 = w->m_WorkRect.pos.y + w->m_WorkRect.ext.y;
 
 					switch(w->m_Align)
 					{
@@ -215,10 +217,10 @@ void XGUI_Widget::RecalcRectWithAligment()
 					}
 				}
 
-				m_Rect.pos.x = x1;
-				m_Rect.pos.y = y1;
-				m_Rect.ext.x = x2 - x1;
-				m_Rect.ext.y = y2 - y1;
+				m_WorkRect.pos.x = x1;
+				m_WorkRect.pos.y = y1;
+				m_WorkRect.ext.x = x2 - x1;
+				m_WorkRect.ext.y = y2 - y1;
 
 			}
 
@@ -230,15 +232,20 @@ void XGUI_Widget::RecalcRectWithAligment()
 
 			if (!m_pParent)
 			{
-				m_Rect.pos = ME_Math::Vector2D(0,0);
-				m_Rect.ext.x = pr.ext.x;
+				m_WorkRect.pos = ME_Math::Vector2D(0,0);
+				m_WorkRect.ext.x = pr.ext.x;
 			}
 			else
 			{
 				vec_t x1,x2,y1,y2;
 
-				x1 = pr.pos.x; x2 = pr.pos.x + pr.ext.x;
-				y1 = 0; y2 = y1 + m_Rect.ext.y;
+				x1 = (m_pParent)->m_vMargins[0][0]; x2 = pr.ext.x - (m_pParent)->m_vMargins[1][0];
+				y1 = (m_pParent)->m_vMargins[0][1]; y2 = y1 + m_UnAlignedRect.ext.y;
+
+				if (y2 > (pr.ext.y - (m_pParent)->m_vMargins[1][1])) 
+				{
+					y2 = (pr.ext.y - (m_pParent)->m_vMargins[1][1]);
+				}
 
 				// alTop pushes widgets at bottom side
 				for(XGUI_Widget * w : m_pParent->m_vAlignOrderedChilds)
@@ -249,8 +256,8 @@ void XGUI_Widget::RecalcRectWithAligment()
 
 					vec_t wx1,wx2,wy1,wy2;
 
-					wx1 = w->m_Rect.pos.x; wx2 = w->m_Rect.pos.x + w->m_Rect.ext.x;
-					wy1 = w->m_Rect.pos.y; wy2 = w->m_Rect.pos.y + w->m_Rect.ext.y;
+					wx1 = w->m_WorkRect.pos.x; wx2 = w->m_WorkRect.pos.x + w->m_WorkRect.ext.x;
+					wy1 = w->m_WorkRect.pos.y; wy2 = w->m_WorkRect.pos.y + w->m_WorkRect.ext.y;
 
 					switch (w->m_Align)
 					{
@@ -263,17 +270,17 @@ void XGUI_Widget::RecalcRectWithAligment()
 					case TAlign::alTop:
 						if (w->m_nWidgetNumber < m_nWidgetNumber)
 						{
-							y1+=w->m_Rect.ext.y;
-							y2+=w->m_Rect.ext.y;
+							y1+=w->m_WorkRect.ext.y;
+							y2+=w->m_WorkRect.ext.y;
 						}
 						break;
 					}
 				}
 
-				m_Rect.pos.x = x1;
-				m_Rect.pos.y = y1;
-				m_Rect.ext.x = x2 - x1;
-				m_Rect.ext.y = y2 - y1;
+				m_WorkRect.pos.x = x1;
+				m_WorkRect.pos.y = y1;
+				m_WorkRect.ext.x = x2 - x1;
+				m_WorkRect.ext.y = y2 - y1;
 			}
 
 
@@ -285,15 +292,15 @@ void XGUI_Widget::RecalcRectWithAligment()
 			
 			if (!m_pParent)
 			{
-				m_Rect.pos = ME_Math::Vector2D(0,pr.ext.y - m_Rect.ext.y);
-				m_Rect.ext.x = pr.ext.x;			
+				m_WorkRect.pos = ME_Math::Vector2D(0,pr.ext.y - m_WorkRect.ext.y);
+				m_WorkRect.ext.x = pr.ext.x;			
 			}
 			else
 			{
 				vec_t x1,x2,y1,y2;
 
 				x1 = pr.pos.x; x2 = pr.pos.x + pr.ext.x;
-				y1 = pr.ext.y - m_Rect.ext.y; y2 = y1 + m_Rect.ext.y;
+				y1 = pr.ext.y - m_WorkRect.ext.y; y2 = y1 + m_WorkRect.ext.y;
 
 				for(XGUI_Widget * w : m_pParent->m_vAlignOrderedChilds)
 				{
@@ -303,8 +310,8 @@ void XGUI_Widget::RecalcRectWithAligment()
 
 					vec_t wx1,wx2,wy1,wy2;
 
-					wx1 = w->m_Rect.pos.x; wx2 = w->m_Rect.pos.x + w->m_Rect.ext.x;
-					wy1 = w->m_Rect.pos.y; wy2 = w->m_Rect.pos.y + w->m_Rect.ext.y;
+					wx1 = w->m_WorkRect.pos.x; wx2 = w->m_WorkRect.pos.x + w->m_WorkRect.ext.x;
+					wy1 = w->m_WorkRect.pos.y; wy2 = w->m_WorkRect.pos.y + w->m_WorkRect.ext.y;
 
 					switch (w->m_Align)
 					{
@@ -317,17 +324,17 @@ void XGUI_Widget::RecalcRectWithAligment()
 					case TAlign::alBottom:
 						if (w->m_nWidgetNumber < m_nWidgetNumber)
 						{
-							y1-=w->m_Rect.ext.y;
-							y2-=w->m_Rect.ext.y;
+							y1-=w->m_WorkRect.ext.y;
+							y2-=w->m_WorkRect.ext.y;
 						}
 						break;
 					}
 				}
 
-				m_Rect.pos.x = x1;
-				m_Rect.pos.y = y1;
-				m_Rect.ext.x = x2 - x1;
-				m_Rect.ext.y = y2 - y1;
+				m_WorkRect.pos.x = x1;
+				m_WorkRect.pos.y = y1;
+				m_WorkRect.ext.x = x2 - x1;
+				m_WorkRect.ext.y = y2 - y1;
 			}
 
 		}
@@ -337,14 +344,14 @@ void XGUI_Widget::RecalcRectWithAligment()
 			
 			if (!m_pParent)
 			{
-				m_Rect.pos = ME_Math::Vector2D(0,0);
-				m_Rect.ext.y = pr.ext.y;			
+				m_WorkRect.pos = ME_Math::Vector2D(0,0);
+				m_WorkRect.ext.y = pr.ext.y;			
 			}
 			else
 			{
 				vec_t x1,x2,y1,y2;
 
-				x1 = 0; x2 = m_Rect.ext.x;
+				x1 = 0; x2 = m_WorkRect.ext.x;
 				y1 = 0; y2 = y1 + pr.ext.y;
 
 				// alTop pushes widgets at bottom side
@@ -356,8 +363,8 @@ void XGUI_Widget::RecalcRectWithAligment()
 
 					vec_t wx1,wx2,wy1,wy2;
 
-					wx1 = w->m_Rect.pos.x; wx2 = w->m_Rect.pos.x + w->m_Rect.ext.x;
-					wy1 = w->m_Rect.pos.y; wy2 = w->m_Rect.pos.y + w->m_Rect.ext.y;
+					wx1 = w->m_WorkRect.pos.x; wx2 = w->m_WorkRect.pos.x + w->m_WorkRect.ext.x;
+					wy1 = w->m_WorkRect.pos.y; wy2 = w->m_WorkRect.pos.y + w->m_WorkRect.ext.y;
 
 					switch (w->m_Align)
 					{
@@ -370,16 +377,16 @@ void XGUI_Widget::RecalcRectWithAligment()
 					case TAlign::alLeft:
 						if (w->m_nWidgetNumber < m_nWidgetNumber)
 						{
-							x1+=w->m_Rect.ext.x;
-							x2+=w->m_Rect.ext.x;
+							x1+=w->m_WorkRect.ext.x;
+							x2+=w->m_WorkRect.ext.x;
 						}
 					}
 				}
 
-				m_Rect.pos.x = x1;
-				m_Rect.pos.y = y1;
-				m_Rect.ext.x = x2 - x1;
-				m_Rect.ext.y = y2 - y1;
+				m_WorkRect.pos.x = x1;
+				m_WorkRect.pos.y = y1;
+				m_WorkRect.ext.x = x2 - x1;
+				m_WorkRect.ext.y = y2 - y1;
 			}
 
 		}		
@@ -389,14 +396,14 @@ void XGUI_Widget::RecalcRectWithAligment()
 			
 			if (!m_pParent)
 			{
-				m_Rect.pos = ME_Math::Vector2D(pr.ext.x - m_Rect.ext.x,0);
-				m_Rect.ext.y = pr.ext.y;		
+				m_WorkRect.pos = ME_Math::Vector2D(pr.ext.x - m_WorkRect.ext.x,0);
+				m_WorkRect.ext.y = pr.ext.y;		
 			}
 			else
 			{
 				vec_t x1,x2,y1,y2;
 
-				x1 = pr.ext.x - m_Rect.ext.x; x2 = x1 + m_Rect.ext.x;
+				x1 = pr.ext.x - m_WorkRect.ext.x; x2 = x1 + m_WorkRect.ext.x;
 				y1 = 0; y2 = y1 + pr.ext.y;
 
 				// alTop pushes widgets at bottom side
@@ -409,8 +416,8 @@ void XGUI_Widget::RecalcRectWithAligment()
 
 					vec_t wx1,wx2,wy1,wy2;
 
-					wx1 = w->m_Rect.pos.x; wx2 = w->m_Rect.pos.x + w->m_Rect.ext.x;
-					wy1 = w->m_Rect.pos.y; wy2 = w->m_Rect.pos.y + w->m_Rect.ext.y;
+					wx1 = w->m_WorkRect.pos.x; wx2 = w->m_WorkRect.pos.x + w->m_WorkRect.ext.x;
+					wy1 = w->m_WorkRect.pos.y; wy2 = w->m_WorkRect.pos.y + w->m_WorkRect.ext.y;
 
 					switch (w->m_Align)
 					{
@@ -423,16 +430,16 @@ void XGUI_Widget::RecalcRectWithAligment()
 					case TAlign::alRight:
 						if (w->m_nWidgetNumber < m_nWidgetNumber)
 						{
-							x1-=w->m_Rect.ext.x;
-							x2-=w->m_Rect.ext.x;
+							x1-=w->m_WorkRect.ext.x;
+							x2-=w->m_WorkRect.ext.x;
 						}
 					}
 				}
 
-				m_Rect.pos.x = x1;
-				m_Rect.pos.y = y1;
-				m_Rect.ext.x = x2 - x1;
-				m_Rect.ext.y = y2 - y1;
+				m_WorkRect.pos.x = x1;
+				m_WorkRect.pos.y = y1;
+				m_WorkRect.ext.x = x2 - x1;
+				m_WorkRect.ext.y = y2 - y1;
 			}
 
 		}
@@ -449,7 +456,8 @@ void XGUI_Widget::RecalcRectWithAligment()
 **/
 void XGUI_Widget::SetRect(xgRect_t & rect)
 {
-	m_Rect = rect;
+	m_WorkRect = rect;
+	m_UnAlignedRect = rect;
 
 	RecalcItemsRects();
 }
@@ -508,9 +516,20 @@ void XGUI_Widget::Render()
 	for(TWidgetSharedPtr child: m_vChilds)
 	{
 		if (child->m_bVisible == false) continue;
-		child->m_vParentStart = m_vParentStart + m_Rect.pos;
+		child->m_vParentStart = m_vParentStart + m_WorkRect.pos;
+
+		xgRect_t r = m_WorkRect;
+		CalcClientRect(r);
+
+		GL_SetScissor(r.Left(),r.Top(),r.ext.x,r.ext.y);
+		GL_EnableScissorTest();
+
 		child->Render();
+
+		g_pTesselator->Flush();
 	}
+
+	
 }
 
 /*
@@ -525,10 +544,10 @@ void XGUI_Widget::DrawComponent()
 	glColor4ubv((GLubyte*)&m_Color);
 	glBegin(GL_QUADS);
 
-	glVertex2d(m_Rect.pos.x,m_Rect.pos.y);
-	glVertex2d(m_Rect.pos.x + m_Rect.ext.x,m_Rect.pos.y);
-	glVertex2d(m_Rect.pos.x + m_Rect.ext.x,m_Rect.pos.y + m_Rect.ext.y);
-	glVertex2d(m_Rect.pos.x,m_Rect.pos.y + m_Rect.ext.y);
+	glVertex2d(m_WorkRect.pos.x,m_WorkRect.pos.y);
+	glVertex2d(m_WorkRect.pos.x + m_WorkRect.ext.x,m_WorkRect.pos.y);
+	glVertex2d(m_WorkRect.pos.x + m_WorkRect.ext.x,m_WorkRect.pos.y + m_WorkRect.ext.y);
+	glVertex2d(m_WorkRect.pos.x,m_WorkRect.pos.y + m_WorkRect.ext.y);
 
 	glEnd();
 
@@ -657,7 +676,7 @@ void XGUI_Widget::AddChildWidget(XGUI_Widget * pWidget)
 	pWidget->OnAddToParent(this);
 
 	// Update rect with aligment
-	pWidget->SetRect(pWidget->m_Rect);	
+	pWidget->SetRect(pWidget->m_WorkRect);	
 	pWidget->m_nWidgetNumber = m_nWidgetCounter++;	
 
 
@@ -687,7 +706,7 @@ void XGUI_Widget::SortChildsByAlignOrder()
 XGUI_Widget* XGUI_Widget::WidgetUnderCursor(ME_Math::Vector2D pt)
 {
 
-	xgRect_t r = m_Rect;
+	xgRect_t r = m_WorkRect;
 	CalcClientRect(r);
 
 	if (!(pt.x >= r.pos.x && pt.x <= r.pos.x + r.ext.x)
@@ -725,7 +744,7 @@ void XGUI_Widget::CalcClientRect(xgRect_t & r)
 {
 	if (m_pParent)
 	{
-		r.pos += m_pParent->m_Rect.pos;
+		r.pos += m_pParent->m_WorkRect.pos;
 		m_pParent->CalcClientRect(r);
 	}
 }
@@ -737,14 +756,14 @@ void XGUI_Widget::ScreenToClient(ME_Math::Vector2D & v)
 {
 	XGUI_Widget * pParent = m_pParent;
 
-	v-=m_Rect.pos;
+	v-=m_WorkRect.pos;
 
 	// Traverse up hierarchy
 	//
 	while(pParent && pParent->m_pParent)
 	{
 		pParent = pParent->m_pParent;
-		v-=pParent->m_Rect.pos;
+		v-=pParent->m_WorkRect.pos;
 	}
 
 }
@@ -756,14 +775,14 @@ void XGUI_Widget::ClientToScreen(ME_Math::Vector2D & v)
 {
 	XGUI_Widget * pParent = m_pParent;
 
-	v+=m_Rect.pos;
+	v+=m_WorkRect.pos;
 
 	// Traverse up hierarchy
 	//
 	while(pParent && pParent->m_pParent)
 	{
 		pParent = pParent->m_pParent;
-		v+=pParent->m_Rect.pos;
+		v+=pParent->m_WorkRect.pos;
 	}
 
 }
@@ -793,10 +812,10 @@ void XGUI_Widget::RecalcDrag()
 		ME_Math::Vector2D v2 = v - m_vDragOrigin;
 
 		ScreenToClient(v2);			
-		m_Rect.pos += v2;		
+		m_WorkRect.pos += v2;		
 
 		// Update aligment
-		SetRect(m_Rect);
+		SetRect(m_WorkRect);
 	}
 }
 
@@ -815,7 +834,7 @@ xgRect_t XGUI_Widget::GetParentRect()
 {
 	if (m_pParent)
 	{
-		return m_pParent->m_Rect;
+		return m_pParent->m_WorkRect;
 	}
 	else
 	{
@@ -864,7 +883,7 @@ int XGUI_Widget::GetAlignPriority() const
 **/
 xgRect_t & XGUI_Widget::GetRect()
 {
-	return m_Rect;
+	return m_WorkRect;
 }
 
 /*
@@ -911,23 +930,23 @@ bool XGUI_Widget::IsFocused()
 
 void XGUI_Widget::OnAddToParent(XGUI_Widget * pParent)
 {
-	ME_Math::Vector2D  p_ext = pParent->m_Rect.ext;
+	ME_Math::Vector2D  p_ext = pParent->m_WorkRect.ext;
 
 	if (flags(m_Anchors & TAnchor::akTop))
 	{
-		m_AnchorsCoefs[ackTop] =  m_Rect.Top();
+		m_AnchorsCoefs[ackTop] =  m_WorkRect.Top();
 	}
 	if (flags(m_Anchors & TAnchor::akLeft))
 	{
-		m_AnchorsCoefs[ackLeft] =  m_Rect.Left();
+		m_AnchorsCoefs[ackLeft] =  m_WorkRect.Left();
 	}
 	if (flags(m_Anchors & TAnchor::akRight))
 	{
-		m_AnchorsCoefs[ackRight] =  pParent->m_Rect.ext.x - m_Rect.Right();
+		m_AnchorsCoefs[ackRight] =  pParent->m_WorkRect.ext.x - m_WorkRect.Right();
 	}
 	if (flags(m_Anchors & TAnchor::akBottom))
 	{
-		m_AnchorsCoefs[ackBottom] =  pParent->m_Rect.ext.y - m_Rect.Bottom();
+		m_AnchorsCoefs[ackBottom] =  pParent->m_WorkRect.ext.y - m_WorkRect.Bottom();
 	}	
 }
 

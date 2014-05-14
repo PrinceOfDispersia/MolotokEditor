@@ -46,7 +46,9 @@ namespace ME_XGUI
 		ME_Math::Vector2D m_vParentStart;		
 		ME_Math::Vector2D m_vMargins[2];
 
-		xgRect_t m_Rect;
+		xgRect_t m_WorkRect;
+		xgRect_t m_UnAlignedRect;
+
 		color32_t m_Color;
 		
 		vec_t m_AnchorsCoefs[4];

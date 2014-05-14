@@ -27,8 +27,8 @@ XGUI_MenuItem::XGUI_MenuItem(xgRect_t & r): XGUI_Widget(r)
 		r.ext.y = 20;
 	}
 
-	m_Rect.pos = r.pos;
-	m_Rect.ext = r.ext;
+	m_WorkRect.pos = r.pos;
+	m_WorkRect.ext = r.ext;
 
 	m_strCaption = _T("Сохранить...");
 	m_bPressed = false;
@@ -61,7 +61,7 @@ void XGUI_MenuItem::DrawHoverOverlay()
 	g_pTesselator->DefaultColor(c);
 
 	if (fadeOut < 1)
-		XGUI_DrawSheetGlyph(sprMenuItemHover,m_Rect);
+		XGUI_DrawSheetGlyph(sprMenuItemHover,m_WorkRect);
 }
 
 /*
@@ -71,15 +71,15 @@ void XGUI_MenuItem::DrawTextLabel()
 {
 	// TODO: calc this once when resize\moved\label change?
 	
-	xgRect_t f = m_Rect;
-	f.Implode(xAxis,m_Rect.ext.y);
+	xgRect_t f = m_WorkRect;
+	f.Implode(xAxis,m_WorkRect.ext.y);
 	
 	m_pGuiFontNormal->SetTextColor(0,0,0,255);
 	m_pGuiFontNormal->DrawAlignedText(m_strCaption,f,THorizontalAligment::alhLeft,TVerticalAligment::alvCenter);
 	
 	xgRect_t r;
-	r.pos = m_Rect.pos;
-	r.ext = ME_Math::Vector2D(m_Rect.ext.y,m_Rect.ext.y);
+	r.pos = m_WorkRect.pos;
+	r.ext = ME_Math::Vector2D(m_WorkRect.ext.y,m_WorkRect.ext.y);
 
 	if (0)
 	{
@@ -111,7 +111,7 @@ void XGUI_MenuItem::DrawTextLabel()
 
 	if (m_pSubMenu)
 	{
-		xgRect_t r = m_Rect;
+		xgRect_t r = m_WorkRect;
 		r.Implode(xAxis,4);
 		XGUI_DrawSheetGlyphAligned(sprMenuSelection,r,THorizontalAligment::alhRight,TVerticalAligment::alvCenter);
 	}
@@ -132,7 +132,7 @@ void XGUI_MenuItem::DrawComponent()
 	else
 	{
 		//XGUI_DrawSheetGlyph(sprMenuItemBg,m_Rect);
-		xgRect_t r = m_Rect;
+		xgRect_t r = m_WorkRect;
 		r.Implode(xAxis,20);
 		r.ext.x += 18;
 
@@ -200,8 +200,8 @@ void XGUI_MenuItem::HandleEvent(ME_Framework::appEvent_t & ev)
 			{
 				pMenu->PopupSubmenu(m_pSubMenu);
 				
-				m_pSubMenu->m_Rect.pos.x = pMenu->m_Rect.Right();
-				m_pSubMenu->m_Rect.pos.y = pMenu->m_Rect.Top() + m_Rect.Top();
+				m_pSubMenu->m_WorkRect.pos.x = pMenu->m_WorkRect.Right();
+				m_pSubMenu->m_WorkRect.pos.y = pMenu->m_WorkRect.Top() + m_WorkRect.Top();
 			}
 		}
 		else if (m_pSubMenu)
@@ -262,7 +262,7 @@ XGUI_MenuItem * XGUI_Menu::AddItem( String strName,TMenuItemKinds kind,int group
 {
 	xgRect_t r;
 	r.pos.x = 0;
-	r.pos.y = m_Rect.ext.y;
+	r.pos.y = m_WorkRect.ext.y;
 
 	r.ext.Init();
 
@@ -271,12 +271,12 @@ XGUI_MenuItem * XGUI_Menu::AddItem( String strName,TMenuItemKinds kind,int group
 	AddChildWidget(pRet);
 		
 
-	if (m_Rect.ext.x < pRet->GetRect().ext.x)
-			m_Rect.ext.x = pRet->GetRect().ext.x;
+	if (m_WorkRect.ext.x < pRet->GetRect().ext.x)
+			m_WorkRect.ext.x = pRet->GetRect().ext.x;
 	if (strName.c_str()[0] == _T('-'))
 		pRet->GetRect().ext.y = 1;
 
-	m_Rect.ext.y += pRet->GetRect().ext.y;
+	m_WorkRect.ext.y += pRet->GetRect().ext.y;
 
 	pRet->SetKind(kind);
 	pRet->SetSelectionGroup(group);
@@ -287,7 +287,7 @@ XGUI_MenuItem * XGUI_Menu::AddItem( String strName,TMenuItemKinds kind,int group
 
 void XGUI_Menu::Popup( ME_Math::Vector2D pos )
 {
-	m_Rect.pos = pos;
+	m_WorkRect.pos = pos;
 	SetVisibilty(true);
 	SetZOrder(zFocused+1);
 }
@@ -352,5 +352,54 @@ bool XGUI_MenuItem::IsBelongsHeirarchy( XGUI_Widget * w )
 
 void XGUI_Menu::DrawComponent()
 {
-	XGUI_DrawSheetGlyph(sprMenuItemBg,m_Rect);
+	XGUI_DrawSheetGlyph(sprMenuItemBg,m_WorkRect);
+}
+
+XGUI_MenuBar::XGUI_MenuBar(xgRect_t r): XGUI_Widget(r)
+{
+	SetAlign(TAlign::alTop);
+	GetRect().ext.y = 20;
+}
+
+XGUI_MenuBar::~XGUI_MenuBar()
+{
+
+}
+
+void XGUI_MenuBar::AddItem( String strName,TWidgetSharedPtr pMenu )
+{
+	vec_t pad = 2.0;
+	vec_t offset = pad;
+
+	for(TWidgetSharedPtr widget: m_vChilds)
+	{
+		offset += widget->GetRect().ext.x + pad;
+	}
+		
+	vec_t w = 0;
+	xgRect_t r;
+
+	
+	g_pGUIManager->Get_GuiFont(TGuiFontTypes::gfNormal)->Calc_TextRect(strName,&r);
+
+	r.pos.y = 0;
+	r.pos.x = offset;
+	r.ext.y = 20;
+	r.ext.x+=15;
+
+	
+
+	XGUI_GenericButton * pButton = new XGUI_GenericButton(r);
+
+	mSheetGlyph_t* skinArr[] = {sprBlank,sprBlank,sprMenuItemHover};
+	pButton->SetCaption(strName);
+	pButton->SetSkinSet(skinArr,3);
+
+	AddChildWidget(pButton);
+}
+
+void XGUI_MenuBar::DrawComponent()
+{
+	//g_pTesselator->DefaultColor(c);
+	//XGUI_DrawSheetGlyph(sprWhite,m_WorkRect);
 }

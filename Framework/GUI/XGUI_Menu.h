@@ -75,6 +75,16 @@ namespace ME_Framework
 
 		};
 
+		class XGUI_MenuBar: public XGUI_Widget
+		{
+		public:
+			XGUI_MenuBar(xgRect_t r);
+			~XGUI_MenuBar();
+
+			void AddItem(String strName,TWidgetSharedPtr pMenu);
+			virtual void DrawComponent();
+		};
+
 	}
 
 }
