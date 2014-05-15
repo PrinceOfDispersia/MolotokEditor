@@ -302,14 +302,14 @@ void XGUI_Manager::Think(float flDeltaTime)
 	{
 		ME_Framework::appEvent_t e;
 		e.eventid = eventTypes::EV_CURSOR_LEAVED;
-		m_pCursorWidget->HandleEvent(e);
+		m_pCursorWidget->DoHandleEvent(e);
 	}
 
 	if (w && m_pCursorWidget != w)
 	{
 		ME_Framework::appEvent_t e;
 		e.eventid = eventTypes::EV_CURSOR_ENTERED;
-		w->HandleEvent(e);
+		w->DoHandleEvent(e);
 	}
 
 	m_pCursorWidget = w;
@@ -400,7 +400,7 @@ void XGUI_Manager::HandleEvent(ME_Framework::appEvent_t & ev)
 							w->SetDragged(true);
 						}
 						else 
-							w->HandleEvent(ev);
+							w->DoHandleEvent(ev);
 					}
 				}
 				break;
@@ -439,7 +439,7 @@ void XGUI_Manager::HandleEvent(ME_Framework::appEvent_t & ev)
 					w->SetDragged(false);
 				}
 			}
-			m_pDesktop->HandleEvent(ev);
+			m_pDesktop->DoHandleEvent(ev);
 		}
 		break;
 		case eventTypes::EV_WINDOW_RESIZE:

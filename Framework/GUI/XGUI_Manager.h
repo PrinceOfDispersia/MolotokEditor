@@ -75,6 +75,7 @@ namespace ME_Framework
 
 		class XGUI_Manager
 		{
+			friend XGUI_Widget;
 			XGUI_Widget * m_pDesktop;
 			
 			XGUI_Sheet  * m_pImagesSheet;

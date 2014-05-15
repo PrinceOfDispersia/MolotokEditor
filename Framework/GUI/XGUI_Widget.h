@@ -77,7 +77,7 @@ namespace ME_XGUI
 		void SortChildsByAlignOrder();
 		void CalcClientRect(xgRect_t & r);
 		void RecalcRectWithAligment();				
-		void RecursiveNotifyEveryone(ME_Framework::appEvent_t & ev);	
+		void RecursiveNotifyEveryone(ME_Framework::appEvent_t & ev,XGUI_Widget * filter = NULL);	
 		void OnAddToParent(XGUI_Widget * pParent);
 		void SetMarginsFromSkinset(mSheetGlyph_t * spr[9]);	
 	public:
@@ -108,6 +108,8 @@ namespace ME_XGUI
 		int				GetAlignPriority() const;
 		int				GetZOrder() const;
 		bool			IsDragged() const;
+
+		void DoHandleEvent(ME_Framework::appEvent_t & pEvent);
 
 		virtual void HandleEvent(ME_Framework::appEvent_t & pEvent);
 		virtual void DrawComponent();

@@ -75,14 +75,33 @@ namespace ME_Framework
 
 		};
 
+		class XGUI_MenuButton;
+
 		class XGUI_MenuBar: public XGUI_Widget
 		{
+			friend XGUI_MenuButton;
+
+			bool m_bActive;
+
 		public:
 			XGUI_MenuBar(xgRect_t r);
 			~XGUI_MenuBar();
 
 			void AddItem(String strName,TWidgetSharedPtr pMenu);
 			virtual void DrawComponent();
+		};
+
+		class XGUI_MenuButton: public XGUI_Widget
+		{		
+			int m_nUsedSkins;
+			mSheetGlyph_t * m_pSkinsSet[3];
+			bool m_bPressed;
+						
+		public:
+			XGUI_MenuButton(xgRect_t & r);
+
+			virtual void DrawComponent();
+			virtual void HandleEvent(ME_Framework::appEvent_t & e);
 		};
 
 	}

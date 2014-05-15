@@ -22,7 +22,7 @@ XGUI_GenericButton::XGUI_GenericButton(xgRect_t & r) : XGUI_Widget(r)
 
 	m_bPressed = false;
 
-	m_pContextMenu = g_pTestMenu;
+	
 }
 
 /*

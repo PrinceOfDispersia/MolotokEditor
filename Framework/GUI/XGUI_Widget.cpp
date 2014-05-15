@@ -478,10 +478,12 @@ void XGUI_Widget::RecalcItemsRects()
 /*
 *	Notifies every component in gui hierarchy with event
 **/
-void XGUI_Widget::RecursiveNotifyEveryone(ME_Framework::appEvent_t & ev)
+void XGUI_Widget::RecursiveNotifyEveryone(ME_Framework::appEvent_t & ev,XGUI_Widget * filter)
 {
 	for(TWidgetSharedPtr w : m_vChilds)
 	{
+		if (w.get() == filter) continue;
+
 		if (w->m_bVisible == false)  
 			continue;
 		w->HandleEvent(ev);
@@ -497,9 +499,21 @@ void XGUI_Widget::HandleEvent(ME_Framework::appEvent_t & ev)
 	switch(ev.eventid)
 	{
 	case eventTypes::EV_MOUSE_KEY_UP:
-		for(TWidgetSharedPtr c : m_vChilds)
+		for(TWidgetSharedPtr c : g_pGUIManager->m_pDesktop->GetChilds())
 		{
-			RecursiveNotifyEveryone(ev);			
+			auto e = ev; 
+			e.eventid = eventTypes::EV_NOTIFY_MOUSE_UP;
+			c->RecursiveNotifyEveryone(e);			
+		}
+		break;
+	case eventTypes::EV_MOUSE_KEY_DOWN:
+		{
+			auto e = ev;
+			e.eventid = eventTypes::EV_NOTIFY_COMPONENT_CLICKED;
+			for(TWidgetSharedPtr c : g_pGUIManager->m_pDesktop->GetChilds())
+			{
+				c->RecursiveNotifyEveryone(e,this);			
+			}
 		}
 		break;
 	}
@@ -970,3 +984,9 @@ bool XGUI_Widget::IsBelongsHeirarchy( XGUI_Widget * w )
 	return m_pParent->IsBelongsHeirarchy(w);
 }
 
+
+void XGUI_Widget::DoHandleEvent( ME_Framework::appEvent_t & pEvent )
+{
+	XGUI_Widget::HandleEvent(pEvent);
+	HandleEvent(pEvent);
+}

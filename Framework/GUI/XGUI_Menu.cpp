@@ -389,17 +389,63 @@ void XGUI_MenuBar::AddItem( String strName,TWidgetSharedPtr pMenu )
 
 	
 
-	XGUI_GenericButton * pButton = new XGUI_GenericButton(r);
+	XGUI_MenuButton * pButton = new XGUI_MenuButton(r);
 
 	mSheetGlyph_t* skinArr[] = {sprBlank,sprBlank,sprMenuItemHover};
 	pButton->SetCaption(strName);
-	pButton->SetSkinSet(skinArr,3);
-
 	AddChildWidget(pButton);
 }
 
 void XGUI_MenuBar::DrawComponent()
 {
-	//g_pTesselator->DefaultColor(c);
-	//XGUI_DrawSheetGlyph(sprWhite,m_WorkRect);
+
+}
+
+XGUI_MenuButton::XGUI_MenuButton( xgRect_t & r ):XGUI_Widget(r)
+{
+	m_bPressed = false;
+}
+
+void XGUI_MenuButton::DrawComponent()
+{
+	float fadeOut = g_pPlatform->TimeElapsed() - m_flHoveroutTimer;
+	fadeOut /= 0.3f;
+	if (fadeOut > 1.0f) fadeOut = 1.0f;
+
+	color32_t c;
+	c.r = c.g = c.b = 255;
+	c.a = (byte)((1-fadeOut) * 255);
+
+	g_pTesselator->DefaultColor(c);
+
+	if (fadeOut < 1)
+	{
+		XGUI_DrawSheetGlyph(sprMenuItemHover,m_WorkRect);			
+	}
+
+	g_pTesselator->ResetDefaultColor();
+
+	m_pGuiFontNormal->SetTextColor(0,0,0,255);
+	m_pGuiFontNormal->DrawAlignedText(m_strCaption,m_WorkRect,THorizontalAligment::alhCenter,TVerticalAligment::alvCenter);
+}
+
+void XGUI_MenuButton::HandleEvent( ME_Framework::appEvent_t & e )
+{
+	if (e.eventid == eventTypes::EV_MOUSE_KEY_DOWN)
+	{
+		XGUI_MenuBar * m_pBar = dynamic_cast<XGUI_MenuBar*>(m_pParent);
+
+		assert(m_pBar);
+
+		m_pBar->m_bActive = true;
+
+
+	}
+	else if (e.eventid == eventTypes::EV_NOTIFY_COMPONENT_CLICKED)
+	{
+		MessageBeep(0xFFFFFFFF);
+	}
+
+		
+	
 }
